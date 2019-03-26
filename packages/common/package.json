@@ -1,0 +1,21 @@
+{
+  "name": "@nestcloud/common",
+  "version": "0.3.0-beta4",
+  "description": "common module for nestcloud",
+  "author": "Miaowing <i@zfeng.net>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nest-cloud/nestcloud.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nest-cloud/nestcloud/issues"
+  },
+  "homepage": "https://github.com/nest-cloud/nestcloud#readme",
+  "dependencies": {
+    "lodash": "^4.17.11"
+  }
+}

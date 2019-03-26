@@ -1,0 +1,27 @@
+{
+  "name": "@nestcloud/boot",
+  "version": "0.1.4",
+  "description": "A Nest framework (node.js) module for getting config parameters when the app start running.",
+  "author": "Miaowing <i@zfeng.net>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@nestcloud/common": "^0.3.0-beta4",
+    "@nestjs/common": "^6.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nest-cloud/nestcloud.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nest-cloud/nestcloud/issues"
+  },
+  "homepage": "https://github.com/nest-cloud/nestcloud#readme",
+  "dependencies": {
+    "lodash": "^4.17.11",
+    "reflect-metadata": "^0.1.12",
+    "yamljs": "^0.3.0"
+  }
+}

@@ -1,0 +1,1 @@
+export const DYNAMIC_BOOT_VALUE = 'DYNAMIC_BOOT_VALUE';

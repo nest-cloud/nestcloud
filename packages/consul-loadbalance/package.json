@@ -1,0 +1,34 @@
+{
+  "name": "@nestcloud/consul-loadbalance",
+  "version": "0.1.4",
+  "description": "A Nest framework (node.js) module for getting service from consul and sending http request by loadbalance.",
+  "author": "Miaowing <i@zfeng.net>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "optionalDependencies": {
+    "@nestcloud/boot": "^0.1.4",
+    "@nestcloud/consul-config": "^0.1.4"
+  },
+  "peerDependencies": {
+    "@nestcloud/common": "^0.1.2",
+    "@nestcloud/consul": "^0.1.4",
+    "@nestcloud/consul-service": "^0.1.2",
+    "@nestjs/common": "^6.0.0",
+    "consul": "^0.30.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nest-cloud/nestcloud.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nest-cloud/nestcloud/issues"
+  },
+  "homepage": "https://github.com/nest-cloud/nestcloud#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "lodash": "^4.17.11",
+    "random-js": "^2.0.0-rc2"
+  }
+}

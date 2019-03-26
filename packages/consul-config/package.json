@@ -1,0 +1,33 @@
+{
+  "name": "@nestcloud/consul-config",
+  "version": "0.1.4",
+  "description": "A Nest framework (node.js) module for getting configurations from consul kv",
+  "author": "Miaowing <i@zfeng.net>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "optionalDependencies": {
+    "@nestcloud/boot": "^0.1.4"
+  },
+  "peerDependencies": {
+    "@nestcloud/common": "^0.1.2",
+    "@nestcloud/consul": "^0.1.4",
+    "@nestjs/common": "^6.0.0",
+    "consul": "^0.30.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nest-cloud/nestcloud.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nest-cloud/nestcloud/issues"
+  },
+  "homepage": "https://github.com/nest-cloud/nestcloud#readme",
+  "dependencies": {
+    "lodash": "^4.17.11",
+    "object-map-transformer": "^0.0.1",
+    "reflect-metadata": "^0.1.12",
+    "yamljs": "^0.3.0"
+  }
+}
