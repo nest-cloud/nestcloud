@@ -1,0 +1,4 @@
+config:
+  service:
+    # if process.env.SERVICE_NAME is undefined, the value will be 'default-config-service'.
+    name: ${ SERVICE_NAME || default-config-service }
