@@ -1,0 +1,3 @@
+feign:
+  axios:
+    timeout: 5000

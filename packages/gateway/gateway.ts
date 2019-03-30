@@ -33,6 +33,10 @@ export class Gateway implements IGateway {
         });
     }
 
+    /**
+     * TODO sync to consul kv when updated routes.
+     * @param routes
+     */
     public updateRoutes(routes: IRoute[]) {
         this.routeMap = {};
         routes.forEach(route => this.routeMap[route.id] = route);

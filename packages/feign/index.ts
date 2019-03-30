@@ -14,3 +14,4 @@ export * from './interfaces/interceptor.interface';
 export * from './interfaces/fallback.interface';
 export * from './interfaces/health-check.interface';
 export * from './interfaces/brake-options.interface';
+export * from './interfaces/global-axios-config.interface';

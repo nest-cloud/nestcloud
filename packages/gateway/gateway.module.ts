@@ -1,6 +1,5 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
 import { Loadbalance } from '@nestcloud/consul-loadbalance';
-import { get } from 'lodash';
 import {
     NEST_BOOT,
     NEST_BOOT_PROVIDER,

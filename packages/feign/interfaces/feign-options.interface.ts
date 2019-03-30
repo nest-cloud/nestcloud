@@ -1,6 +1,6 @@
-import { AxiosRequestConfig } from 'axios';
+import { IGlobalAxiosConfig } from "./global-axios-config.interface";
 
 export interface IFeignOptions {
     dependencies?: string[];
-    axiosConfig?: AxiosRequestConfig;
+    axiosConfig?: IGlobalAxiosConfig;
 }

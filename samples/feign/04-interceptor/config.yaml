@@ -4,6 +4,7 @@ web:
 consul:
   host: 127.0.0.1
   port: 8500
+  discoveryHost: 127.0.0.1
   healthCheck:
     route: /health
     protocol: http
@@ -11,12 +12,6 @@ consul:
     interval: 10s
     maxRetry: 5
     retryInterval: 5000
-loadbalance:
-  # Supports:
-  # RandomRule
-  # RoundRobinRule
-  # WeightedResponseTimeRule
-  ruleCls: RandomRule
-  rules:
-    - service: your-service-name
-      ruleCls: ../custom.rule
+feign:
+  axios:
+    timeout: 5000

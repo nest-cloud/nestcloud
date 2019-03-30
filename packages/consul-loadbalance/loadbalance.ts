@@ -23,9 +23,9 @@ export class Loadbalance implements ILoadbalance {
         this.rules = rules;
         this.globalRuleCls = globalRuleCls;
 
-        const services: string[] = await this.service.getServiceNames();
+        const services: string[] = this.service.getServiceNames();
         await this.updateServices(services);
-        this.service.watchServiceList(async (services: string[]) => await this.updateServices(services));
+        this.service.watchServiceList((services: string[]) => this.updateServices(services));
     }
 
     chooseLoadbalancer(serviceName: string) {
@@ -44,7 +44,7 @@ export class Loadbalance implements ILoadbalance {
         return loadbalancer.chooseService();
     }
 
-    private async updateServices(services: string[]) {
+    private updateServices(services: string[]) {
         const ruleMap = keyBy(this.rules, 'service');
         services.forEach(service => {
             const nodes = this.service.getServiceNodes(service);

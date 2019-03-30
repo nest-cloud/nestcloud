@@ -61,4 +61,6 @@ export interface IBrakesConfig {
     event?: (name: string, ...params) => void;
 
     healthCheck?: boolean;
+
+    timeout?: number;
 }

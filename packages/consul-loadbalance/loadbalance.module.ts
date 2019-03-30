@@ -30,6 +30,7 @@ export class LoadbalanceModule {
             provide: NEST_CONSUL_LOADBALANCE_PROVIDER,
             useFactory: async (service: ConsulService, boot: Boot | ConsulConfig): Promise<Loadbalance> => {
                 const loadbalance = new Loadbalance(service);
+                // TODO rewrite & support dynamic update
                 const rules = (
                     options.dependencies && options.dependencies.includes(NEST_BOOT) ?
                         (boot as Boot).get('loadbalance.rules') :
