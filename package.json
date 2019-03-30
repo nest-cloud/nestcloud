@@ -22,6 +22,7 @@
   "devDependencies": {
     "@nestjs/common": "^6.0.0",
     "@nestjs/core": "^6.0.3",
+    "@nestjs/terminus": "^6.0.0",
     "@nestjs/typeorm": "^6.0.0",
     "@types/cache-manager": "^1.2.7",
     "@types/chai": "4.1.7",

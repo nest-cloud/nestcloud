@@ -8,6 +8,8 @@
     "start": "ts-node -r tsconfig-paths/register ./main.ts"
   },
   "dependencies": {
+    "@nestcloud/boot": "^0.2.1",
+    "@nestcloud/core": "^0.2.1",
     "@nestjs/common": "^6.0.4",
     "@nestjs/core": "^6.0.4",
     "@nestjs/microservices": "^6.0.4",

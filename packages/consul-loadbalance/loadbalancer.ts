@@ -7,14 +7,18 @@ import { ServerState } from './server-state';
 import { IRule } from "./interfaces/rule.interface";
 
 export class Loadbalancer implements ILoadbalancer {
-    private readonly INTERVAL_RULES = ['RandomRule', 'RoundRobinRule', 'WeightedResponseTimeRule'];
+    private readonly INTERVAL_RULES = {
+        RandomRule: 'random.rule',
+        RoundRobinRule: 'round-robin.rule',
+        WeightedResponseTimeRule: 'weighted-response-time.rule',
+    };
     private readonly PATH_RE = /node_modules\/.+/;
     private readonly id: string;
     private readonly name: string;
     servers: Server[];
     private rule: IRule;
 
-    constructor(options: { id: string; name?: string; servers?: Server[]; ruleCls?; }) {
+    constructor(options: { id: string; name?: string; servers?: Server[]; ruleCls? }) {
         this.id = options.id;
         this.name = options.name || options.id;
         this.servers = this.initialServers(options.servers);
@@ -22,8 +26,8 @@ export class Loadbalancer implements ILoadbalancer {
             this.rule = new options.ruleCls(this);
         } else if (typeof options.ruleCls === 'string' && options.ruleCls) {
             let modulePath = path.resolve(__dirname.replace(this.PATH_RE, ''), options.ruleCls);
-            if (this.INTERVAL_RULES.indexOf(options.ruleCls) !== -1) {
-                modulePath = path.resolve(__dirname, '../rules', options.ruleCls);
+            if (this.INTERVAL_RULES[options.ruleCls]) {
+                modulePath = path.resolve(__dirname, '../rules', this.INTERVAL_RULES[options.ruleCls]);
             }
 
             const module = require(modulePath);

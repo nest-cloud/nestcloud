@@ -1,0 +1,32 @@
+web:
+  serviceName: your-service-name
+  port: 3000
+consul:
+  host: 127.0.0.1
+  port: 8500
+  discoveryHost: 127.0.0.1
+  healthCheck:
+    # http check
+    route: /health
+    protocol: http
+    timeout: 1s
+    interval: 10s
+    maxRetry: 5
+    retryInterval: 5000
+
+    # script check
+    # timeout: 1s
+    # interval: 10s
+    # script: /root/script/check.sh
+
+    # tcp check
+    # timeout: 1s
+    # interval: 10s
+    # tcp: localhost:3000
+
+    # ttl
+    # ttl: 60s
+
+    # docker check
+    # dockerContainerId: 2ddd99fd268c
+    # interval: 10s

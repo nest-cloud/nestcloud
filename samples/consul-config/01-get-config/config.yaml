@@ -1,0 +1,6 @@
+consul:
+  host: 127.0.0.1
+  port: 8500
+  config:
+    # Please put your configurations to consul kv, the key is my-service-configuration
+    key: my-service-configruation

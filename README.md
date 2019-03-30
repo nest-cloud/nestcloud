@@ -1,6 +1,6 @@
 # NestCloud
 
-A NodeJS micro-service solution based on consul, writing by typescript language and NestJS framework.
+A NodeJS micro-service solution based on Consul, writing by Typescript language and NestJS framework.
 
 
 ## Components
@@ -42,7 +42,7 @@ Memcached module.
 
 ### Schedule
 
-A job scheduler that supports distribute and decorator.
+A job scheduler that supports distributed and decorator.
 
 ## Quick Start
 

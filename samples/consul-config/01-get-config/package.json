@@ -1,5 +1,5 @@
 {
-  "name": "nestcloud-boot-samples-03",
+  "name": "nestcloud-consul-config-samples-01",
   "version": "1.0.0",
   "description": "NestCloud Samples",
   "license": "MIT",
@@ -8,11 +8,16 @@
     "start": "ts-node -r tsconfig-paths/register ./main.ts"
   },
   "dependencies": {
+    "@nestcloud/boot": "^0.2.1",
+    "@nestcloud/consul": "^0.2.1",
+    "@nestcloud/consul-config": "^0.2.1",
+    "@nestcloud/core": "^0.2.1",
     "@nestjs/common": "^6.0.4",
     "@nestjs/core": "^6.0.4",
     "@nestjs/microservices": "^6.0.4",
     "@nestjs/platform-express": "^6.0.4",
     "@nestjs/websockets": "^6.0.4",
+    "consul": "^0.34.1",
     "reflect-metadata": "0.1.13",
     "rimraf": "2.6.3",
     "rxjs": "6.4.0"

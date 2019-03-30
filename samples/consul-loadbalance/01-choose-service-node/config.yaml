@@ -1,0 +1,12 @@
+consul:
+  host: 127.0.0.1
+  port: 8500
+loadbalance:
+  # Supports:
+  # RandomRule
+  # RoundRobinRule
+  # WeightedResponseTimeRule
+  ruleCls: RandomRule
+  rules:
+    - service: your-service-name
+      ruleCls: RoundRobinRule

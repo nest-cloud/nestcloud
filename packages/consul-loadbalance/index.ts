@@ -9,4 +9,5 @@ export * from './server';
 export * from './server-state';
 export * from './rules';
 export * from './exceptions/server-critical.exception';
+export * from './exceptions/service-not-exist.exception';
 export * from './http.delegate';

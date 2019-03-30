@@ -1,8 +1,7 @@
-import { ILoadbalancer } from "@nestcloud/common";
-import { Server } from "../server";
+import { ILoadbalancer, IServer } from "@nestcloud/common";
 
 export interface IRule {
     init(loadbalancer: ILoadbalancer);
 
-    choose(): Server;
+    choose(): IServer;
 }

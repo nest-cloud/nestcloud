@@ -7,7 +7,6 @@ import { ConsulConfigInitException } from "./exceptions/consul-config-init.excep
 import { ConsulConfigSyncException } from "./exceptions/consul-config-sync.exception";
 
 export class ConsulConfig implements IConsulConfig {
-    private configs: any = {};
     private readonly store = Store;
     private readonly consul: Consul;
     private readonly key: string;

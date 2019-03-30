@@ -7,6 +7,7 @@ import { Loadbalancer } from './loadbalancer';
 import { Server } from './server';
 import { ServerState } from './server-state';
 import { IRule } from "./interfaces/rule.interface";
+import { ServiceNotExistException } from "./exceptions/service-not-exist.exception";
 
 export class Loadbalance implements ILoadbalance {
     private readonly service: ConsulService;
@@ -38,7 +39,7 @@ export class Loadbalance implements ILoadbalance {
     choose(serviceName: string) {
         const loadbalancer = this.loadbalancers[serviceName];
         if (!loadbalancer) {
-            throw new Error(`The service ${ serviceName } is not exist`);
+            throw new ServiceNotExistException(`The service ${ serviceName } is not exist`);
         }
         return loadbalancer.chooseService();
     }
