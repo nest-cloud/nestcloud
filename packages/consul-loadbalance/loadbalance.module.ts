@@ -12,12 +12,13 @@ import { DynamicModule, Global, Module } from '@nestjs/common';
 import { Boot } from '@nestcloud/boot';
 import { ConsulConfig } from '@nestcloud/consul-config';
 import { Loadbalance } from './loadbalance';
-import { Options, RuleOptions } from './loadbalance.options';
+import { ILoadbalanceOptions } from './interfaces/loadbalance-options.interface';
+import { IRuleOptions } from './interfaces/rule-options.interface';
 
 @Global()
 @Module({})
 export class LoadbalanceModule {
-    static register(options: Options = {}): DynamicModule {
+    static register(options: ILoadbalanceOptions = {}): DynamicModule {
         const inject = [NEST_CONSUL_SERVICE_PROVIDER];
         if (options.dependencies.includes(NEST_BOOT)) {
             inject.push(NEST_BOOT_PROVIDER);
@@ -34,7 +35,7 @@ export class LoadbalanceModule {
                         (boot as Boot).get('loadbalance.rules') :
                         options.dependencies && options.dependencies.includes(NEST_CONSUL_CONFIG) ?
                             await (boot as ConsulConfig).get('loadbalance.rules') : options.rules
-                ) as RuleOptions[] || [];
+                ) as IRuleOptions[] || [];
                 await loadbalance.init(rules, options.ruleCls);
                 return loadbalance;
             },

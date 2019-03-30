@@ -1,35 +1,36 @@
 import { ConsulService } from '@nestcloud/consul-service';
 import { get, keyBy } from 'lodash';
+import { ILoadbalance, IServiceNode } from '@nestcloud/common';
 
-import { RuleOptions } from './loadbalance.options';
+import { IRuleOptions } from './interfaces/rule-options.interface';
 import { Loadbalancer } from './loadbalancer';
 import { Server } from './server';
-import { ServerState } from './stats/server.state';
+import { ServerState } from './server-state';
+import { IRule } from "./interfaces/rule.interface";
 
-export class Loadbalance {
+export class Loadbalance implements ILoadbalance {
     private readonly service: ConsulService;
     private loadbalancers = {};
-    private rules: RuleOptions[];
-    private globalRuleCls: any;
+    private rules: IRuleOptions[];
+    private globalRuleCls: IRule | Function;
 
     constructor(service: ConsulService) {
         this.service = service;
     }
 
-    async init(rules: RuleOptions[], globalRuleCls) {
+    async init(rules: IRuleOptions[], globalRuleCls) {
         this.rules = rules;
         this.globalRuleCls = globalRuleCls;
 
-        const services = await this.service.getAllServices();
+        const services: string[] = await this.service.getServiceNames();
         await this.updateServices(services);
-
-        this.service.onServiceListChange(async services => await this.updateServices(services))
+        this.service.watchServiceList(async (services: string[]) => await this.updateServices(services));
     }
 
     chooseLoadbalancer(serviceName: string) {
         const loadbalancer = this.loadbalancers[serviceName];
         if (!loadbalancer) {
-            throw new Error(`The service ${serviceName} is not exist`);
+            throw new Error(`The service ${ serviceName } is not exist`);
         }
         return loadbalancer;
     }
@@ -37,32 +38,28 @@ export class Loadbalance {
     choose(serviceName: string) {
         const loadbalancer = this.loadbalancers[serviceName];
         if (!loadbalancer) {
-            throw new Error(`The service ${serviceName} is not exist`);
+            throw new Error(`The service ${ serviceName } is not exist`);
         }
         return loadbalancer.chooseService();
     }
 
-    private async updateServices(services) {
+    private async updateServices(services: string[]) {
         const ruleMap = keyBy(this.rules, 'service');
-        for (const serviceId in services) {
-            if (services.hasOwnProperty(serviceId)) {
-                const nodes = services[serviceId];
-                await this.addService(serviceId, nodes, get(ruleMap[serviceId], 'ruleCls', this.globalRuleCls));
+        services.forEach(service => {
+            const nodes = this.service.getServiceNodes(service);
+            if (!service || this.loadbalancers[service]) {
+                return null;
             }
-        }
+
+            const ruleCls = get(ruleMap[service], 'ruleCls', this.globalRuleCls);
+            this.createLoadbalancer(service, nodes, ruleCls);
+            this.createServiceWatcher(service, ruleCls);
+        });
+
     }
 
-    private async addService(serviceName: string, nodes: any[], ruleCls: any) {
-        if (!serviceName || this.loadbalancers[serviceName]) {
-            return null;
-        }
-
-        this.createLoadbalancer(serviceName, nodes, ruleCls);
-        this.createServiceWatcher(serviceName, ruleCls);
-    }
-
-    private createServiceWatcher(serviceName, ruleCls) {
-        this.service.onServiceChange(serviceName, nodes => this.createLoadbalancer(serviceName, nodes, ruleCls));
+    private createServiceWatcher(service: string, ruleCls: IRule | Function) {
+        this.service.watch(service, (nodes: IServiceNode[]) => this.createLoadbalancer(service, nodes, ruleCls));
     }
 
     private createLoadbalancer(serviceName, nodes, ruleCls) {

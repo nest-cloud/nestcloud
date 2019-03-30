@@ -1,9 +1,9 @@
 import { get } from 'lodash';
 import { Random } from 'random-js';
 
-import { ILoadbalancer } from '../loadbalancer.interface';
+import { ILoadbalancer } from '@nestcloud/common';
 import { Server } from '../server';
-import { IRule } from './rule.interface';
+import { IRule } from '../interfaces/rule.interface';
 
 export class RandomRule implements IRule {
     private readonly random = new Random();

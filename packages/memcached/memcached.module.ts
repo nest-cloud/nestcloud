@@ -1,6 +1,6 @@
-import { Memcached } from './memcached.wrapper';
+import { Memcached } from './memcached.class';
 import { Module, DynamicModule, Global } from '@nestjs/common';
-import { Options } from './memcached.options';
+import { IMemcachedOptions } from './interfaces/memcached-options.interface';
 import { Boot } from '@nestcloud/boot';
 import { ConsulConfig } from "@nestcloud/consul-config";
 import {
@@ -14,7 +14,7 @@ import {
 @Global()
 @Module({})
 export class MemcachedModule {
-    static register(options: Options = {}): DynamicModule {
+    static register(options: IMemcachedOptions = {}): DynamicModule {
         const inject = [];
         if (options.dependencies.includes(NEST_BOOT)) {
             inject.push(NEST_BOOT_PROVIDER);

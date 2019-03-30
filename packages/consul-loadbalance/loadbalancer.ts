@@ -1,9 +1,10 @@
 import * as path from 'path';
 
-import { ILoadbalancer } from './loadbalancer.interface';
-import { IRule, RandomRule } from './rules';
+import { ILoadbalancer } from '@nestcloud/common';
+import { RandomRule } from './rules';
 import { Server } from './server';
-import { ServerState } from './stats/server.state';
+import { ServerState } from './server-state';
+import { IRule } from "./interfaces/rule.interface";
 
 export class Loadbalancer implements ILoadbalancer {
     private readonly INTERVAL_RULES = ['RandomRule', 'RoundRobinRule', 'WeightedResponseTimeRule'];

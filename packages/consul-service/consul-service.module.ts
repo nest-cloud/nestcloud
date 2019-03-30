@@ -1,7 +1,4 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
-import {
-    RegisterOptions,
-} from './consul-service.interfaces';
 import * as Consul from 'consul';
 import { ConsulService } from './consul-service.class';
 import {
@@ -11,11 +8,12 @@ import {
     NEST_BOOT
 } from "@nestcloud/common";
 import { Boot } from "@nestcloud/boot";
+import { IConsulServiceOptions } from "./interfaces/consul-service-options.interface";
 
 @Global()
 @Module({})
 export class ConsulServiceModule {
-    static register(options: RegisterOptions = {}): DynamicModule {
+    static register(options: IConsulServiceOptions = {}): DynamicModule {
         const inject = [NEST_CONSUL_PROVIDER];
 
         if (options.dependencies && options.dependencies.includes(NEST_BOOT)) {
@@ -33,7 +31,7 @@ export class ConsulServiceModule {
                     consul: options.consul,
                     logger: options.logger,
                 };
-                if (options.dependencies && options.dependencies.includes(NEST_BOOT)) {
+                if (inject.includes(NEST_BOOT_PROVIDER)) {
                     configs = {
                         web: boot.get('web'),
                         consul: boot.get('consul'),

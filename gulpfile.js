@@ -7,17 +7,17 @@ const deleteEmpty = require('delete-empty');
 const packages = {
     common: ts.createProject('packages/common/tsconfig.json'),
     boot: ts.createProject('packages/boot/tsconfig.json'),
+    core: ts.createProject('packages/core/tsconfig.json'),
     consul: ts.createProject('packages/consul/tsconfig.json'),
     'consul-config': ts.createProject('packages/consul-config/tsconfig.json'),
     'consul-service': ts.createProject('packages/consul-service/tsconfig.json'),
     'consul-loadbalance': ts.createProject('packages/consul-loadbalance/tsconfig.json'),
-    feign: ts.createProject('packages/feign/tsconfig.json'),
     gateway: ts.createProject('packages/gateway/tsconfig.json'),
     logger: ts.createProject('packages/logger/tsconfig.json'),
     memcached: ts.createProject('packages/memcached/tsconfig.json'),
     schedule: ts.createProject('packages/schedule/tsconfig.json'),
     validations: ts.createProject('packages/validations/tsconfig.json'),
-    // core: ts.createProject('packages/core/tsconfig.json'),
+    feign: ts.createProject('packages/feign/tsconfig.json'),
 };
 const modules = Object.keys(packages);
 const source = 'packages';
@@ -39,16 +39,17 @@ gulp.task('copy-misc', function () {
         .src(['LICENSE', '.npmignore'])
         .pipe(gulp.dest(`${source}/common`))
         .pipe(gulp.dest(`${source}/boot`))
+        .pipe(gulp.dest(`${source}/core`))
         .pipe(gulp.dest(`${source}/consul`))
         .pipe(gulp.dest(`${source}/consul-config`))
         .pipe(gulp.dest(`${source}/consul-service`))
         .pipe(gulp.dest(`${source}/consul-loadbalance`))
-        .pipe(gulp.dest(`${source}/feign`))
         .pipe(gulp.dest(`${source}/gateway`))
         .pipe(gulp.dest(`${source}/logger`))
         .pipe(gulp.dest(`${source}/memcached`))
         .pipe(gulp.dest(`${source}/schedule`))
         .pipe(gulp.dest(`${source}/validations`))
+        .pipe(gulp.dest(`${source}/feign`));
 });
 
 gulp.task('clean:output', function () {

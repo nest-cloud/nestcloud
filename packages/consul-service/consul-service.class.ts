@@ -2,16 +2,16 @@ import { Inject, LoggerService, OnModuleDestroy, OnModuleInit } from '@nestjs/co
 import * as md5encode from 'blueimp-md5';
 import * as Consul from 'consul';
 import { get } from 'lodash';
-import * as os from 'os';
 
-import { Check, Options } from './consul-service.interfaces';
-import { Watcher } from './consul-service.watcher';
-import { Server } from './server';
+import { IConsulService } from '@nestcloud/common';
+import { IConsulServiceInnerOptions } from "./interfaces/consul-service-inner-options.interface";
+import { IConsulServiceCheck } from "./interfaces/consul-service-check.interface";
+import { getIPAddress } from "./utils/os.util";
+import { IServiceNode } from "../common";
+import { Store } from "./store";
 
-export class ConsulService implements OnModuleInit, OnModuleDestroy {
-    private readonly CRITICAL = 'critical';
-    private readonly PASSING = 'passing';
-    private readonly WARNING = 'warning';
+export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulService {
+    private store: Store;
 
     private readonly discoveryHost: string;
     private readonly serviceId: string;
@@ -32,23 +32,13 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy {
     private readonly ttl: string;
     private readonly notes: string;
     private readonly status: string;
-
-    private callbacks = {};
-    private callback = null;
-    private readonly services = {};
-    private watcher = null;
-    private readonly watchers = {};
-    private timers = {};
-    private lastUpdates = {};
-
-    private readonly INTERVAL = 15000;
-    private readonly WATCH_TIMEOUT = 305000;
+    private readonly includes: string[];
 
     constructor(
         @Inject('ConsulClient') private readonly consul: Consul,
-        options: Options,
+        options: IConsulServiceInnerOptions,
     ) {
-        this.discoveryHost = get(options, 'consul.discoveryHost', this.getIPAddress());
+        this.discoveryHost = get(options, 'consul.discoveryHost', getIPAddress());
         this.serviceId = get(options, 'web.serviceId');
         this.serviceName = get(options, 'web.serviceName');
         this.servicePort = get(options, 'web.port');
@@ -67,217 +57,40 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy {
         this.ttl = get(options, 'consul.healthCheck.ttl');
         this.notes = get(options, 'consul.healthCheck.notes');
         this.status = get(options, 'consul.healthCheck.status');
+        this.includes = get(options, 'consul.service.includes', []);
     }
 
     async init() {
-        const services = await this.consul.catalog.service.list();
-        await this.addServices(services);
-        this.lastUpdates['global'] = new Date().getTime();
-        this.createServicesWatcher();
-        if (this.timers['global']) {
-            clearInterval(this.timers['global']);
-        }
-        this.timers['global'] = setInterval(async () => {
-            const now = new Date().getTime();
-            if (now - (this.lastUpdates['global'] || 0) > this.WATCH_TIMEOUT) {
-                try {
-                    await this.init();
-                } catch (e) {
-                }
-            }
-        }, this.INTERVAL)
+        this.store = new Store(this.consul, this.includes);
+        await this.store.init();
     }
 
-    onServiceChange(service: string, callback: (servers: Server[]) => void) {
-        this.callbacks[service] = callback;
+    watch(service: string, callback: (services: IServiceNode[]) => void) {
+        this.store.watch(service, callback);
     }
 
-    onServiceListChange(callback: (newServices: string[]) => void) {
-        this.callback = callback;
+    watchServiceList(callback: (service: string[]) => void) {
+        this.store.watchServiceList(callback);
     }
 
-    getAllServices() {
-        return this.services;
+    getServices(): { [service: string]: IServiceNode[] } {
+        return this.store.getServices();
     }
 
-    getServices(name: string, options: { passing: boolean }) {
-        const nodes = this.services[name];
-        if (!nodes) {
-            return [];
-        }
+    getServiceNames(): string[] {
+        return this.store.getServiceNames();
+    }
 
-        if (options && options.passing) {
-            return nodes.filter(node => node.status === this.PASSING);
-        }
-
-        return nodes;
+    getServiceNodes(service: string, passing?: boolean): IServiceNode[] {
+        return this.store.getServiceNodes(service, passing);
     }
 
     async onModuleInit(): Promise<any> {
-        const service = this.generateService();
-
-        let current = 0;
-        while (true) {
-            try {
-                await this.consul.agent.service.register(service);
-                this.logger && (this.logger as LoggerService).log('Register the service success.');
-                break;
-            } catch (e) {
-                if (this.maxRetry !== -1 && ++current > this.maxRetry) {
-                    this.logger && (this.logger as LoggerService).error('Register the service fail.', e);
-                    break;
-                }
-
-                this.logger && (this.logger as LoggerService).warn(`Register the service fail, will retry after ${ this.retryInterval }`);
-                await this.sleep(this.retryInterval);
-            }
-        }
+        await this.registerService();
     }
 
     async onModuleDestroy(): Promise<any> {
-        const service = this.generateService();
-
-        let current = 0;
-        while (true) {
-            try {
-                await this.consul.agent.service.deregister(service);
-                this.logger && (this.logger as LoggerService).log('Deregister the service success.');
-                break;
-            } catch (e) {
-                if (this.maxRetry !== -1 && ++current > this.maxRetry) {
-                    this.logger && (this.logger as LoggerService).error('Deregister the service fail.', e);
-                    break;
-                }
-
-                this.logger && (this.logger as LoggerService).warn(`Deregister the service fail, will retry after ${ this.retryInterval }`);
-                await this.sleep(this.retryInterval);
-            }
-        }
-
-        for (const key in this.timers) {
-            if (this.timers[key]) {
-                clearInterval(this.timers[key]);
-            }
-        }
-    }
-
-    private async addService(serviceName: string) {
-        if (!serviceName) {
-            return null;
-        }
-
-        const nodes = await this.consul.health.service(serviceName);
-        this.addNodes(serviceName, nodes);
-        this.lastUpdates[serviceName] = new Date().getTime();
-        this.createServiceWatcher(serviceName);
-        if (this.timers[serviceName]) {
-            clearInterval(this.timers[serviceName]);
-        }
-
-        this.timers[serviceName] = setInterval(async () => {
-            const now = new Date().getTime();
-            if (now - (this.lastUpdates[serviceName] || 0) > this.WATCH_TIMEOUT) {
-                try {
-                    await this.addService(serviceName);
-                } catch (e) {
-                }
-            }
-        }, this.INTERVAL);
-    }
-
-    private createServiceWatcher(serviceName) {
-        if (this.watchers[serviceName]) {
-            this.watchers[serviceName].clear();
-        }
-        const watcher = this.watchers[serviceName] = new Watcher(this.consul, {
-            method: this.consul.health.service,
-            params: { service: serviceName, wait: '5m', timeout: this.WATCH_TIMEOUT }
-        });
-        watcher.watch((e, nodes) => e ? void 0 : this.addNodes(serviceName, nodes));
-    }
-
-    private createServicesWatcher() {
-        if (this.watcher) {
-            this.watcher.end();
-        }
-        const watcher = this.watcher = new Watcher(this.consul, {
-            method: this.consul.catalog.service.list,
-            params: { wait: '5m', timeout: this.WATCH_TIMEOUT }
-        });
-        watcher.watch(async (e, services) => {
-            if (!e) {
-                await this.addServices(services);
-                this.lastUpdates['global'] = new Date().getTime();
-            }
-        });
-    }
-
-    private async addServices(services) {
-        const newServices = [];
-        for (const serviceName in services) {
-            if (services.hasOwnProperty(serviceName) && serviceName !== 'consul') {
-                newServices.push(serviceName);
-                if (!this.services[serviceName]) {
-                    await this.addService(serviceName);
-                }
-            }
-        }
-        for (const service in this.services) {
-            if (this.services.hasOwnProperty(service)) {
-                if (newServices.indexOf(service) === -1) {
-                    this.removeService(service);
-                }
-            }
-        }
-
-        if (this.callback) {
-            this.callback(this.services);
-        }
-    }
-
-    private addNodes(serviceName, nodes) {
-        this.services[serviceName] = nodes.map(node => {
-            let status = this.CRITICAL;
-            if (node.Checks.length) {
-                status = this.PASSING;
-            }
-            for (let i = 0; i < node.Checks.length; i++) {
-                const check = node.Checks[i];
-                if (check.Status === this.CRITICAL) {
-                    status = this.CRITICAL;
-                    break;
-                } else if (check.Status === this.WARNING) {
-                    status = this.WARNING;
-                    break;
-                }
-            }
-
-            return { ...node, status };
-        }).map(node => {
-            const server = new Server(get(node, 'Service.Address', '127.0.0.1'), get(node, 'Service.Port'));
-            server.name = get(node, 'Node.Node');
-            server.service = get(node, 'Service.Service');
-            server.status = get(node, 'status', this.CRITICAL);
-            return server;
-        });
-
-        const onUpdate = this.callbacks[serviceName];
-        if (onUpdate) {
-            onUpdate(this.services[serviceName] || []);
-        }
-    }
-
-    private removeService(serviceName: string) {
-        delete this.services[serviceName];
-        const watcher = this.watchers[serviceName];
-        if (watcher) {
-            watcher.clear();
-            delete this.watchers[serviceName];
-        }
-        const onUpdate = this.callbacks[serviceName];
-        if (onUpdate) {
-            onUpdate(this.services[serviceName] || []);
-        }
+        await this.cancelService();
     }
 
     private generateService() {
@@ -287,7 +100,7 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy {
             deregistercriticalserviceafter: this.deregisterCriticalServiceAfter,
             notes: this.notes,
             status: this.status,
-        } as Check;
+        } as IConsulServiceCheck;
 
         if (this.tcp) {
             check.tcp = this.tcp;
@@ -311,23 +124,44 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy {
         };
     }
 
-    private getIPAddress() {
-        const interfaces = os.networkInterfaces();
-        for (const devName in interfaces) {
-            if (!interfaces.hasOwnProperty(devName)) {
-                continue;
-            }
+    private async registerService() {
+        const service = this.generateService();
 
-            const iface = interfaces[devName];
-            for (let i = 0; i < iface.length; i++) {
-                const alias = iface[i];
-                if (
-                    alias.family === 'IPv4' &&
-                    alias.address !== '127.0.0.1' &&
-                    !alias.internal
-                ) {
-                    return alias.address;
+        let current = 0;
+        while (true) {
+            try {
+                await this.consul.agent.service.register(service);
+                this.logger && (this.logger as LoggerService).log('Register the service success.');
+                break;
+            } catch (e) {
+                if (this.maxRetry !== -1 && ++current > this.maxRetry) {
+                    this.logger && (this.logger as LoggerService).error('Register the service fail.', e);
+                    break;
                 }
+
+                this.logger && (this.logger as LoggerService).warn(`Register the service fail, will retry after ${ this.retryInterval }`);
+                await this.sleep(this.retryInterval);
+            }
+        }
+    }
+
+    private async cancelService() {
+        const service = this.generateService();
+
+        let current = 0;
+        while (true) {
+            try {
+                await this.consul.agent.service.deregister(service);
+                this.logger && (this.logger as LoggerService).log('Deregister the service success.');
+                break;
+            } catch (e) {
+                if (this.maxRetry !== -1 && ++current > this.maxRetry) {
+                    this.logger && (this.logger as LoggerService).error('Deregister the service fail.', e);
+                    break;
+                }
+
+                this.logger && (this.logger as LoggerService).warn(`Deregister the service fail, will retry after ${ this.retryInterval }`);
+                await this.sleep(this.retryInterval);
             }
         }
     }

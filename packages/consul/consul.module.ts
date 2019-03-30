@@ -1,14 +1,15 @@
 import * as Consul from 'consul';
 import { get, set } from 'lodash';
 import { Module, DynamicModule, Global } from '@nestjs/common';
-import { Options } from './consul.options';
-import { NEST_BOOT_PROVIDER, NEST_CONSUL_PROVIDER, NEST_BOOT, Cache, NEST_CONSUL } from "@nestcloud/common";
+import { NEST_BOOT_PROVIDER, NEST_CONSUL_PROVIDER, NEST_BOOT } from "@nestcloud/common";
 import { Boot } from '@nestcloud/boot';
+import { IConsulOptions } from "./interfaces/consul-options.interface";
+import { Store } from "./store";
 
 @Global()
 @Module({})
 export class ConsulModule {
-    static register(options: Options = {}): DynamicModule {
+    static register(options: IConsulOptions = {}): DynamicModule {
         const inject = [];
         if (options.dependencies && options.dependencies.includes(NEST_BOOT)) {
             inject.push(NEST_BOOT_PROVIDER);
@@ -22,9 +23,8 @@ export class ConsulModule {
                 if (!get(options, 'defaults.timeout')) {
                     set(options, 'defaults.timeout', 5000);
                 }
-                const consul = await new Consul({ ...options, promisify: true });
-                Cache.getInstance(NEST_CONSUL).set('consul', consul);
-                return consul;
+                Store.consul = await new Consul({ ...options, promisify: true });
+                return Store.consul;
             },
             inject,
         };

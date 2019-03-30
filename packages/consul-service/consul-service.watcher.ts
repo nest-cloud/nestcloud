@@ -1,5 +1,4 @@
 import * as Consul from 'consul';
-import { get } from 'lodash';
 
 export class Watcher {
     private watcher;

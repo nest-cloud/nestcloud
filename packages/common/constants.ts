@@ -20,3 +20,7 @@ export const NEST_LOGGER_PROVIDER = 'NEST_LOGGER_PROVIDER';
 export const NEST_GATEWAY_PROVIDER = 'NEST_GATEWAY_PROVIDER';
 export const NEST_TYPEORM_LOGGER_PROVIDER = 'NEST_TYPEORM_LOGGER_PROVIDER';
 export const NEST_COMMON_PROVIDER = 'NEST_COMMON_PROVIDER';
+
+export const CRITICAL = 'critical';
+export const PASSING = 'passing';
+export const WARNING = 'warning';

@@ -4,12 +4,14 @@ import * as Consul from 'consul';
 
 import { Boot } from '@nestcloud/boot';
 import { ConsulConfig } from './consul-config.class';
-import { Options } from './consul-config.options';
+import { IConsulConfigOptions } from './interfaces/consul-config-options.interface';
 
 @Global()
 @Module({})
 export class ConsulConfigModule {
-    static register(options: Options = {}): DynamicModule {
+    private static env = process.env.NODE_ENV || 'development';
+
+    static register(options: IConsulConfigOptions = {}): DynamicModule {
         const inject = [NEST_CONSUL_PROVIDER];
         if (options.dependencies && options.dependencies.includes(NEST_BOOT)) {
             inject.push(NEST_BOOT_PROVIDER);
@@ -17,12 +19,9 @@ export class ConsulConfigModule {
         const consulConfigProvider = {
             provide: NEST_CONSUL_CONFIG_PROVIDER,
             useFactory: async (consul: Consul, boot: Boot): Promise<ConsulConfig> => {
-                const env = process.env.NODE_ENV || 'development';
                 let key = options.key;
-                let retry = options.retry;
-                if (options.dependencies && options.dependencies.includes(NEST_BOOT)) {
+                if (inject.includes(NEST_BOOT_PROVIDER)) {
                     key = boot.get('consul.config.key');
-                    retry = boot.get('consul.config.retry', 5);
                     const serviceName = boot.get('web.serviceName', 'localhost');
                     const serviceId = boot.get('web.serviceId', '');
 
@@ -31,11 +30,11 @@ export class ConsulConfigModule {
                     }
                     key = key
                         .replace(/ /g, '')
-                        .replace('{env}', env)
+                        .replace('{env}', this.env)
                         .replace('{serviceName}', serviceName)
                         .replace('{serviceId}', serviceId);
                 }
-                const client = new ConsulConfig(consul, key, { retry });
+                const client = new ConsulConfig(consul, key);
                 await client.init();
                 return client;
             },

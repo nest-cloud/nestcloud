@@ -1,3 +1,4 @@
-export * from './consul.decorators';
 export * from './consul.module';
-export * from './consul.options';
+export * from './decorators/inject-consul.decorator';
+export * from './decorators/watch-kv.decorator';
+export * from './interfaces/consul-options.interface';
