@@ -1,0 +1,22 @@
+web:
+  serviceName: your-service-name
+  port: 3000
+consul:
+  host: 127.0.0.1
+  port: 8500
+  discoveryHost: 127.0.0.1
+  healthCheck:
+    route: /health
+    protocol: http
+    timeout: 1s
+    interval: 10s
+    maxRetry: 5
+    retryInterval: 5000
+  config:
+    key: consul-kv-key
+gateway:
+  routes:
+    - id: test
+      uri: lb://your-service-name
+    - id: test2
+      uri: http://example.com

@@ -1,0 +1,26 @@
+logger:
+  level: debug
+  transports:
+    - transport: console
+      colorize: true
+      datePattern: YYYY-MM-DD h:mm:ss
+      label: multicloud-composer
+    - transport: file
+      name: info
+      json: false
+      filename: ../logs/all.log
+      datePattern: YYYY-MM-DD h:mm:ss
+      label: multicloud-composer
+      # 200M
+      maxsize: 209715200
+      maxFiles: 10
+    - transport: file
+      name: error
+      level: error
+      json: false
+      filename: ../logs/error.log
+      datePattern: YYYY-MM-DD h:mm:ss
+      label: multicloud-composer
+      # 200M
+      maxsize: 209715200
+      maxFiles: 10
