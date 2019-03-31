@@ -62,7 +62,7 @@ async function bootstrap() {
         }),
     }));
 
-    await app.listen(3000);
+    await app.listen(NestCloud.global.boot.get('web.port', 3000));
 }
 
 bootstrap();
@@ -94,7 +94,7 @@ import { TerminusModule } from '@nestjs/terminus';
         ConsulConfigModule.register({ dependencies: [NEST_BOOT] }),
         ConsulServiceModule.register({ dependencies: [NEST_BOOT] }),
         LoadbalanceModule.register({ dependencies: [NEST_BOOT] }), // or NEST_CONSUL_CONFIG
-        FeignModule.register({ dependencies: [NEST_CONSUL_LOADBALANCE] }),
+        FeignModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL_LOADBALANCE] }),
         TerminusModule.forRootAsync({
             useFactory: () => ({ endpoints: [{ url: '/health', healthIndicators: [] }] }),
         }),
