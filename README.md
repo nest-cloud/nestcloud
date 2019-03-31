@@ -17,6 +17,12 @@
 
 A NodeJS micro-service solution based on Consul, writing by Typescript language and NestJS framework.
 
+## Install
+
+```bash
+npm install --save @nestcloud/core @nestcloud/common @nestcloud/boot @nestcloud/consul @nestcloud/consul-service @nestcloud/consul-config @nestcloud/consul-loadbalance @nestcloud/feign @nestcloud/logger @nestcloud/schedule 
+```
+
 ## Docs
 
 [中文文档](docs)
@@ -81,7 +87,7 @@ async function bootstrap() {
         }),
     }));
 
-    await app.listen(NestCloud.global.boot.get('web.port', 3000));
+    await app.listen(NestCloud.global.boot.get('consul.service.port', 3000));
 }
 
 bootstrap();
@@ -112,7 +118,7 @@ import { TerminusModule } from '@nestjs/terminus';
         ConsulModule.register({ dependencies: [NEST_BOOT] }),
         ConsulConfigModule.register({ dependencies: [NEST_BOOT] }),
         ConsulServiceModule.register({ dependencies: [NEST_BOOT] }),
-        LoadbalanceModule.register({ dependencies: [NEST_BOOT] }), // or NEST_CONSUL_CONFIG
+        LoadbalanceModule.register({ dependencies: [NEST_BOOT] }),
         FeignModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL_LOADBALANCE] }),
         TerminusModule.forRootAsync({
             useFactory: () => ({ endpoints: [{ url: '/health', healthIndicators: [] }] }),

@@ -3,17 +3,7 @@
 ## 安装组件
 
 ```bash
-npm install --save \
-    @nestcloud/core \
-    @nestcloud/common \
-    @nestcloud/boot \
-    @nestcloud/consul \ 
-    @nestcloud/consul-service \
-    @nestcloud/consul-config \ 
-    @nestcloud/consul-loadbalance \ 
-    @nestcloud/feign \
-    @nestcloud/logger \ 
-    @nestcloud/schedule 
+npm install --save @nestcloud/core @nestcloud/common @nestcloud/boot @nestcloud/consul @nestcloud/consul-service @nestcloud/consul-config @nestcloud/consul-loadbalance @nestcloud/feign @nestcloud/logger @nestcloud/schedule 
 ```
 
 ### main.ts
