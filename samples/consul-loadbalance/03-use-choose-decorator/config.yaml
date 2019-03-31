@@ -19,4 +19,4 @@ loadbalance:
   ruleCls: RandomRule
   rules:
     - service: your-service-name
-      ruleCls: ./custom.rule
+      ruleCls: RoundRobinRule

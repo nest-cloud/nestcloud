@@ -1,12 +1,13 @@
-import { Store } from "../store";
-import { IKVResponse } from "@nestcloud/common";
+import { IKVResponse, NEST_CONSUL } from "@nestcloud/common";
 import * as YAML from "yamljs";
+import * as CoreModule from '@nestcloud/core';
 
 export const WatchKV = (key?: string, type?: 'json' | 'yaml' | 'text', defaults?: any) => createKVDecorator(key, type, defaults);
 
 const createKVDecorator = (key?: string, type?: 'json' | 'yaml' | 'text', defaults?: any): PropertyDecorator => {
     return function (target: any, propertyName: string | Symbol) {
-        Store.watch(async consul => {
+        const Core: typeof CoreModule = require('@nestcloud/core');
+        Core.NestCloud.global.watch<any>(NEST_CONSUL, async consul => {
             try {
                 const result = await consul.kv.get(key) as IKVResponse;
                 updatePropertyValue(result, target, propertyName, type, defaults);

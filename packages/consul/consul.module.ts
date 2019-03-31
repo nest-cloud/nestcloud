@@ -4,7 +4,6 @@ import { Module, DynamicModule, Global } from '@nestjs/common';
 import { NEST_BOOT_PROVIDER, NEST_CONSUL_PROVIDER, NEST_BOOT } from "@nestcloud/common";
 import { Boot } from '@nestcloud/boot';
 import { IConsulOptions } from "./interfaces/consul-options.interface";
-import { Store } from "./store";
 
 @Global()
 @Module({})
@@ -23,8 +22,7 @@ export class ConsulModule {
                 if (!get(options, 'defaults.timeout')) {
                     set(options, 'defaults.timeout', 5000);
                 }
-                Store.consul = await new Consul({ ...options, promisify: true });
-                return Store.consul;
+                return await new Consul({ ...options, promisify: true });
             },
             inject,
         };

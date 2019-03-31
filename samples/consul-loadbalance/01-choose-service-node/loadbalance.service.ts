@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectLoadbalance, Loadbalance, ServiceNotExistException } from '@nestcloud/consul-loadbalance';
-import { IServiceNode } from '@nestcloud/common';
+import { IServer } from '@nestcloud/common';
 
 @Injectable()
 export class LoadbalanceService {
@@ -11,7 +11,7 @@ export class LoadbalanceService {
 
     chooseYourServiceNode() {
         try {
-            const node: IServiceNode = this.lb.choose('your-service-name');
+            const node: IServer = this.lb.choose('your-service-name');
             if (!node) {
                 console.log('No available node');
             }

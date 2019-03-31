@@ -34,9 +34,9 @@ export class GatewayModule {
                     gateway = new Gateway(proxy, lb, options.routes);
                 } else if (inject.includes(NEST_CONSUL_CONFIG_PROVIDER)) {
                     options = (config as IConsulConfig).get('gateway');
-                    gateway = new Gateway(proxy, lb, options.routes);
+                    gateway = new Gateway(proxy, lb, options.routes, config as IConsulConfig);
                     (config as IConsulConfig).watch('gateway.routes', routes => {
-                        gateway.updateRoutes(routes || []);
+                        gateway.updateRoutes(routes || [], false);
                     });
                 } else {
                     gateway = new Gateway(proxy, lb, options.routes);

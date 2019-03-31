@@ -11,7 +11,7 @@ import { LoadbalanceService } from "./loadbalance.service";
         BootModule.register(__dirname, `config.yaml`),
         ConsulModule.register({ dependencies: [NEST_BOOT] }),
         ConsulServiceModule.register({ dependencies: [NEST_BOOT] }),
-        LoadbalanceModule.register({ dependencies: [NEST_BOOT], customRulePath: __dirname })
+        LoadbalanceModule.register({ dependencies: [NEST_BOOT] })
     ],
     providers: [LoadbalanceService],
 })

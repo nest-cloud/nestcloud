@@ -1,10 +1,12 @@
 import * as path from 'path';
 
-import { ILoadbalancer } from '@nestcloud/common';
+import { ILoadbalancer, IServer } from '@nestcloud/common';
 import { RandomRule } from './rules';
 import { Server } from './server';
 import { ServerState } from './server-state';
 import { IRule } from "./interfaces/rule.interface";
+import { ILoadbalanerOptions } from "./interfaces/loadbalancer-options.interface";
+import { RuleInitException } from "./exceptions/rule-init.exception";
 
 export class Loadbalancer implements ILoadbalancer {
     private readonly INTERVAL_RULES = {
@@ -12,38 +14,51 @@ export class Loadbalancer implements ILoadbalancer {
         RoundRobinRule: 'round-robin.rule',
         WeightedResponseTimeRule: 'weighted-response-time.rule',
     };
-    private readonly PATH_RE = /node_modules\/.+/;
     private readonly id: string;
     private readonly name: string;
     servers: Server[];
     private rule: IRule;
 
-    constructor(options: { id: string; name?: string; servers?: Server[]; ruleCls? }) {
+    constructor(options: ILoadbalanerOptions) {
         this.id = options.id;
         this.name = options.name || options.id;
         this.servers = this.initialServers(options.servers);
         if (typeof options.ruleCls === 'function' && options.ruleCls.prototype.constructor) {
-            this.rule = new options.ruleCls(this);
+            this.rule = new (options.ruleCls as any)(this);
         } else if (typeof options.ruleCls === 'string' && options.ruleCls) {
-            let modulePath = path.resolve(__dirname.replace(this.PATH_RE, ''), options.ruleCls);
+            let modulePath;
             if (this.INTERVAL_RULES[options.ruleCls]) {
-                modulePath = path.resolve(__dirname, '../rules', this.INTERVAL_RULES[options.ruleCls]);
+                modulePath = path.resolve(__dirname, './rules', this.INTERVAL_RULES[options.ruleCls]);
+            } else if (options.customRulePath) {
+                modulePath = path.resolve(options.customRulePath, options.ruleCls);
+            } else {
+                throw new RuleInitException(
+                    'The loadbalancer rule name is not correct or the custom rule path is empty'
+                );
             }
 
-            const module = require(modulePath);
-            for (const key in module) {
-                if (module.hasOwnProperty(key)) {
-                    this.rule = new module[key]();
-                    break;
+            try {
+                const module = require(modulePath);
+                for (const key in module) {
+                    if (module.hasOwnProperty(key)) {
+                        this.rule = new module[key]();
+                        break;
+                    }
                 }
+            } catch (e) {
+                throw new RuleInitException(
+                    'Rule module not found, maybe the custom rule path is not correct',
+                    e.stack
+                );
             }
+
         } else {
             this.rule = new RandomRule();
         }
         this.rule.init(this);
     }
 
-    chooseService() {
+    chooseService(): IServer {
         if (!this.rule) {
             throw new Error("The rule is not exist.");
         }

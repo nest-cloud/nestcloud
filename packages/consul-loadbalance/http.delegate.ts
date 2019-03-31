@@ -8,12 +8,10 @@ export class HttpDelegate {
     constructor(private readonly server: Server) {
     }
 
-    /**
-     * TODO check url
-     * @param http
-     * @param config
-     */
     async send(http: AxiosInstance, config: AxiosRequestConfig): Promise<AxiosResponse> {
+        if (config.url && config.url.charAt(0) !== '/') {
+            config.url = '/' + config.url;
+        }
         config.url = `http://${ this.server.address }:${ this.server.port }${ config.url }`;
         this.server.state.incrementServerActiveRequests();
         this.server.state.incrementTotalRequests();

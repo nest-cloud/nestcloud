@@ -1,4 +1,6 @@
-export interface IMemcached {
+import { IComponent } from "./component.interface";
+
+export interface IMemcached extends IComponent {
     touch(key: string, lifetime?: number): Promise<any>;
 
     get(key: string): Promise<any>;

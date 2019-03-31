@@ -2,7 +2,7 @@ import { Loadbalance } from '@nestcloud/consul-loadbalance';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Request, Response } from 'express';
 import * as HttpProxy from 'http-proxy';
-import { IGateway } from '@nestcloud/common';
+import { IGateway, IConsulConfig } from '@nestcloud/common';
 
 import { IRoute } from './interfaces/route.interface';
 import { IProxyOptions } from './interfaces/proxy-options.interface';
@@ -11,11 +11,13 @@ export class Gateway implements IGateway {
     private readonly proxy: HttpProxy;
     private readonly proxyOptions: IProxyOptions;
     private readonly lb: Loadbalance;
+    protected readonly config: IConsulConfig;
     private routeMap = {};
 
-    constructor(proxyOptions: IProxyOptions, lb: Loadbalance, routes: IRoute[]) {
+    constructor(proxyOptions: IProxyOptions, lb: Loadbalance, routes: IRoute[], config?: IConsulConfig) {
         this.lb = lb;
         routes.forEach(route => this.routeMap[route.id] = route);
+        this.config = config;
         this.proxyOptions = Object.assign({}, proxyOptions, {
             prependPath: true,
             ignorePath: true
@@ -32,14 +34,13 @@ export class Gateway implements IGateway {
             res.end(JSON.stringify({ message: err.message, status: 500 }));
         });
     }
-
-    /**
-     * TODO sync to consul kv when updated routes.
-     * @param routes
-     */
-    public updateRoutes(routes: IRoute[]) {
+    
+    public updateRoutes(routes: IRoute[], sync: boolean = true) {
         this.routeMap = {};
         routes.forEach(route => this.routeMap[route.id] = route);
+        if (sync && this.config) {
+            this.config.set('loadbalance.rules', routes);
+        }
     }
 
     forward(req: Request, res: Response, id: string) {

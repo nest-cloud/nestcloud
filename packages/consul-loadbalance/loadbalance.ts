@@ -1,6 +1,6 @@
 import { ConsulService } from '@nestcloud/consul-service';
 import { get, keyBy } from 'lodash';
-import { ILoadbalance, IServiceNode } from '@nestcloud/common';
+import { ILoadbalance, IServiceNode, IServer, ILoadbalancer } from '@nestcloud/common';
 
 import { IRuleOptions } from './interfaces/rule-options.interface';
 import { Loadbalancer } from './loadbalancer';
@@ -14,9 +14,11 @@ export class Loadbalance implements ILoadbalance {
     private loadbalancers = {};
     private rules: IRuleOptions[];
     private globalRuleCls: IRule | Function;
+    private readonly customRulePath: string;
 
-    constructor(service: ConsulService) {
+    constructor(service: ConsulService, customRulePath: string) {
         this.service = service;
+        this.customRulePath = customRulePath;
     }
 
     async init(rules: IRuleOptions[], globalRuleCls) {
@@ -28,7 +30,7 @@ export class Loadbalance implements ILoadbalance {
         this.service.watchServiceList((services: string[]) => this.updateServices(services));
     }
 
-    chooseLoadbalancer(serviceName: string) {
+    chooseLoadbalancer(serviceName: string): ILoadbalancer {
         const loadbalancer = this.loadbalancers[serviceName];
         if (!loadbalancer) {
             throw new Error(`The service ${ serviceName } is not exist`);
@@ -36,7 +38,7 @@ export class Loadbalance implements ILoadbalance {
         return loadbalancer;
     }
 
-    choose(serviceName: string) {
+    choose(serviceName: string): IServer {
         const loadbalancer = this.loadbalancers[serviceName];
         if (!loadbalancer) {
             throw new ServiceNotExistException(`The service ${ serviceName } is not exist`);
@@ -72,6 +74,11 @@ export class Loadbalance implements ILoadbalance {
             return server;
         });
 
-        this.loadbalancers[serviceName] = new Loadbalancer({ id: serviceName, servers, ruleCls });
+        this.loadbalancers[serviceName] = new Loadbalancer({
+            id: serviceName,
+            servers,
+            ruleCls,
+            customRulePath: this.customRulePath
+        });
     }
 }

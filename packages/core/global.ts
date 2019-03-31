@@ -1,11 +1,28 @@
 import { NestContainer } from "@nestjs/core";
 import { INestApplication } from "@nestjs/common";
-import { IBoot, IConsulConfig, IConsulService, ILoadbalance, ILogger, IGateway, IMemcached } from "@nestcloud/common";
+import {
+    IBoot,
+    IConsulConfig,
+    IConsulService,
+    ILoadbalance,
+    ILogger,
+    IGateway,
+    IMemcached,
+    IComponent,
+    NEST_BOOT,
+    NEST_CONSUL,
+    NEST_CONSUL_CONFIG,
+    NEST_CONSUL_LOADBALANCE,
+    NEST_CONSUL_SERVICE,
+    NEST_GATEWAY,
+    NEST_LOGGER
+} from "@nestcloud/common";
 import * as Consul from 'consul';
 import { AxiosInstance, AxiosRequestConfig } from "axios";
 import axios from 'axios';
 
 export class Global {
+    private callbackMap = new Map<string, ((IComponent) => void)[]>();
     /**
      * Nest Application
      */
@@ -28,87 +45,111 @@ export class Global {
      */
     private _axios: AxiosInstance;
 
-    get app(): INestApplication {
+    public get app(): INestApplication {
         return this._app;
     }
 
-    set app(app: INestApplication) {
+    public set app(app: INestApplication) {
         this._app = app;
     }
 
-    get boot(): IBoot {
+    public get boot(): IBoot {
         return this._boot;
     }
 
-    set boot(boot: IBoot) {
+    public set boot(boot: IBoot) {
         this._boot = boot;
+        this.trigger(NEST_BOOT, boot);
     }
 
-    get consul(): Consul {
+    public get consul(): Consul {
         return this._consul;
     }
 
-    set consul(consul: Consul) {
+    public set consul(consul: Consul) {
         this._consul = consul;
+        this.trigger(NEST_CONSUL, consul);
     }
 
-    get consulConfig(): IConsulConfig {
+    public get consulConfig(): IConsulConfig {
         return this._consulConfig;
     }
 
-    set consulConfig(consulConfig: IConsulConfig) {
+    public set consulConfig(consulConfig: IConsulConfig) {
         this._consulConfig = consulConfig;
+        this.trigger(NEST_CONSUL_CONFIG, consulConfig);
     }
 
-    get consulService(): IConsulService {
+    public get consulService(): IConsulService {
         return this._consulService;
     }
 
-    set consulService(consulService: IConsulService) {
+    public set consulService(consulService: IConsulService) {
         this._consulService = consulService;
+        this.trigger(NEST_CONSUL_SERVICE, consulService);
     }
 
-    get loadbalance(): ILoadbalance {
+    public get loadbalance(): ILoadbalance {
         return this._loadbalance;
     }
 
-    set loadbalance(loadbalance: ILoadbalance) {
+    public set loadbalance(loadbalance: ILoadbalance) {
         this._loadbalance = loadbalance;
+        this.trigger(NEST_CONSUL_LOADBALANCE, loadbalance);
     }
 
-    get logger(): ILogger {
+    public get logger(): ILogger {
         return this._logger;
     }
 
-    set logger(logger: ILogger) {
+    public set logger(logger: ILogger) {
         this._logger = logger;
+        this.trigger(NEST_LOGGER, logger);
     }
 
-    get gateway(): IGateway {
+    public get gateway(): IGateway {
         return this._gateway;
     }
 
-    set gateway(gateway: IGateway) {
+    public set gateway(gateway: IGateway) {
         this._gateway = gateway;
+        this.trigger(NEST_GATEWAY, gateway);
     }
 
-    get memcached(): IMemcached {
+    public get memcached(): IMemcached {
         return this._memcached;
     }
 
-    set memcached(memcached: IMemcached) {
+    public set memcached(memcached: IMemcached) {
         this._memcached = memcached;
     }
 
-    get axios(): AxiosInstance {
+    public get axios(): AxiosInstance {
         return this._axios;
     }
 
-    set axiosConfig(axiosConfig: AxiosRequestConfig) {
+    public set axiosConfig(axiosConfig: AxiosRequestConfig) {
         this._axios = axios.create(axiosConfig);
+    }
+
+    public watch<T extends IComponent>(component: string, callback: (component: T) => void) {
+        if (this.callbackMap.has(component)) {
+            const callbacks = this.callbackMap.get(component);
+            callbacks.push(callback);
+            this.callbackMap.set(component, callbacks);
+        } else {
+            this.callbackMap.set(component, [callback]);
+        }
     }
 
     public getContainer(): NestContainer {
         return this._app ? (this._app as any).container : void 0;
+    }
+
+    private trigger(component: string, value: IComponent) {
+        if (this.callbackMap.has(component)) {
+            const callbacks = this.callbackMap.get(component);
+            callbacks.forEach(cb => cb(value));
+        }
     }
 }
