@@ -43,7 +43,7 @@ feign:
 
 ```typescript
 import { Injectable } from "@nestjs/common";
-import { Loadbalanced, Get, Query, Post, Body, Param, Put, Delete } from "@nestcloud/feign";
+import { Get, Query, Post, Body, Param, Put, Delete } from "@nestcloud/feign";
 
 @Injectable()
 export class UserClient {

@@ -1,4 +1,4 @@
-# Boot 完整配置
+# 配置清单
 
 ```yaml
 consul:

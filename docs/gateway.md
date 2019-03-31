@@ -24,7 +24,7 @@ export class AppModule {
 }
 ```
 
-## Boot 配置
+## 配置
 
 ```yaml
 gateway:

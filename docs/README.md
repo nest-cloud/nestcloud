@@ -5,7 +5,7 @@
   
   - [部署 Consul](deploy-consul.md)
   - [使用 Starter 快速开始](quickstart.md)
-  - [Boot完整配置](config.md)
+  - [配置清单](config.md)
 
 - 组件
 
