@@ -1,4 +1,4 @@
-import { IBaseOptions } from "./base-options.interface";
+import { IBaseOptions } from './base-options.interface';
 
 export interface ICronOptions extends IBaseOptions {
     startTime?: Date;

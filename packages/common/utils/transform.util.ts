@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
 
-export const objectToMap = function (object) {
+export const objectToMap = object => {
     const result = {};
     parseObjectToMap(result, object);
 
     return result;
 };
 
-export const transformMapToObject = function (map) {
+export const transformMapToObject = map => {
     const result = {};
     for (const key in map) {
         if (!map.hasOwnProperty(key)) {
@@ -26,6 +26,9 @@ function parseObjectToMap(mapper, object, path?) {
     }
 
     for (const key in object) {
+        if (!object.hasOwnProperty(key)) {
+            continue;
+        }
         let newPath;
         if (!path) {
             newPath = key;
@@ -51,7 +54,7 @@ function parseObjectToMap(mapper, object, path?) {
 
 function parseArray(mapper, array, path) {
     array.forEach((item, index) => {
-        let newPath = path + '[' + index + ']';
+        const newPath = path + '[' + index + ']';
         if (_.isObject(item)) {
             parseObjectToMap(mapper, item, newPath);
         } else if (_.isArray(item)) {

@@ -1,4 +1,4 @@
-import { IRoute } from "./route.interface";
+import { IRoute } from './route.interface';
 
 export interface IGatewayOptions {
     dependencies?: string[];

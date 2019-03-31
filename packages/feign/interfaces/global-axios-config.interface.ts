@@ -1,4 +1,4 @@
-import { AxiosBasicCredentials, AxiosProxyConfig } from "axios";
+import { AxiosBasicCredentials, AxiosProxyConfig } from 'axios';
 
 export interface IGlobalAxiosConfig {
     baseURL?: string;

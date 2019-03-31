@@ -1,11 +1,13 @@
 import { get, set } from 'lodash';
-import { objectToMap } from "@nestcloud/common";
+import { objectToMap } from '@nestcloud/common';
 
 export class Store {
     private static _data: any;
-    private static _map: { [key: string]: any } = {};
-    private static watchCallbacks: { [key: string]: Array<(value: any) => void> } = {};
-    private static hasDefined: { [key: string]: boolean } = {};
+    private static readonly _map: { [key: string]: any } = {};
+    private static readonly watchCallbacks: {
+        [key: string]: Array<(value: any) => void>;
+    } = {};
+    private static readonly hasDefined: { [key: string]: boolean } = {};
 
     static get data() {
         return this._data;
@@ -22,7 +24,6 @@ export class Store {
     }
 
     public static merge(data: any) {
-
     }
 
     public static get<T extends any>(path: string, defaults?: T): T {
@@ -37,7 +38,7 @@ export class Store {
 
         if (!this.hasDefined[path]) {
             Object.defineProperty(this._map, path, {
-                set: (newVal) => {
+                set: newVal => {
                     this.watchCallbacks[path].forEach(cb => cb(newVal));
                 },
             });

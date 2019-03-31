@@ -9,7 +9,7 @@ import { Validator } from 'class-validator';
 @Injectable()
 export class IsUUID implements PipeTransform<any> {
   private readonly message: string;
-  private validator: Validator;
+  private readonly validator: Validator;
 
   constructor(message?: string) {
     this.message = message || '';

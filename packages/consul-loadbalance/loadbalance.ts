@@ -1,84 +1,94 @@
 import { ConsulService } from '@nestcloud/consul-service';
 import { get, keyBy } from 'lodash';
-import { ILoadbalance, IServiceNode, IServer, ILoadbalancer } from '@nestcloud/common';
+import {
+  ILoadbalance,
+  IServiceNode,
+  IServer,
+  ILoadbalancer,
+} from '@nestcloud/common';
 
 import { IRuleOptions } from './interfaces/rule-options.interface';
 import { Loadbalancer } from './loadbalancer';
 import { Server } from './server';
 import { ServerState } from './server-state';
-import { IRule } from "./interfaces/rule.interface";
-import { ServiceNotExistException } from "./exceptions/service-not-exist.exception";
+import { IRule } from './interfaces/rule.interface';
+import { ServiceNotExistException } from './exceptions/service-not-exist.exception';
 
 export class Loadbalance implements ILoadbalance {
-    private readonly service: ConsulService;
-    private loadbalancers = {};
-    private rules: IRuleOptions[];
-    private globalRuleCls: IRule | Function;
-    private readonly customRulePath: string;
+  private readonly service: ConsulService;
+  private readonly loadbalancers = {};
+  private rules: IRuleOptions[];
+  private globalRuleCls: IRule | Function;
+  private readonly customRulePath: string;
 
-    constructor(service: ConsulService, customRulePath: string) {
-        this.service = service;
-        this.customRulePath = customRulePath;
+  constructor(service: ConsulService, customRulePath: string) {
+    this.service = service;
+    this.customRulePath = customRulePath;
+  }
+
+  async init(rules: IRuleOptions[], globalRuleCls) {
+    this.rules = rules;
+    this.globalRuleCls = globalRuleCls;
+
+    const services: string[] = this.service.getServiceNames();
+    await this.updateServices(services);
+    this.service.watchServiceList((services: string[]) =>
+      this.updateServices(services),
+    );
+  }
+
+  chooseLoadbalancer(serviceName: string): ILoadbalancer {
+    const loadbalancer = this.loadbalancers[serviceName];
+    if (!loadbalancer) {
+      throw new Error(`The service ${serviceName} is not exist`);
     }
+    return loadbalancer;
+  }
 
-    async init(rules: IRuleOptions[], globalRuleCls) {
-        this.rules = rules;
-        this.globalRuleCls = globalRuleCls;
-
-        const services: string[] = this.service.getServiceNames();
-        await this.updateServices(services);
-        this.service.watchServiceList((services: string[]) => this.updateServices(services));
+  choose(serviceName: string): IServer {
+    const loadbalancer = this.loadbalancers[serviceName];
+    if (!loadbalancer) {
+      throw new ServiceNotExistException(
+        `The service ${serviceName} is not exist`,
+      );
     }
+    return loadbalancer.chooseService();
+  }
 
-    chooseLoadbalancer(serviceName: string): ILoadbalancer {
-        const loadbalancer = this.loadbalancers[serviceName];
-        if (!loadbalancer) {
-            throw new Error(`The service ${ serviceName } is not exist`);
-        }
-        return loadbalancer;
-    }
+  private updateServices(services: string[]) {
+    const ruleMap = keyBy(this.rules, 'service');
+    services.forEach(service => {
+      const nodes = this.service.getServiceNodes(service);
+      if (!service || this.loadbalancers[service]) {
+        return null;
+      }
 
-    choose(serviceName: string): IServer {
-        const loadbalancer = this.loadbalancers[serviceName];
-        if (!loadbalancer) {
-            throw new ServiceNotExistException(`The service ${ serviceName } is not exist`);
-        }
-        return loadbalancer.chooseService();
-    }
+      const ruleCls = get(ruleMap[service], 'ruleCls', this.globalRuleCls);
+      this.createLoadbalancer(service, nodes, ruleCls);
+      this.createServiceWatcher(service, ruleCls);
+    });
+  }
 
-    private updateServices(services: string[]) {
-        const ruleMap = keyBy(this.rules, 'service');
-        services.forEach(service => {
-            const nodes = this.service.getServiceNodes(service);
-            if (!service || this.loadbalancers[service]) {
-                return null;
-            }
+  private createServiceWatcher(service: string, ruleCls: IRule | Function) {
+    this.service.watch(service, (nodes: IServiceNode[]) =>
+      this.createLoadbalancer(service, nodes, ruleCls),
+    );
+  }
 
-            const ruleCls = get(ruleMap[service], 'ruleCls', this.globalRuleCls);
-            this.createLoadbalancer(service, nodes, ruleCls);
-            this.createServiceWatcher(service, ruleCls);
-        });
+  private createLoadbalancer(serviceName, nodes, ruleCls) {
+    const servers = nodes.map(node => {
+      const server = new Server(node.address, node.port);
+      server.name = node.name;
+      server.state = new ServerState();
+      server.state.status = node.status;
+      return server;
+    });
 
-    }
-
-    private createServiceWatcher(service: string, ruleCls: IRule | Function) {
-        this.service.watch(service, (nodes: IServiceNode[]) => this.createLoadbalancer(service, nodes, ruleCls));
-    }
-
-    private createLoadbalancer(serviceName, nodes, ruleCls) {
-        const servers = nodes.map(node => {
-            const server = new Server(node.address, node.port);
-            server.name = node.name;
-            server.state = new ServerState();
-            server.state.status = node.status;
-            return server;
-        });
-
-        this.loadbalancers[serviceName] = new Loadbalancer({
-            id: serviceName,
-            servers,
-            ruleCls,
-            customRulePath: this.customRulePath
-        });
-    }
+    this.loadbalancers[serviceName] = new Loadbalancer({
+      id: serviceName,
+      servers,
+      ruleCls,
+      customRulePath: this.customRulePath,
+    });
+  }
 }

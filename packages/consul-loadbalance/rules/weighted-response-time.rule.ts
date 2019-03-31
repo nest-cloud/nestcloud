@@ -1,6 +1,6 @@
 import { get } from 'lodash';
-import { RoundRobinRule } from "./round-robin.rule";
-import { Server } from "../server";
+import { RoundRobinRule } from './round-robin.rule';
+import { Server } from '../server';
 
 export class WeightedResponseTimeRule extends RoundRobinRule {
     constructor() {

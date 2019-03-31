@@ -1,4 +1,4 @@
-import { ICronOptions } from "./cron-options.interface";
+import { ICronOptions } from './cron-options.interface';
 
 export interface IScheduleOptions extends ICronOptions {
     cron?: string;

@@ -1,6 +1,6 @@
-import { IFallback } from "../interfaces/fallback.interface";
-import { BRAKES_FALLBACK_METADATA, GUARDS_METADATA } from "../constants";
-import { extendMetadata } from "../utils/metadata.util";
+import { IFallback } from '../interfaces/fallback.interface';
+import { BRAKES_FALLBACK_METADATA, GUARDS_METADATA } from '../constants';
+import { extendMetadata } from '../utils/metadata.util';
 
 export const UseFallback = <T extends IFallback>(Fallback: IFallback | Function) => (target, key?, descriptor?) => {
     extendMetadata(BRAKES_FALLBACK_METADATA, Fallback, key ? descriptor.value : target);

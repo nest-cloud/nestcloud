@@ -1,5 +1,5 @@
-import { IServiceNode } from "./service-node.interface";
-import { IComponent } from "./component.interface";
+import { IServiceNode } from './service-node.interface';
+import { IComponent } from './component.interface';
 
 export interface IConsulService extends IComponent {
     watch(service: string, callback: (services: IServiceNode[]) => void): void;

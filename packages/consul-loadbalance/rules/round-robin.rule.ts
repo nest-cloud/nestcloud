@@ -1,7 +1,7 @@
 import { get } from 'lodash';
-import { IRule } from "../interfaces/rule.interface";
-import { ILoadbalancer } from "@nestcloud/common";
-import { Server } from "../server";
+import { IRule } from '../interfaces/rule.interface';
+import { ILoadbalancer } from '@nestcloud/common';
+import { Server } from '../server';
 
 export class RoundRobinRule implements IRule {
     protected loadbalancer: ILoadbalancer;

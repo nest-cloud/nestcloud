@@ -1,4 +1,4 @@
-import { IComponent } from "./component.interface";
+import { IComponent } from './component.interface';
 
 export interface IBoot extends IComponent{
     getEnv(): string;

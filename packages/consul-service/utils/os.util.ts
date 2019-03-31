@@ -1,6 +1,6 @@
-import * as os from "os";
+import * as os from 'os';
 
-export const getIPAddress = function () {
+export const getIPAddress = () => {
     const interfaces = os.networkInterfaces();
     for (const devName in interfaces) {
         if (!interfaces.hasOwnProperty(devName)) {

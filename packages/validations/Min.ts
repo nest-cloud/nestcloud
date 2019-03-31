@@ -10,7 +10,7 @@ import { Validator } from 'class-validator';
 export class Min implements PipeTransform<any> {
   private readonly min: number;
   private readonly message: string;
-  private validator: Validator;
+  private readonly validator: Validator;
 
   constructor(min: number, message?: string) {
     this.message = message || '';

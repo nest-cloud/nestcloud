@@ -3,7 +3,7 @@ import { NEST_CONSUL_LOADBALANCE, ILoadbalance, IServer } from '@nestcloud/commo
 import * as CoreModule from '@nestcloud/core';
 
 export const Choose = (service: string): PropertyDecorator => {
-    return function (target: any, propertyName: string | Symbol) {
+    return (target: any, propertyName: string | Symbol) => {
         const attributeName = propertyName as string;
         const coreModule: typeof CoreModule = require('@nestcloud/core');
 
@@ -27,5 +27,5 @@ export const Choose = (service: string): PropertyDecorator => {
                 }
             }
         });
-    }
+    };
 };

@@ -1,4 +1,4 @@
-import { IServerState } from "./server-state.interface";
+import { IServerState } from './server-state.interface';
 
 export interface IServer {
     id: string;

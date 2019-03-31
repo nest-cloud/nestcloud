@@ -1,4 +1,4 @@
-import "reflect-metadata";
+import 'reflect-metadata';
 import { REQUEST_PARAMS_METADATA, PARAMS_METADATA, BODY_METADATA, QUERY_METADATA, HEADER_METADATA } from '../constants';
 
 export const Param = (field?: string): ParameterDecorator => createParamDecorator(PARAMS_METADATA)(field);

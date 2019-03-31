@@ -1,4 +1,4 @@
-import { IConsoleTransport, IDailyRotateFile, IFileTransport } from "./transport.interface";
+import { IConsoleTransport, IDailyRotateFile, IFileTransport } from './transport.interface';
 
 export interface ILoggerOptions {
     path: string;

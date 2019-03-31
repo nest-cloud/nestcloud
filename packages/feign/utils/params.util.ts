@@ -1,4 +1,4 @@
-import { BODY_METADATA, HEADER_METADATA, PARAMS_METADATA, QUERY_METADATA } from "../constants";
+import { BODY_METADATA, HEADER_METADATA, PARAMS_METADATA, QUERY_METADATA } from '../constants';
 import { isEmpty } from 'lodash';
 
 export const getMetadata = (value, target, oldValue) => (paramType) => {

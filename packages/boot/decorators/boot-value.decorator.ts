@@ -1,8 +1,8 @@
 import 'reflect-metadata';
-import { Store } from "../store";
+import { Store } from '../store';
 
 export const BootValue = (path?: string, defaultValue?: any): PropertyDecorator => {
-    return function (target: any, propertyName: string | Symbol) {
+    return (target: any, propertyName: string | Symbol) => {
         const attributeName = propertyName as string;
         const configPath = path || attributeName;
 
@@ -10,5 +10,5 @@ export const BootValue = (path?: string, defaultValue?: any): PropertyDecorator 
             target[attributeName] = value;
         });
         target[attributeName] = Store.get(configPath, defaultValue);
-    }
+    };
 };

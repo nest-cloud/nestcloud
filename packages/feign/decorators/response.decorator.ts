@@ -1,4 +1,4 @@
-import "reflect-metadata";
+import 'reflect-metadata';
 import { RESPONSE, RESPONSE_HEADER, RESPONSE_BODY } from '../constants';
 
 export const Response = (): MethodDecorator => (target, key, descriptor) => {

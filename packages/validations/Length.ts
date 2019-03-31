@@ -10,7 +10,7 @@ import { Validator } from 'class-validator';
 export class Length implements PipeTransform<any> {
   private readonly length: number;
   private readonly message: string;
-  private validator: Validator;
+  private readonly validator: Validator;
 
   constructor(max: number, message?: string) {
     this.message = message || '';

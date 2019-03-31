@@ -1,4 +1,4 @@
-import "reflect-metadata";
+import 'reflect-metadata';
 import {
     PATH_METADATA,
     METHOD_METADATA,
@@ -16,8 +16,8 @@ import { getMetadata } from '../utils/metadata.util';
 import { AxiosRequestConfig } from 'axios';
 import * as Brakes from 'brakes';
 import * as Circuit from 'brakes/lib/Circuit';
-import { RequestCreator } from "../request.creator";
-import { chooseModule, getInstance } from "../utils/module.util";
+import { RequestCreator } from '../request.creator';
+import { chooseModule, getInstance } from '../utils/module.util';
 
 export const Get = (path: string, options?: AxiosRequestConfig): MethodDecorator => createMappingDecorator('GET', path, options);
 
@@ -83,11 +83,11 @@ const createMappingDecorator = (method: string, path: string, options?: object) 
                     if (instance) {
                         interceptors.push(instance);
                     }
-                })
+                });
             }
         }
 
-        return await RequestCreator.create(url, method, parameters, options, serviceName, circuit, interceptors, responseType);
+        return RequestCreator.create(url, method, parameters, options, serviceName, circuit, interceptors, responseType);
     };
     const metadataKeys = Reflect.getMetadataKeys(oldDescriptorValue);
     metadataKeys.forEach(key =>

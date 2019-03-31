@@ -10,7 +10,7 @@ import { Validator } from 'class-validator';
 export class NotEquals implements PipeTransform<any> {
   private readonly message: string;
   private readonly comparison: any;
-  private validator: Validator;
+  private readonly validator: Validator;
 
   constructor(comparison: any, message?: string) {
     this.message = message || '';

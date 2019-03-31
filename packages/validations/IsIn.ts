@@ -10,7 +10,7 @@ import { Validator } from 'class-validator';
 export class IsIn implements PipeTransform<any> {
   private readonly message: string;
   private readonly possibleValues: any[];
-  private validator: Validator;
+  private readonly validator: Validator;
 
   constructor(possibleValues: any[], message?: string) {
     this.message = message || '';

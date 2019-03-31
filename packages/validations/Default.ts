@@ -4,7 +4,7 @@ import { Validator } from 'class-validator';
 @Injectable()
 export class Default implements PipeTransform<any> {
   private readonly defaults: any;
-  private validator: Validator;
+  private readonly validator: Validator;
 
   constructor(defaults: any) {
     this.defaults = defaults;
