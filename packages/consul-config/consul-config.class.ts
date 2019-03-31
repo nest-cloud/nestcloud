@@ -19,7 +19,7 @@ export class ConsulConfig implements IConsulConfig {
   async init() {
     try {
       const result = await this.consul.kv.get<IKVResponse>(this.key);
-      this.store.data = YAML.parse(result.Value);
+      this.store.data = result ? YAML.parse(result.Value) : {};
       this.createWatcher();
     } catch (e) {
       throw new ConsulConfigInitException(e.message, e.stack);
@@ -61,7 +61,7 @@ export class ConsulConfig implements IConsulConfig {
     });
     watcher.on('change', (data, res) => {
       try {
-        this.store.data = YAML.parse(data.Value);
+        this.store.data = data ? YAML.parse(data.Value) : {};
       } catch (e) {
         this.store.data = { parseErr: e };
       }

@@ -17,6 +17,10 @@
 
 A NodeJS micro-service solution based on Consul, writing by Typescript language and NestJS framework.
 
+## Docs
+
+[中文文档](docs)
+
 
 ## Components
 

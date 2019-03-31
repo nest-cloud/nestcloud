@@ -27,8 +27,8 @@ export class ConsulConfigModule {
         let key = options.key;
         if (inject.includes(NEST_BOOT_PROVIDER)) {
           key = boot.get('consul.config.key');
-          const serviceName = boot.get('web.serviceName', 'localhost');
-          const serviceId = boot.get('web.serviceId', '');
+          const serviceName = boot.get('consul.service.name', 'localhost');
+          const serviceId = boot.get('consul.service.id', '');
 
           if (!key) {
             throw new Error('Please set consul.config.key in bootstrap.yml');
