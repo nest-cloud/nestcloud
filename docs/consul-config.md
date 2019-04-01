@@ -27,15 +27,18 @@ import { NEST_BOOT } from '@nestcloud/common';
 export class ApplicationModule {}
 ```
 
-## Boot 配置
+## 配置
 
 ```yaml
 consul:
+  host: localhost
+  port: 8500
+  service: 
+    id: null
+    name: example-service
   config:
-    key: config__{serviceName}__{env}
+    key: config__${{ consul.service.name }}__${{ consul.service.id }}
 ```
-
-config.key 支持使用内置的变量，目前支持的变量有：serviceName, env 和 serviceId。
 
 ## 从配置中心获取配置
 

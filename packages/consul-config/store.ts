@@ -1,5 +1,6 @@
-import { get, set } from 'lodash';
+import { get, set, isArray, isString, isObject } from 'lodash';
 import { objectToMap } from '@nestcloud/common';
+import { compile } from "handlebars";
 
 export class Store {
     private static _data: any;
@@ -15,6 +16,13 @@ export class Store {
 
     static set data(data: any) {
         this._data = data;
+        if (isObject(this._data)) {
+            for (const key in this._data) {
+                if (this._data.hasOwnProperty(key)) {
+                    this.compileWithEnv(key, this._data, this._data[key]);
+                }
+            }
+        }
         this.updateConfigMap();
     }
 
@@ -43,6 +51,21 @@ export class Store {
                 },
             });
             this.hasDefined[path] = true;
+        }
+    }
+
+    private static compileWithEnv(key: string | number, parent: any, config: any) {
+        if (isString(config)) {
+            const template = compile(config.replace(/\${{/g, '{{'));
+            parent[key] = template({ ...this._data });
+        } else if (isArray(config)) {
+            config.forEach((item, index) => this.compileWithEnv(index, config, item));
+        } else if (isObject(config)) {
+            for (const key in config) {
+                if (config.hasOwnProperty(key)) {
+                    this.compileWithEnv(key, config, config[key]);
+                }
+            }
         }
     }
 

@@ -1,29 +1,24 @@
-import {
-  ArgumentMetadata,
-  BadRequestException,
-  Injectable,
-  PipeTransform,
-} from '@nestjs/common';
+import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 import { Validator } from 'class-validator';
 
 @Injectable()
 export class Equals implements PipeTransform<any> {
-  private readonly message: string;
-  private readonly comparison: any;
-  private readonly validator: Validator;
+    private readonly message: string;
+    private readonly comparison: any;
+    private readonly validator: Validator;
 
-  constructor(comparison: any, message?: string) {
-    this.message = message || '';
-    this.comparison = comparison;
-    this.validator = new Validator();
-  }
-
-  async transform(value: any, metadata: ArgumentMetadata) {
-    if (!this.validator.equals(value, this.comparison)) {
-      const { data } = metadata;
-      const defaults = data ? `${data} is not valid` : 'Validation failed';
-      throw new BadRequestException(this.message || defaults);
+    constructor(comparison: any, message?: string) {
+        this.message = message || '';
+        this.comparison = comparison;
+        this.validator = new Validator();
     }
-    return value;
-  }
+
+    async transform(value: any, metadata: ArgumentMetadata) {
+        if (!this.validator.equals(value, this.comparison)) {
+            const { data } = metadata;
+            const defaults = data ? `${data} is not valid` : 'Validation failed';
+            throw new BadRequestException(this.message || defaults);
+        }
+        return value;
+    }
 }

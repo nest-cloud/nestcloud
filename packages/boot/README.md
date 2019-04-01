@@ -1,24 +1,35 @@
+
+[travis-image]: https://api.travis-ci.org/nest-cloud/nestcloud.svg?branch=master
+[travis-url]: https://travis-ci.org/nest-cloud/nestcloud
+[linux-image]: https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux
+[linux-url]: https://travis-ci.org/nest-cloud/nestcloud
+
+# NestCloud - Boot
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/v/@nestcloud/core.svg" alt="NPM Version"/></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/l/@nestcloud/core.svg" alt="Package License"/></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/dm/@nestcloud/core.svg" alt="NPM Downloads"/></a>
+    <a href="https://travis-ci.org/nest-cloud/nestcloud" target="_blank"><img src="https://travis-ci.org/nest-cloud/nestcloud.svg?branch=master" alt="Travis"/></a>
+    <a href="https://travis-ci.org/nest-cloud/nestcloud" target="_blank"><img src="https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux" alt="Linux"/></a>
+    <a href="https://coveralls.io/github/nest-cloud/nestcloud?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nest-cloud/nestcloud/badge.svg?branch=master" alt="Coverage"/></a>
 </p>
 
 ## Description
 
-A component of [nestcloud](http://github.com/nest-cloud/nestcloud). NestCloud is a nest framework micro-service solution.
-  
-[中文文档](https://nestcloud.org/solutions/ben-di-pei-zhi)
+NestCloud component for getting local configurations and environment values when the app bootstrap.
 
-A [Nest](https://github.com/nestjs/nest) module to get configurations when the app bootstrap.
+[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/bootstrap.md)
 
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/boot
+$ npm i --save @nestcloud/boot@next
 ```
 
 ## Quick Start
 
-#### Import Module
+### Import Module
 
 ```typescript
 import { Module } from '@nestjs/common';
@@ -32,7 +43,7 @@ const env = process.env.NODE_ENV;
 export class ApplicationModule {}
 ```
 
-#### Yaml Config File
+### Configurations
 
 eg: bootstrap-development.yml.
 
@@ -42,7 +53,7 @@ web:
   port: 3000
 ```
 
-#### Usage
+## Usage
 
 There are two ways to get configurations,
  
@@ -66,12 +77,11 @@ export class TestService {
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { Bootstrap, BootValue } from '@nestcloud/boot';
+import { BootValue } from '@nestcloud/boot';
 
 @Injectable()
-@Bootstrap()
 export class TestService {
-  @BootValue('web.port', 3000)
+  @BootValue('service.port', 3000)
   private readonly port: number;
 
   getPort() {
@@ -80,15 +90,33 @@ export class TestService {
 }
 ```
 
-#### Get configurations with env.
+## Template Compile.
 
-The boot module supports get configurations with env, use ${} expression, example:
+Dependency [handlebars.js](https://github.com/wycats/handlebars.js).
+
+template:
+
+```typescript
+process.env.SERVICE_ID = 'your-service-id';
+process.env.SERVICE_NAME = 'your-service-name';
+```
 
 ```yaml
-web:
-  serviceId: ${ SERVICE_ID || example-service }
-  serviceName: ${ SERVICE_NAME || example-service }
+service:
+  id: ${{ SERVICE_ID }}
+  name: ${{ SERVICE_NAME }}
   port: 3000
+  address: http://${{ service.name }}:${{ service.port }}
+```
+
+result:
+
+```yaml
+service:
+  id: your-service-id
+  name: your-service-name
+  port: 3000
+  address: http://your-service-name:3000
 ```
 
 ## API
@@ -97,7 +125,7 @@ web:
 
 #### static register\(path: string, filename: string\): DynamicModule
 
-Import nest boot module.
+Register boot module.
 
 | field | type | description |
 | :--- | :--- | :--- |
@@ -125,19 +153,17 @@ Get the current config filename.
 
 #### getConfigPath\(\): string
 
-Get the current path of the config file.
+Get the config file path.
 
 #### getFullConfigPath\(\): string
 
-Get the current full path of the config file.
+Get the config file path with filename.
 
 ### Decorator
 
 #### InjectBoot\(\): PropertyDecorator
 
 Inject Boot instance.
-
-#### Bootstrap\(\): ClassDecorator
 
 #### BootValue\(path?: string, defaultValue?: any\): PropertyDecorator
 

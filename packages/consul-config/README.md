@@ -1,45 +1,35 @@
+
+[travis-image]: https://api.travis-ci.org/nest-cloud/nestcloud.svg?branch=master
+[travis-url]: https://travis-ci.org/nest-cloud/nestcloud
+[linux-image]: https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux
+[linux-url]: https://travis-ci.org/nest-cloud/nestcloud
+
+# NestCloud - ConsulConfig
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/v/@nestcloud/core.svg" alt="NPM Version"/></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/l/@nestcloud/core.svg" alt="Package License"/></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/dm/@nestcloud/core.svg" alt="NPM Downloads"/></a>
+    <a href="https://travis-ci.org/nest-cloud/nestcloud" target="_blank"><img src="https://travis-ci.org/nest-cloud/nestcloud.svg?branch=master" alt="Travis"/></a>
+    <a href="https://travis-ci.org/nest-cloud/nestcloud" target="_blank"><img src="https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux" alt="Linux"/></a>
+    <a href="https://coveralls.io/github/nest-cloud/nestcloud?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nest-cloud/nestcloud/badge.svg?branch=master" alt="Coverage"/></a>
 </p>
 
 ## Description
 
-A component of [nestcloud](http://github.com/nest-cloud/nestcloud). NestCloud is a nest framework micro-service solution.
-  
-[中文文档](https://nestcloud.org/solutions/pei-zhi-zhong-xin)
+A NestCloud component for getting and watching configurations from consul kv.
 
-This is a [Nest](https://github.com/nestjs/nest) module to get configurations from consul kv.
+[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/consul-config.md)
 
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/consul consul @nestcloud/consul-config
+$ npm i --save @nestcloud/consul@next consul @nestcloud/consul-config@next
 ```
 
 ## Quick Start
 
 ### Import Module
-
-```typescript
-import { Module } from '@nestjs/common';
-import { ConsulModule } from '@nestcloud/consul';
-import { ConsulConfigModule } from '@nestcloud/consul-config';
-
-const env = process.env.NODE_ENV;
-
-@Module({
-  imports: [
-      ConsulModule.register({
-        host: '127.0.0.1',
-        port: 8500
-      }),
-      ConsulConfigModule.register({key: `config__user-service__${env}`})
-  ],
-})
-export class ApplicationModule {}
-```
-
-If you dependency [@nestcloud/boot](https://github.com/nest-cloud/boot) module.
 
 ```typescript
 import { Module } from '@nestjs/common';
@@ -58,24 +48,22 @@ import { NEST_BOOT } from '@nestcloud/common';
 export class ApplicationModule {}
 ```
 
-#### Boot config file
+#### Configurations
 
 ```yaml
-web:
-  serviceId:
-  serviceName: user-service
 consul:
   host: localhost
   port: 8500
+  service: 
+    id: null
+    name: example-service
   config:
-    # available expressions: {serviceName} {serviceId} {env}
-    key: config__{serviceName}__{env}
-    retry: 5
+    key: config__${{ consul.service.name }}__${{ NODE_ENV }}
 ```
 
-### How to get configurations
+### How to get remote configurations
 
-In consul kv, the key is "config__user-service__development".
+In consul kv, the key is "config__example-service__development".
 
 ```yaml
 user:
@@ -106,10 +94,9 @@ export class TestService {
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { Configuration, ConfigValue } from '@nestcloud/consul-config';
+import { ConfigValue } from '@nestcloud/consul-config';
 
 @Injectable()
-@Configuration()
 export class TestService {
   @ConfigValue('user.info', {name: 'judi'})
   private readonly userInfo;
@@ -126,12 +113,11 @@ export class TestService {
 
 #### static register\(options\): DynamicModule
 
-Import nest consul config module.
+Register consul config module.
 
 | field | type | description |
 | :--- | :--- | :--- |
 | options.dependencies | string[] | if you are using @nestcloud/boot module, please set [NEST_BOOT] |
-| options.key | string | the key of consul kv |
 | options.retry | number | the max retry count when get configuration fail |
 
 ### class ConsulConfig
@@ -149,9 +135,9 @@ Get configuration from consul kv.
 
 Get the current key.
 
-#### onChange\(callback: \(configs\) =&gt; void\): void
+#### watch\(path: string, callback: \(configs: any\) =&gt; void\): void
 
-watch the configurations.
+Watch the configurations.
 
 | field | type | description |
 | :--- | :--- | :--- |
@@ -159,7 +145,7 @@ watch the configurations.
 
 #### async set\(path: string, value: any\): void
 
-update configuration.
+Update configuration.
 
 | field | type | description |
 | :--- | :--- | :--- |
@@ -168,8 +154,6 @@ update configuration.
 
 
 ### Decorators
-
-#### Configuration\(\): ClassDecorator
 
 #### ConfigValue\(path?: string, defaultValue?: any\): PropertyDecorator
 

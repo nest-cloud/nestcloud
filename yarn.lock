@@ -236,6 +236,10 @@
   dependencies:
     "@types/node" "*"
 
+"@types/ejs@^2.6.3":
+  version "2.6.3"
+  resolved "https://registry.yarnpkg.com/@types/ejs/-/ejs-2.6.3.tgz#b6509e9925d7eb5e95c8c73b6492e5baae7c1e6a"
+
 "@types/express-serve-static-core@*":
   version "4.16.2"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.16.2.tgz#5ee8a22e602005be6767df6b2cba9879df3f75aa"
@@ -250,6 +254,12 @@
     "@types/body-parser" "*"
     "@types/express-serve-static-core" "*"
     "@types/serve-static" "*"
+
+"@types/handlebars@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@types/handlebars/-/handlebars-4.1.0.tgz#3fcce9bf88f85fe73dc932240ab3fb682c624850"
+  dependencies:
+    handlebars "*"
 
 "@types/http-proxy@^1.16.2":
   version "1.17.0"
@@ -1686,6 +1696,10 @@ ecc-jsbn@~0.1.1:
     jsbn "~0.1.0"
     safer-buffer "^2.1.0"
 
+ejs@^2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/ejs/-/ejs-2.6.1.tgz#498ec0d495655abc6f23cd61868d926464071aa0"
+
 emoji-regex@^7.0.1:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-7.0.3.tgz#933a04052860c85e83c122479c4748a8e4c72156"
@@ -2521,7 +2535,7 @@ gulplog@^1.0.0:
   dependencies:
     glogg "^1.0.0"
 
-handlebars@^4.0.2, handlebars@^4.1.0:
+handlebars@*, handlebars@^4.0.2, handlebars@^4.1.0, handlebars@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.1.1.tgz#6e4e41c18ebe7719ae4d38e5aca3d32fa3dd23d3"
   dependencies:
