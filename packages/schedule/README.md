@@ -4,7 +4,7 @@
 [linux-image]: https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux
 [linux-url]: https://travis-ci.org/nest-cloud/nestcloud
 
-# NestCloud - Feign
+# NestCloud - Schedule
 
 <p align="center">
     <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/v/@nestcloud/core.svg" alt="NPM Version"/></a>

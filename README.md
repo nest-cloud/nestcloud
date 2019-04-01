@@ -73,6 +73,10 @@ A job scheduler that supports distributed and decorator.
 
 Logger module based on winston@2.x
 
+### [Validations](packages/validations)
+
+Validate request params.
+
 
 ## Quick Start
 
