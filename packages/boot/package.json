@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/boot",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A Nest framework (node.js) module for getting config parameters when the app start running.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
@@ -20,9 +20,9 @@
   },
   "homepage": "https://github.com/nest-cloud/nestcloud#readme",
   "dependencies": {
+    "handlebars": "^4.1.1",
     "lodash": "^4.17.11",
     "reflect-metadata": "^0.1.12",
-    "yamljs": "^0.3.0",
-    "handlebars": "^4.1.1"
+    "yamljs": "^0.3.0"
   }
 }

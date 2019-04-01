@@ -410,7 +410,3 @@ export class ApplicationModule {}
 ### 2. Interceptor decorator
 
 Interceptor decorator changed to UseInterceptor, the new Interceptor supports dynamic import and inject features.
-
-## Gateway
-
-### 1. 
