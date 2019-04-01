@@ -1,5 +1,18 @@
+
+[travis-image]: https://api.travis-ci.org/nest-cloud/nestcloud.svg?branch=master
+[travis-url]: https://travis-ci.org/nest-cloud/nestcloud
+[linux-image]: https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux
+[linux-url]: https://travis-ci.org/nest-cloud/nestcloud
+
+# NestCloud - Feign
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/v/@nestcloud/core.svg" alt="NPM Version"/></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/l/@nestcloud/core.svg" alt="Package License"/></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/dm/@nestcloud/core.svg" alt="NPM Downloads"/></a>
+    <a href="https://travis-ci.org/nest-cloud/nestcloud" target="_blank"><img src="https://travis-ci.org/nest-cloud/nestcloud.svg?branch=master" alt="Travis"/></a>
+    <a href="https://travis-ci.org/nest-cloud/nestcloud" target="_blank"><img src="https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux" alt="Linux"/></a>
+    <a href="https://coveralls.io/github/nest-cloud/nestcloud?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nest-cloud/nestcloud/badge.svg?branch=master" alt="Coverage"/></a>
 </p>
 
 ## Description
@@ -13,44 +26,55 @@ This is a [Nest](https://github.com/nestjs/nest) module for writing nestjs http 
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/feign @nestcloud/consul-loadbalance @nestcloud/consul consul
+$ npm i --save @nestcloud/feign@next @nestcloud/consul-loadbalance@next @nestcloud/consul@next consul
 ```
 
 ## Quick Start
 
-#### Import Module
+### Import Module
 
 ```typescript
 import { Module } from '@nestjs/common';
+import { ConsulModule } from '@nestcloud/consul';
+import { ConsulServiceModule } from '@nestcloud/consul-service';
+import { LoadbalanceModule } from '@nestcloud/consul-loadbalance';
+import { BootModule } from '@nestcloud/boot';
 import { FeignModule } from '@nestcloud/feign';
-import { NEST_CONSUL_LOADBALANCE } from '@nestcloud/common';
+import { NEST_BOOT, NEST_CONSUL_LOADBALANCE } from '@nestcloud/common';
 
 @Module({
-  imports: [FeignModule.register({
-    dependencies: [], // If use @nestcloud/consul-loadbalance module, please set NEST_CONSUL_LOADBALANCE
-    axiosConfig: {},
-  })],
+  imports: [
+      BootModule.register(__dirname, 'bootstrap.yml'),
+      ConsulModule.register({dependencies: [NEST_BOOT]}),
+      ConsulServiceModule.register({ dependencies: [NEST_BOOT] }),
+      LoadbalanceModule.register({ dependencies: [NEST_BOOT] }),
+      FeignModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL_LOADBALANCE] }), // or NEST_CONSUL_CONFIG
+  ],
 })
 export class ApplicationModule {}
 ```
 
-#### Injection
+### Configurations
 
-UserClient:
+```yaml
+feign:
+  axios:
+    timeout: 1000
+```
+
+## Usage
 
 ```typescript
 import { Injectable } from "@nestjs/common";
-import { Loadbalanced, Get, Query, Post, Body, Param, Put, Delete } from "@nestcloud/feign";
-​
+import { Get, Query, Post, Body, Param, Put, Delete } from "@nestcloud/feign";
+
 @Injectable()
-@Loadbalanced('user-service') // open lb support
 export class UserClient {
     @Get('/users')
     getUsers(@Query('role') role: string) {
     }
     
     @Get('http://test.com/users')
-    @Loadbalanced(false) // close lb support
     getRemoteUsers() {
     }
     
@@ -69,17 +93,148 @@ export class UserClient {
 }
 ```
 
-UserService:
+### Loadbalance
 
-```typescript
-export class UserService {
-    constructor(private readonly userClient: UserClient) {}
+```yaml
+import { Injectable } from "@nestjs/common";
+import { Loadbalanced, Get, Query } from "@nestcloud/feign";
+
+@Injectable()
+@Loadbalanced('user-service') // open loadbalance supports, need @nestcloud/consul-loadbalance module.
+export class UserClient {
+    @Get('/users')
+    getUsers(@Query('role') role: string) {
+    }
     
-    doCreateUser() {
-        this.userClient.createUser({name: 'test'});
+    @Get('http://test.com/users')
+    @Loadbalanced(false) // close loadbalance supports.
+    getRemoteUsers() {
     }
 }
 ```
+
+### Brakes
+
+```typescript
+import { IFallback } from "@nestcloud/feign";
+import { Injectable, ServiceUnavailableException } from "@nestjs/common";
+import { AxiosResponse } from "axios";
+
+@Injectable()
+export class CustomFallback implements IFallback {
+    fallback(): Promise<AxiosResponse | void> | AxiosResponse | void {
+        throw new ServiceUnavailableException('The service is unavailable, please retry soon.');
+    }
+}
+```
+
+```typescript
+import { IHealthCheck } from "@nestcloud/feign";
+import { Injectable } from "@nestjs/common";
+import { HealthClient } from "./health.client";
+
+@Injectable()
+export class CustomCheck implements IHealthCheck {
+    constructor(
+        private readonly client: HealthClient
+    ) {
+    }
+
+    async check(): Promise<void> {
+        await this.client.checkHealth();
+    }
+}
+```
+
+```typescript
+import { Injectable } from "@nestjs/common";
+import { UseBrakes, UseFallback, UseHealthCheck, Get, Query } from "@nestcloud/feign";
+import { CustomFallback } from "./custom.fallback";
+import { CustomCheck } from "./custom.check";
+
+@Injectable()
+@UseBrakes({
+    statInterval: 2500,
+    threshold: 0.5,
+    circuitDuration: 15000,
+    timeout: 250,
+    healthCheck: true,
+})
+@UseFallback(CustomFallback)
+@UseHealthCheck(CustomCheck)
+export class UserClient {
+}
+```
+
+### Interceptor
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { IInterceptor } from "@nestcloud/feign";
+import { AxiosResponse, AxiosRequestConfig } from 'axios';
+
+@Injectable()
+export class AddHeaderInterceptor implements IInterceptor {
+    onRequest(request: AxiosRequestConfig): AxiosRequestConfig {
+        request.headers['x-service'] = 'service-name';
+        return request;
+    }
+    
+    onResponse(response: AxiosResponse): AxiosResponse {
+        return response;
+    }
+    
+    onRequestError(error: any): any {
+        return Promise.reject(error);
+    }
+    
+    onResponseError(error: any): any {
+        return Promise.reject(error);
+    }
+}
+```
+
+```typescript
+import { Injectable } from "@nestjs/common";
+import { Get, UseInterceptor } from "@nestcloud/feign";
+import { AddHeaderInterceptor } from "./middlewares/AddHeaderInterceptor";
+
+@Injectable()
+@UseInterceptor(AddHeaderInterceptor)
+export class ArticleClient {
+    @Get('https://api.apiopen.top/recommendPoetry')
+    getArticles() {
+    }
+}
+```
+
+examples:
+
+```typescript
+@UseInterceptor(Interceptor1)
+@UseInterceptor(Interceptor2)
+export class Client {
+
+    @UseInterceptor(Interceptor3)
+    @UseInterceptor(Interceptor4)
+    getArticles() {
+    }
+}
+```
+
+result:
+
+```text
+interceptor1 request
+interceptor2 request
+interceptor3 request
+interceptor4 request
+interceptor4 response
+interceptor3 response
+interceptor2 response
+interceptor1 response
+```
+
 
 ## API
 
@@ -133,92 +288,27 @@ Set response data encode, default 'utf8'
 
 Open or close lb support.
 
-### Interceptor&lt;T extends IInterceptor&gt;\(interceptor: { new\(\): T }\)
+### UseInterceptor&lt;T extends IInterceptor&gt;\(interceptor: { new\(\): T }\)
 
-add interceptor，such as：
+Use interceptor, supports dynamic import and inject.
 
-AddHeaderInterceptor.ts:
-```typescript
-import { IInterceptor } from "@nestcloud/feign";
-import { AxiosResponse, AxiosRequestConfig } from 'axios';
-
-export class AddHeaderInterceptor implements IInterceptor {
-    onRequest(request: AxiosRequestConfig): AxiosRequestConfig {
-        request.headers['x-service'] = 'service-name';
-        return request;
-    }
-    
-    onResponse(response: AxiosResponse): AxiosResponse {
-        return response;
-    }
-    
-    onRequestError(error: any): any {
-        return Promise.reject(error);
-    }
-    
-    onResponseError(error: any): any {
-        return Promise.reject(error);
-    }
-}
-```
-
-ArticleClient.ts:
-```typescript
-import { Injectable } from "@nestjs/common";
-import { Get, Interceptor } from "@nestcloud/feign";
-import { AddHeaderInterceptor } from './AddHeaderInterceptor';
-
-@Injectable()
-@Interceptor(AddHeaderInterceptor)
-export class ArticleClient {
-    @Get('https://api.apiopen.top/recommendPoetry')
-    getArticles() {
-    }
-}
-```
-
-interceptor processing：
-
-```typescript
-@Interceptor(Interceptor1)
-@Interceptor(Interceptor2)
-export class Client {
-
-    @Interceptor(Interceptor3)
-    @Interceptor(Interceptor4)
-    getArticles() {
-    }
-}
-```
-
-console:
-```text
-interceptor1 request
-interceptor2 request
-interceptor3 request
-interceptor4 request
-interceptor4 response
-interceptor3 response
-interceptor2 response
-interceptor1 response
-```
-
-### Brakes(config?: BrakesConfig | boolean): ClassDecorator \| MethodDecorator
+### UseBrakes(config?: BrakesConfig | boolean): ClassDecorator \| MethodDecorator
 
 Open circuit supports.
 
-### Fallback<T extends IFallback>(Fall: { new(): T })
+### UseFallback<T extends IFallback>(Fall: { new(): T })
 
-Add Custom fallback, use together with Brakes decorator.
+Add Custom fallback, use together with Brakes decorator, supports dynamic import and inject.
 
-### HealthChecker<T extends IHealthChecker>(Checker: { new(): T })
+### UseHealthChecker<T extends IHealthChecker>(Checker: { new(): T })
 
-Add Health Checker for Brakes, use together with Brakes decorator, please set heathCheck: true, such as
+Add Health Checker for Brakes, use together with Brakes decorator, supports dynamic import and inject.
+ 
+If you use health check, please set heathCheck: true, such as
 
 ```typescript
 @Brakes({healthCheck: true})
 ```
-
 
 ## Stay in touch
 

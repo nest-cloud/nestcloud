@@ -30,32 +30,32 @@ npm install --save @nestcloud/core @nestcloud/common @nestcloud/boot @nestcloud/
 
 ## Components
 
-### Boot
+### [Boot](docs/bootstrap.md)
 
 Get local configurations and environment values when the app bootstrap.
 
 
-### Consul
+### [Consul](docs/consul.md)
 
 Consul module.
 
 
-### Consul-Config
+### [Consul-Config](docs/consul-config.md)
 
 Get & watch configurations from Consul KV.
 
 
-### Consul-Service
+### [Consul-Service](docs/consul-service.md)
 
 Register & cancel register service, discovery other service.
 
 
-### Consul-Loadbalance
+### [Consul-Loadbalance](docs/consul-loadbalance.md)
 
 Software load balancers primary for rest calls.
 
 
-### Feign
+### [Feign](docs/feign.md)
 
 A http client that supports decorator and loadbalance.
 
@@ -65,9 +65,14 @@ A http client that supports decorator and loadbalance.
 Memcached module.
 
 
-### Schedule
+### [Schedule](docs/schedule.md)
 
 A job scheduler that supports distributed and decorator.
+
+### [Logger](docs/logger.md)
+
+Logger module based on winston@2.x
+
 
 ## Quick Start
 

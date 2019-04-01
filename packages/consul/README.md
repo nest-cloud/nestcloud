@@ -1,14 +1,25 @@
+
+[travis-image]: https://api.travis-ci.org/nest-cloud/nestcloud.svg?branch=master
+[travis-url]: https://travis-ci.org/nest-cloud/nestcloud
+[linux-image]: https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux
+[linux-url]: https://travis-ci.org/nest-cloud/nestcloud
+
+# NestCloud - Consul
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/v/@nestcloud/core.svg" alt="NPM Version"/></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/l/@nestcloud/core.svg" alt="Package License"/></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/dm/@nestcloud/core.svg" alt="NPM Downloads"/></a>
+    <a href="https://travis-ci.org/nest-cloud/nestcloud" target="_blank"><img src="https://travis-ci.org/nest-cloud/nestcloud.svg?branch=master" alt="Travis"/></a>
+    <a href="https://travis-ci.org/nest-cloud/nestcloud" target="_blank"><img src="https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux" alt="Linux"/></a>
+    <a href="https://coveralls.io/github/nest-cloud/nestcloud?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nest-cloud/nestcloud/badge.svg?branch=master" alt="Coverage"/></a>
 </p>
 
 ## Description
 
-A component of [nestcloud](http://github.com/nest-cloud/nestcloud). NestCloud is a nest framework micro-service solution.
-  
-[中文文档](https://nestcloud.org/solutions/consul)
+A NestCloud component for providing consul api based on [node-consul](https://github.com/silas/node-consul).
 
-This is a [Consul](http://consul.io/) module for [Nest](https://github.com/nestjs/nest), based on [node-consul](https://github.com/silas/node-consul).
+[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/consul.md)
 
 ## Installation
 
@@ -18,22 +29,7 @@ $ npm i --save @nestcloud/consul consul
 
 ## Quick Start
 
-#### Import Module
-
-```typescript
-import { Module } from '@nestjs/common';
-import { ConsulModule } from '@nestcloud/consul';
-
-@Module({
-  imports: [ConsulModule.register({
-    host: '127.0.0.1',
-    port: 8500
-  })],
-})
-export class ApplicationModule {}
-```
-
-If you use [@nestcloud/boot](https://github.com/nest-cloud/boot) module.
+### Import Module
 
 ```typescript
 import { Module } from '@nestjs/common';
@@ -50,7 +46,7 @@ import { NEST_BOOT } from '@nestcloud/common';
 export class ApplicationModule {}
 ```
 
-##### Nest-boot config file
+### Configurations
 
 ```yaml
 consul:
@@ -58,7 +54,7 @@ consul:
   port: 8500
 ```
 
-#### Usage
+## Usage
 
 ```typescript
 import { Injectable } from '@nestjs/common';
@@ -67,19 +63,22 @@ import { InjectConsul } from '@nestcloud/consul';
 
 @Injectable()
 export class TestService {
-  constructor(@InjectConsul() private readonly consul: Consul) {}
+  constructor(
+    @InjectConsul() private readonly consul: Consul
+  ) {
+  }
 }
 ```
 
-##### Simple Get Consul KV
+### Simple Get Consul KV
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { ConsulKV } from '@nestcloud/consul';
+import { WatchKV } from '@nestcloud/consul';
 
 @Injectable()
 export class TestService {
-  @ConsulKV('test_key', 'yaml', {})
+  @WatchKV('test_key', 'yaml', {})
   private readonly config: any;
 }
 ```
@@ -103,7 +102,7 @@ see [node-consul](https://github.com/silas/node-consul)
 
 ### Decorators
 
-#### ConsulKV(key: string, type?: 'json' | 'yaml' | 'text', defaults?: any): PropertyDecorator
+#### WatchKV(key: string, type?: 'json' | 'yaml' | 'text', defaults?: any): PropertyDecorator
 
 Inject consul kv to the class attribute, it will update immediately when consul kv update.
 

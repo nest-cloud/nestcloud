@@ -1,20 +1,30 @@
+
+[travis-image]: https://api.travis-ci.org/nest-cloud/nestcloud.svg?branch=master
+[travis-url]: https://travis-ci.org/nest-cloud/nestcloud
+[linux-image]: https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux
+[linux-url]: https://travis-ci.org/nest-cloud/nestcloud
+
+# NestCloud - Logger
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/v/@nestcloud/core.svg" alt="NPM Version"/></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/l/@nestcloud/core.svg" alt="Package License"/></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/dm/@nestcloud/core.svg" alt="NPM Downloads"/></a>
+    <a href="https://travis-ci.org/nest-cloud/nestcloud" target="_blank"><img src="https://travis-ci.org/nest-cloud/nestcloud.svg?branch=master" alt="Travis"/></a>
+    <a href="https://travis-ci.org/nest-cloud/nestcloud" target="_blank"><img src="https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux" alt="Linux"/></a>
+    <a href="https://coveralls.io/github/nest-cloud/nestcloud?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nest-cloud/nestcloud/badge.svg?branch=master" alt="Coverage"/></a>
 </p>
 
 ## Description
 
-A component of [nestcloud](http://github.com/nest-cloud/nestcloud). NestCloud is a nest framework micro-service solution.
-  
-[中文文档](https://nestcloud.org/solutions/ri-zhi)
+The logger module for nestcloud.
 
-A logger module for nestcloud.
+[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/logger.md)
 
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/logger
-$ npm i --save-dev @types/winston
+$ npm i --save @nestcloud/logger@next
 ```
 
 ## Quick Start
@@ -32,7 +42,7 @@ async function bootstrap() {
 }
 ```
 
-### Config logger.yml
+### Configurations
 
 ```yaml
 logger:
@@ -78,12 +88,12 @@ export class ApplicationModule {}
 
 ```typescript
 import { Injectable } from '@nestjs/common';
+import { ILogger } from '@nestcloud/common';
 import { InjectLogger, Logger } from '@nestcloud/logger';
-import { LoggerInstance } from 'winston';
 
 @Injectable()
 export class TestService {
-  constructor(@InjectLogger() private readonly logger: LoggerInstance) {}
+  constructor(@InjectLogger() private readonly logger: ILogger) {}
 
   log() {
       this.logger.info('The first log');

@@ -48,7 +48,7 @@ import { NEST_BOOT } from '@nestcloud/common';
 export class ApplicationModule {}
 ```
 
-#### Configurations
+### Configurations
 
 ```yaml
 consul:
@@ -61,7 +61,7 @@ consul:
     key: config__${{ consul.service.name }}__${{ NODE_ENV }}
 ```
 
-### How to get remote configurations
+## How to get remote configurations
 
 In consul kv, the key is "config__example-service__development".
 
@@ -71,7 +71,7 @@ user:
     name: 'test'
 ```
 
-#### Inject Config Client
+### Inject Config Client
 
 ```typescript
 import { Injectable } from '@nestjs/common';
@@ -90,7 +90,7 @@ export class TestService {
 }
 ```
 
-#### Inject value
+### Inject value
 
 ```typescript
 import { Injectable } from '@nestjs/common';

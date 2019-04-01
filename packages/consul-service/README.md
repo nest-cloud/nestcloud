@@ -1,57 +1,35 @@
+
+[travis-image]: https://api.travis-ci.org/nest-cloud/nestcloud.svg?branch=master
+[travis-url]: https://travis-ci.org/nest-cloud/nestcloud
+[linux-image]: https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux
+[linux-url]: https://travis-ci.org/nest-cloud/nestcloud
+
+# NestCloud - ConsulService
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/v/@nestcloud/core.svg" alt="NPM Version"/></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/l/@nestcloud/core.svg" alt="Package License"/></a>
+    <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/dm/@nestcloud/core.svg" alt="NPM Downloads"/></a>
+    <a href="https://travis-ci.org/nest-cloud/nestcloud" target="_blank"><img src="https://travis-ci.org/nest-cloud/nestcloud.svg?branch=master" alt="Travis"/></a>
+    <a href="https://travis-ci.org/nest-cloud/nestcloud" target="_blank"><img src="https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux" alt="Linux"/></a>
+    <a href="https://coveralls.io/github/nest-cloud/nestcloud?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nest-cloud/nestcloud/badge.svg?branch=master" alt="Coverage"/></a>
 </p>
 
 ## Description
 
-A component of [nestcloud](http://github.com/nest-cloud/nestcloud). NestCloud is a nest framework micro-service solution.
-  
-[中文文档](https://nestcloud.org/solutions/fu-wu-zhu-ce-yu-fa-xian)
+A NestCloud component for service registration and service discovery.
 
-This is a [Nest](https://github.com/nestjs/nest) module provide service registration and service discovery.
+[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/consul-service.md)
 
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/consul-service @nestcloud/consul consul
+$ npm i --save @nestcloud/consul-service@next @nestcloud/consul@next consul
 ```
 
 ## Quick Start
 
-#### Import Module
-
-```typescript
-import { Module } from '@nestjs/common';
-import { ConsulModule } from '@nestcloud/consul';
-import { ConsulServiceModule } from '@nestcloud/consul-service';
-
-@Module({
-  imports: [
-      ConsulModule.register({
-          host: '127.0.0.1',
-          port: 8500
-      }),
-      ConsulServiceModule.register({
-           serviceId: 'node1',
-           serviceName: 'user-service',
-           port: 3001,
-           consul: {
-               discoveryHost: 'localhost',
-               healthCheck: {
-                   timeout: '1s',
-                   interval: '10s',
-                   route: '/health',
-               },
-               maxRetry: 5,
-               retryInterval: 3000,
-           }
-      }),
-  ],
-})
-export class ApplicationModule {}
-```
-
-If you use [@nestcloud/boot](https://github.com/nest-cloud/boot) module.
+### Import Module
 
 ```typescript
 import { Module } from '@nestjs/common';
@@ -70,17 +48,17 @@ import { NEST_BOOT } from '@nestcloud/common';
 export class ApplicationModule {}
 ```
 
-#### Simple Boot Config
+### Configurations
 
 ```yaml
-web: 
-  serviceId: node1
-  serviceName: user-service
-  port: 3001
 consul:
   host: localhost
   port: 8500
   discoveryHost: localhost
+  service:
+    id: your-service-id
+    name: your-service-name
+    port: 3000
   healthCheck:
     timeout: 1s
     interval: 10s
@@ -90,7 +68,7 @@ consul:
   retryInterval: 5000
 ```
 
-#### Usage
+## Usage
 
 ```typescript
 import { Component } from '@nestjs/common';
@@ -100,12 +78,12 @@ import { InjectConsulService, ConsulService } from '@nestcloud/consul-service';
 export class TestService {
   constructor(@InjectConsulService() private readonly service: ConsulService) {}
 
-  getServices() {
-      const services = this.service.getServices('user-service', {passing: true});
-      this.service.onUpdate('user-service', services => {
-          console.log(services);
+  getServiceNodes() {
+      const nodes = this.service.getServiceNodes('user-service', {passing: true});
+      this.service.watch('user-service', nodes => {
+          console.log(nodes);
       });
-      console.log(services);
+      console.log(nodes);
   }
 }
 ```
@@ -170,9 +148,10 @@ Import nest consul service module.
 | field | type | description |
 | :--- | :--- | :--- |
 | options.dependencies | string[] | if you are using @nestcloud/boot module, please set [NEST_BOOT] |
-| options.serviceId | string | the service id |
-| options.serviceName | string | the service name |
-| options.port | number | the service port |
+| options.service.id | string | the service id |
+| options.service.name | string | the service name |
+| options.service.port | number | the service port |
+| options.service.includes | string[] | sync services from consul, if not set, it will sync all services |
 | options.consul.discoveryHost | string | the discovery ip |
 | options.consul.healthCheck.timeout | number | the health check timeout, default 1s |
 | options.consul.healthCheck.interval | number | the health check interval，default 10s |
@@ -191,21 +170,21 @@ Import nest consul service module.
 
 ### class ConsulService
 
-#### getServices\(serviceName: string, options?: object\): Server[]
+#### getServices\(\): ServiceNode[]
 
-Get available services.
+Get all services with nodes.
 
-#### getAllServices()
+#### getServiceNames\(\): string[]
 
-Get all services
+Get all service names
 
-#### onServiceChange(service: string, callback: (servers: Server[]) => void): void
+#### watch(service: string, callback: (nodes: IServiceNode[]) => void): void
 
-watch service change
+watch service nodes change
 
-#### onServiceListChange(callback: (newServices: string[]) => void): void
+#### watchServiceList(callback: (services: string[]) => void): void
 
-watch service list change
+watch service name list change
 
 ## Stay in touch
 
