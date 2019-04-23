@@ -8,12 +8,13 @@
     "access": "public"
   },
   "optionalDependencies": {
-    "@nestcloud/boot": "^0.2.1",
-    "@nestcloud/consul-config": "^0.2.1",
-    "@nestcloud/consul-loadbalance": "^0.2.1"
+    "@nestcloud/boot": "^0.2.3",
+    "@nestcloud/consul-config": "^0.2.3",
+    "@nestcloud/consul-loadbalance": "^0.2.3"
   },
   "peerDependencies": {
-    "@nestcloud/common": "^0.2.1",
+    "@nestcloud/common": "^0.2.3",
+    "@nestcloud/core": "^0.2.3",
     "@nestjs/common": "^6.0.0",
     "consul": "^0.30.0"
   },
