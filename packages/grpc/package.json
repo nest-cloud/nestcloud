@@ -1,7 +1,7 @@
 {
-  "name": "@nestcloud/core",
+  "name": "@nestcloud/grpc",
   "version": "0.2.4-2",
-  "description": "A Nest framework (node.js) module for registering and getting consul service easily.",
+  "description": "loadbalance grpc module for nestcloud",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
   "publishConfig": {
@@ -14,5 +14,10 @@
   "bugs": {
     "url": "https://github.com/nest-cloud/nestcloud/issues"
   },
-  "homepage": "https://github.com/nest-cloud/nestcloud#readme"
+  "homepage": "https://github.com/nest-cloud/nestcloud#readme",
+  "peerDependencies": {
+    "@nestcloud/common": "^0.3.1",
+    "@nestcloud/core": "^0.3.1",
+    "@nestjs/microservices": "^6.1.1"
+  }
 }

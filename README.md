@@ -60,6 +60,11 @@ Software load balancers primary for rest calls.
 A http client that supports decorator and loadbalance.
 
 
+### [Grpc](packages/grpc)
+
+A grpc client that supports loadbalance.
+
+
 ### [Memcached](packages/memcached)
 
 Memcached module.
@@ -69,9 +74,11 @@ Memcached module.
 
 A job scheduler that supports distributed and decorator.
 
+
 ### [Logger](packages/logger)
 
 Logger module based on winston@2.x
+
 
 ### [Validations](packages/validations)
 

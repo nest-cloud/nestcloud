@@ -18,6 +18,7 @@ const packages = {
     schedule: ts.createProject('packages/schedule/tsconfig.json'),
     validations: ts.createProject('packages/validations/tsconfig.json'),
     feign: ts.createProject('packages/feign/tsconfig.json'),
+    grpc: ts.createProject('packages/grpc/tsconfig.json'),
 };
 const modules = Object.keys(packages);
 const source = 'packages';
@@ -49,7 +50,8 @@ gulp.task('copy-misc', function () {
         .pipe(gulp.dest(`${source}/memcached`))
         .pipe(gulp.dest(`${source}/schedule`))
         .pipe(gulp.dest(`${source}/validations`))
-        .pipe(gulp.dest(`${source}/feign`));
+        .pipe(gulp.dest(`${source}/feign`))
+        .pipe(gulp.dest(`${source}/grpc`));
 });
 
 gulp.task('clean:output', function () {

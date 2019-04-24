@@ -21,7 +21,7 @@ export class ConsulConfigModule {
                 if (inject.includes(NEST_BOOT_PROVIDER)) {
                     key = boot.get('consul.config.key');
                     if (!key) {
-                        throw new Error('Please set consul.config.key in bootstrap.yml');
+                        throw new Error('Please set consul.config.key in Boot module config file');
                     }
                 }
                 const client = new ConsulConfig(consul, key);

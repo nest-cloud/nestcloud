@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/nestcloud",
-  "version": "0.1.0",
+  "version": "0.3.1",
   "description": "Nest micro service solution.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
@@ -24,6 +24,7 @@
   "devDependencies": {
     "@nestjs/common": "^6.0.0",
     "@nestjs/core": "^6.0.3",
+    "@nestjs/microservices": "^6.1.1",
     "@nestjs/terminus": "^6.0.0",
     "@nestjs/typeorm": "^6.0.0",
     "@types/cache-manager": "^1.2.7",

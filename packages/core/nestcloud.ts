@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplicationContext } from '@nestjs/common';
 import { Global } from './Global';
 import {
     NEST_BOOT_PROVIDER,
@@ -27,7 +27,7 @@ export class NestCloud {
         [NEST_MEMCACHED_PROVIDER]: 'memcached',
     };
 
-    static create<T extends INestApplication = INestApplication>(application: T): T {
+    static create<T extends INestApplicationContext = INestApplicationContext>(application: T): T {
         this.initialize(application);
         return application;
     }
