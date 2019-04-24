@@ -16,10 +16,10 @@ export class Loadbalancer implements ILoadbalancer {
     };
     private readonly id: string;
     private readonly name: string;
-    servers: Server[];
+    public servers: Server[];
     private rule: IRule;
 
-    constructor(options: ILoadbalanerOptions) {
+    public constructor(options: ILoadbalanerOptions) {
         this.id = options.id;
         this.name = options.name || options.id;
         this.servers = this.initialServers(options.servers);
@@ -57,7 +57,7 @@ export class Loadbalancer implements ILoadbalancer {
         this.rule.init(this);
     }
 
-    chooseService(): IServer {
+    public chooseService(): IServer {
         if (!this.rule) {
             throw new Error('The rule is not exist.');
         }
@@ -65,22 +65,30 @@ export class Loadbalancer implements ILoadbalancer {
         return this.rule.choose();
     }
 
-    updateRule(RuleCls) {
+    public updateRule(RuleCls) {
         if (typeof RuleCls === 'function' && RuleCls.prototype.constructor) {
             this.rule = new RuleCls(this);
             this.rule.init(this);
         }
     }
 
-    addServer(server: Server) {
+    public addServer(server: Server) {
         if (server) {
             this.servers.push(this.initialServer(server));
         }
     }
 
-    removeServer(serverId: string) {
+    public removeServer(serverId: string) {
         if (serverId) {
             this.servers = this.servers.filter(server => server.id !== serverId);
+        }
+    }
+
+    public getServer(serverId: string): Server {
+        for (let i = 0; i < this.servers.length; i++) {
+            if (this.servers[i].id === serverId) {
+                return this.servers[i];
+            }
         }
     }
 

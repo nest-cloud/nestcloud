@@ -33,7 +33,7 @@ export class Loadbalance implements ILoadbalance {
     chooseLoadbalancer(serviceName: string): ILoadbalancer {
         const loadbalancer = this.loadbalancers[serviceName];
         if (!loadbalancer) {
-            throw new Error(`The service ${serviceName} is not exist`);
+            throw new Error(`The service ${ serviceName } is not exist`);
         }
         return loadbalancer;
     }
@@ -41,7 +41,7 @@ export class Loadbalance implements ILoadbalance {
     choose(serviceName: string): IServer {
         const loadbalancer = this.loadbalancers[serviceName];
         if (!loadbalancer) {
-            throw new ServiceNotExistException(`The service ${serviceName} is not exist`);
+            throw new ServiceNotExistException(`The service ${ serviceName } is not exist`);
         }
         return loadbalancer.chooseService();
     }
@@ -65,10 +65,15 @@ export class Loadbalance implements ILoadbalance {
     }
 
     private createLoadbalancer(serviceName, nodes, ruleCls) {
+        const loadbalancer: Loadbalancer = this.loadbalancers[serviceName];
         const servers = nodes.map(node => {
             const server = new Server(node.address, node.port);
             server.name = node.name;
-            server.state = new ServerState();
+            if (loadbalancer && loadbalancer.getServer(server.id)) {
+                server.state = loadbalancer.getServer(server.id).state;
+            } else {
+                server.state = new ServerState();
+            }
             server.state.status = node.status;
             return server;
         });
