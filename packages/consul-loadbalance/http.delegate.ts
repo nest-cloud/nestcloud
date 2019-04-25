@@ -5,13 +5,16 @@ import { ServerCriticalException } from './exceptions/server-critical.exception'
 import { Server } from './server';
 
 export class HttpDelegate {
-    constructor(private readonly server: Server) {}
+    constructor(
+        private readonly server: Server
+    ) {
+    }
 
     async send(http: AxiosInstance, config: AxiosRequestConfig): Promise<AxiosResponse> {
         if (config.url && config.url.charAt(0) !== '/') {
             config.url = '/' + config.url;
         }
-        config.url = `http://${this.server.address}:${this.server.port}${config.url}`;
+        config.url = `http://${ this.server.address }:${ this.server.port }${ config.url }`;
         this.server.state.incrementServerActiveRequests();
         this.server.state.incrementTotalRequests();
 

@@ -1,8 +1,8 @@
 import { IClientConfig } from "./interfaces/grpc-configuration.interface";
 import { ClientGrpcProxy } from '@nestjs/microservices/client';
-import { Observable } from "rxjs";
 import { NestCloud } from "@nestcloud/core";
 import { ILoadbalance, IServer } from "@nestcloud/common";
+import { GrpcDelegate } from "@nestcloud/consul-loadbalance";
 
 export class GrpcClient {
     private readonly config: IClientConfig;
@@ -25,44 +25,17 @@ export class GrpcClient {
                 let { service, node } = this.getProxyService<T>(name, key);
                 if (!service) {
                     service = noClusterService;
+                    return service[key](...args);
                 }
 
-                if (node) {
-                    node.state.incrementServerActiveRequests();
-                    node.state.incrementTotalRequests();
-                    if (!node.state.firstConnectionTimestamp) {
-                        node.state.noteFirstConnectionTime();
-                    }
-                }
-
-                const startTime = new Date().getTime();
-                return new Observable(observer => {
-                    const observable: Observable<any> = service[key](...args);
-                    observable.subscribe({
-                        error(err) {
-                            if (node) {
-                                node.state.decrementServerActiveRequests();
-                                node.state.incrementServerFailureCounts();
-                                node.state.noteConnectionFailedTime();
-                            }
-                            observer.error(err);
-                        },
-                        complete() {
-                            if (node) {
-                                const endTime = new Date().getTime();
-                                node.state.noteResponseTime(endTime - startTime);
-                                node.state.decrementServerActiveRequests();
-                            }
-                            observer.complete();
-                        },
-                        next(data) {
-                            observer.next(data);
-                        }
-                    });
-                });
+                return new GrpcDelegate(node, service).execute(key, ...args);
             };
         });
         return grpcService;
+    }
+
+    private scheduleCleanCache() {
+
     }
 
     private getProxyService<T extends {}>(name: string, method: string): { service: T, node: IServer } {

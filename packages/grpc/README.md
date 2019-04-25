@@ -31,18 +31,21 @@ $ npm install --save @nestcloud/grpc@next
 
 ```typescript
 import { Controller, Get, OnModuleInit } from '@nestjs/common';
-import { GrpcClient, LbClient } from '@nestcloud/grpc';
+import { GrpcClient, LbClient, IClientConfig, Service } from '@nestcloud/grpc';
 import { HeroService } from './interfaces/hero-service.interface';
 import { join } from 'path';
 
+const grpcOptions: IClientConfig = {
+    service: 'rpc-server',
+            package: 'hero',
+            protoPath: join(__dirname, './hero.proto'),
+};
+
 @Controller()
 export class HeroController implements OnModuleInit {
-    @LbClient({
-        service: 'rpc-server',
-        package: 'hero',
-        protoPath: join(__dirname, './hero.proto'),
-    })
+    @LbClient(grpcOptions)
     private readonly client: GrpcClient;
+    @Service('HeroService', grpcOptions)
     private heroService: HeroService;
 
     onModuleInit() {
@@ -56,7 +59,7 @@ export class HeroController implements OnModuleInit {
 }
 ```
 
-More: https://github.com/nest-cloud/nestcloud-grpc-example
+More please visit the example: https://github.com/nest-cloud/nestcloud-grpc-example
 
 
 ## Stay in touch

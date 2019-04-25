@@ -13,3 +13,4 @@ export * from './exceptions/server-critical.exception';
 export * from './exceptions/service-not-exist.exception';
 export * from './exceptions/rule-init.exception';
 export * from './http.delegate';
+export * from './grpc.delegate';

@@ -41,10 +41,10 @@ export class AppModule {
 ```
 
 ```typescript
-import { Injectable, LoggerService } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Cron, Interval, Timeout, NestSchedule } from '@nestcloud/schedule';
 
-@Injectable()
+@Injectable() // Only support SINGLETON scope
 export class ScheduleService extends NestSchedule {    
   @Cron('0 0 2 * *', {
     startTime: new Date(), 
@@ -65,6 +65,32 @@ export class ScheduleService extends NestSchedule {
     
     // if you want to cancel the job, you should return true;
     return true;
+  }
+}
+```
+
+### Dynamic Schedule Job
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { InjectSchedule, Schedule } from '@nestcloud/schedule';
+
+@Injectable()
+export class ScheduleService {    
+  constructor(
+    @InjectSchedule() private readonly schedule: Schedule,
+  ) {
+  }
+  
+  createJob() {
+    // schedule a 2s interval job
+    this.schedule.scheduleIntervalJob('my-job', 2000, () => {
+      console.log('executing interval job');
+    });
+  }
+  
+  cancelJob() {
+    this.schedule.cancelJob('my-job');
   }
 }
 ```
