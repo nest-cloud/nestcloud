@@ -11,31 +11,27 @@ npm install @nestcloud/grpc@next
 ## 使用
 
 ```typescript
-import { Controller, Get, OnModuleInit } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { GrpcClient, LbClient, IClientConfig, Service } from '@nestcloud/grpc';
 import { HeroService } from './interfaces/hero-service.interface';
 import { join } from 'path';
 
 const grpcOptions: IClientConfig = {
     service: 'rpc-server',
-            package: 'hero',
-            protoPath: join(__dirname, './hero.proto'),
+    package: 'hero',
+    protoPath: join(__dirname, './hero.proto'),
 };
 
 @Controller()
-export class HeroController implements OnModuleInit {
+export class HeroController {
     @LbClient(grpcOptions)
     private readonly client: GrpcClient;
     @Service('HeroService', grpcOptions)
-    private heroService: HeroService;
-
-    onModuleInit() {
-        this.heroService = this.client.getService<HeroService>('HeroService');
-    }
+    private readonly heroService: HeroService;
 
     @Get()
     async execute(): Promise<any> {
-        return await this.heroService.findOne({ id: 1 }).toPromise();
+        return await this.heroService.get({ id: 1 }).toPromise();
     }
 }
 ```

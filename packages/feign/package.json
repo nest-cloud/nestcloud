@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/feign",
-  "version": "0.2.4-3",
+  "version": "0.2.4",
   "description": "Feign is a nest http decorators library that makes writing nodejs http clients easier.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
