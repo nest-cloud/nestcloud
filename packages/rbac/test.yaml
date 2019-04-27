@@ -1,0 +1,17 @@
+kind: Account
+name: test
+
+---
+
+kind: Role
+name: admin
+rules:
+  - resources: ["hero"]
+    verbs: ["get", "list"]
+
+---
+
+kind: RoleBinding
+role: admin
+accounts:
+  - test

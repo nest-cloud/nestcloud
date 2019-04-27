@@ -85,6 +85,11 @@ Logger module based on winston@2.x
 Validate request params.
 
 
+### [Rbac](packages/rbac)
+
+Role based access control.
+
+
 ## Quick Start
 
 main.ts

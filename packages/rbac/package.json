@@ -1,19 +1,11 @@
 {
-  "name": "@nestcloud/consul",
+  "name": "@nestcloud/rbac",
   "version": "0.2.5-2",
-  "description": "A Consul module for Nest framework (node.js)",
+  "description": "Rbac component for @nestcloud",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
-  },
-  "peerDependencies": {
-    "@nestcloud/common": "^0.2.1",
-    "@nestjs/common": "^6.0.0",
-    "consul": "^0.34.1"
-  },
-  "optionalDependencies": {
-    "@nestcloud/boot": "^0.2.1"
   },
   "repository": {
     "type": "git",
@@ -24,7 +16,7 @@
   },
   "homepage": "https://github.com/nest-cloud/nestcloud#readme",
   "dependencies": {
-    "reflect-metadata": "^0.1.13",
+    "reflect-metadata": "^0.1.12",
     "yamljs": "^0.3.0"
   }
 }
