@@ -10,7 +10,7 @@ export class Rbac {
     }
 
 
-    public async init(client: any) {
+    public async init(client?: any) {
         await this.validator.init(this.config, client);
     }
 

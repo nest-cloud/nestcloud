@@ -4,5 +4,5 @@ export interface IRbacConfig {
     dependencies?: string[];
     backend?: string;
     validator?: IRbacValidator | Function;
-    key?: string;
+    parameters?: { [key: string]: string }
 }

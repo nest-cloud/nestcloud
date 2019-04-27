@@ -8,8 +8,8 @@ export const Verbs = {
 
 export const Backend = {
     CONSUL: 'consul',
-    API_CLUSTER: 'api_cluster',
-    API_NODE: 'api_node',
+    LOADBALANCE: 'loadbalance',
+    CUSTOM: 'custom',
 };
 
 export const RESOURCE_METADATA = 'resource';
