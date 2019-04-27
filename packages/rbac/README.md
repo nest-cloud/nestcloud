@@ -66,7 +66,7 @@ rbac:
 
 The Rbac configuration has three kinds: Account, Role, RoleBinding and use '---' split these.
 
-Please set this configurations into consul kv named service-rbac.
+Please set the rbac configuration into consul kv named service-rbac.
 
 ```yaml
 kind: Account
@@ -148,7 +148,7 @@ import { IRbacRoleBinding } from "./interfaces/rbac-role-binding.interface";
 import { Store } from "./store";
 import { IRbacConfig } from "./interfaces/rbac-config.interface";
 
-export class ConsulValidator implements IRbacValidator {
+export class CustomValidator implements IRbacValidator {
     private readonly store: Store = new Store();
 
     /**
@@ -157,7 +157,7 @@ export class ConsulValidator implements IRbacValidator {
     * @param client 
     * If set config.backend to Backend.CONSUl, the client will be consul instance;
     * if set config.backend to Backend.LOADBALANCE, the client will be loadbalance instance;
-    * if set config.backend to Backend.CUSTOM or not set, the client is null.
+    * if set config.backend to Backend.CUSTOM or not set, the client will be null.
     */
     public async init(config: IRbacConfig, client?: any) {
         const roles: IRbacRole[] = [];

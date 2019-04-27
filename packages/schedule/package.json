@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/schedule",
-  "version": "0.2.5-2",
+  "version": "0.2.5-3",
   "description": "Nest - modern, fast, powerful node.js web framework (@schedule)",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
