@@ -1,5 +1,5 @@
 import { INestApplicationContext } from '@nestjs/common';
-import { Global } from './Global';
+import { Global } from './global';
 import {
     NEST_BOOT_PROVIDER,
     NEST_CONSUL_CONFIG_PROVIDER,
