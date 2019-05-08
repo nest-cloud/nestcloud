@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/logger",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Nestcloud logger module",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
