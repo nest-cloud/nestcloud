@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/consul-config",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A Nest framework (node.js) module for getting configurations from consul kv",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",

@@ -1,5 +1,5 @@
 import { LoggerService } from '@nestjs/common';
-import { Logger } from './Logger';
+import { Logger } from './logger';
 import { ILoggerOptions } from './interfaces/logger-options.interface';
 import { Cache, NEST_LOGGER } from '@nestcloud/common';
 
