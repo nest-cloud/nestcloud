@@ -35,7 +35,9 @@ export class HttpDelegate {
             if (e.response) {
                 throw new HttpException(e.response.data, e.response.status);
             } else if (e.request) {
-                throw new HttpException(e.message, 400);
+                this.server.state.incrementServerFailureCounts();
+                this.server.state.noteConnectionFailedTime();
+                throw new ServerCriticalException(e.message);
             } else {
                 this.server.state.incrementServerFailureCounts();
                 this.server.state.noteConnectionFailedTime();
