@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/gateway",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "gateway module for nestcloud",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
