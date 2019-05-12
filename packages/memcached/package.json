@@ -8,11 +8,11 @@
     "access": "public"
   },
   "optionalDependencies": {
-    "@nestcloud/boot": "^0.3.5",
-    "@nestcloud/consul-config": "^0.3.5"
+    "@nestcloud/boot": "^0.3.7",
+    "@nestcloud/consul-config": "^0.3.7"
   },
   "peerDependencies": {
-    "@nestcloud/common": "^0.3.5",
+    "@nestcloud/common": "^0.3.7",
     "@nestjs/common": "^6.0.0",
     "memcached": "^2.2.2"
   },

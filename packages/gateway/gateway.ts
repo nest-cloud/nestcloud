@@ -23,15 +23,6 @@ export class Gateway implements IGateway {
             ignorePath: true,
         });
         this.proxy = HttpProxy.createProxyServer({});
-        this.proxy.on('error', (err, req, res) => {
-            try {
-                res.writeHead(500, {
-                    'Content-Type': 'application/json',
-                });
-            } catch (ignore) {}
-
-            res.end(JSON.stringify({ message: err.message, status: 500 }));
-        });
     }
 
     public updateRoutes(routes: IRoute[], sync: boolean = true) {
@@ -53,17 +44,42 @@ export class Gateway implements IGateway {
             if (!server) {
                 throw new InternalServerErrorException(`No available server can handle this request`);
             }
-            const target = `${this.proxyOptions.secure ? 'https' : 'http'}://${server.address}:${server.port}${
+            const target = `${ this.proxyOptions.secure ? 'https' : 'http' }://${ server.address }:${ server.port }${
                 req.url
-            }`;
+                }`;
             this.proxy.web(req, res, {
                 target,
                 prependPath: true,
                 ignorePath: true,
+            }, (err: any, req, res) => {
+                try {
+                    res.writeHead(500, {
+                        'Content-Type': 'application/json',
+                    });
+                } catch (ignore) {
+                }
+
+                try {
+                    if (err && err.code === 'ECONNREFUSED') {
+                        server.state.noteConnectionFailedTime();
+                    }
+                } catch (ignore) {
+                }
+
+                res.end(JSON.stringify({ message: err.message, status: 500 }));
             });
         } else if (route.uri.indexOf('http://') === 0 || route.uri.indexOf('https://') === 0) {
             const target = route.uri;
-            this.proxy.web(req, res, { target });
+            this.proxy.web(req, res, { target }, (err: any, req, res) => {
+                try {
+                    res.writeHead(500, {
+                        'Content-Type': 'application/json',
+                    });
+                } catch (ignore) {
+                }
+
+                res.end(JSON.stringify({ message: err.message, status: 500 }));
+            });
         }
     }
 }

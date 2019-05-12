@@ -8,7 +8,7 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@nestcloud/common": "^0.3.5",
+    "@nestcloud/common": "^0.3.7",
     "@nestjs/common": "^6.0.0",
     "consul": "^0.34.1"
   },
