@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/rbac",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "Rbac component for @nestcloud",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
