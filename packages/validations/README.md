@@ -22,7 +22,7 @@ This is a [Nest](https://github.com/nestjs/nest) module for validating request p
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/validations@next class-validator
+$ npm i --save @nestcloud/validations class-validator
 ```
 
 ## Quick Start

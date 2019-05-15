@@ -24,7 +24,7 @@ A NestCloud component for service registration and service discovery.
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/consul-service@next @nestcloud/consul@next consul
+$ npm i --save @nestcloud/consul-service @nestcloud/consul consul
 ```
 
 ## Quick Start

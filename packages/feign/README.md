@@ -26,7 +26,7 @@ This is a [Nest](https://github.com/nestjs/nest) module for writing nestjs http 
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/feign@next @nestcloud/consul-loadbalance@next @nestcloud/consul@next consul
+$ npm i --save @nestcloud/feign @nestcloud/consul-loadbalance @nestcloud/consul consul
 ```
 
 ## Quick Start

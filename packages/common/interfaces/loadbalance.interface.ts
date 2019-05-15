@@ -5,4 +5,6 @@ export interface ILoadbalance extends IComponent {
     chooseLoadbalancer(serviceName: string);
 
     choose(serviceName: string): IServer;
+
+    state(): { [service: string]: IServer[] };
 }

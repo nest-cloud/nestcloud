@@ -24,7 +24,7 @@ The logger module for nestcloud.
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/logger@next
+$ npm i --save @nestcloud/logger
 ```
 
 ## Quick Start

@@ -24,7 +24,7 @@ The loadbalance grpc module for nestcloud.
 ## Installation
 
 ```bash
-$ npm install --save @nestcloud/grpc@next
+$ npm install --save @nestcloud/grpc
 ```
 
 ## Usage

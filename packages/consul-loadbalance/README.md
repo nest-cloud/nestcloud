@@ -24,7 +24,7 @@ This is a software load balancers primary for rest calls.
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/consul@next consul @nestcloud/consul-loadbalance@next
+$ npm i --save @nestcloud/consul consul @nestcloud/consul-loadbalance
 ```
 
 ## Quick Start
@@ -133,6 +133,10 @@ Choose a node that running the specific service.
 | field | type | description |
 | :--- | :--- | :--- |
 | service | string | the service name |
+
+#### state\(\): {[service: string]: IServer[]}
+
+List all servers info for all services.
 
 #### chooseLoadbalancer\(service: string\): Loadbalancer
 

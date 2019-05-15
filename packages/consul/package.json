@@ -13,7 +13,7 @@
     "consul": "^0.34.1"
   },
   "optionalDependencies": {
-    "@nestcloud/boot": "^0.2.1"
+    "@nestcloud/boot": "^0.3.7"
   },
   "repository": {
     "type": "git",

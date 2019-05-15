@@ -11,7 +11,7 @@ import { ServiceNotExistException } from './exceptions/service-not-exist.excepti
 
 export class Loadbalance implements ILoadbalance {
     private readonly service: ConsulService;
-    private readonly loadbalancers = {};
+    private readonly loadbalancers: { [service: string]: Loadbalancer } = {};
     private rules: IRuleOptions[];
     private globalRuleCls: IRule | Function;
     private readonly customRulePath: string;
@@ -21,7 +21,7 @@ export class Loadbalance implements ILoadbalance {
         this.customRulePath = customRulePath;
     }
 
-    async init(rules: IRuleOptions[], globalRuleCls) {
+    public async init(rules: IRuleOptions[], globalRuleCls) {
         this.rules = rules;
         this.globalRuleCls = globalRuleCls;
 
@@ -30,7 +30,7 @@ export class Loadbalance implements ILoadbalance {
         this.service.watchServiceList((services: string[]) => this.updateServices(services));
     }
 
-    chooseLoadbalancer(serviceName: string): ILoadbalancer {
+    public chooseLoadbalancer(serviceName: string): ILoadbalancer {
         const loadbalancer = this.loadbalancers[serviceName];
         if (!loadbalancer) {
             throw new Error(`The service ${ serviceName } is not exist`);
@@ -38,12 +38,20 @@ export class Loadbalance implements ILoadbalance {
         return loadbalancer;
     }
 
-    choose(serviceName: string): IServer {
+    public choose(serviceName: string): IServer {
         const loadbalancer = this.loadbalancers[serviceName];
         if (!loadbalancer) {
             throw new ServiceNotExistException(`The service ${ serviceName } is not exist`);
         }
         return loadbalancer.chooseService();
+    }
+
+    public state(): { [service: string]: IServer[] } {
+        const state = {};
+        for (const service in this.loadbalancers) {
+            state[service] = this.loadbalancers[service].servers;
+        }
+        return state;
     }
 
     private updateServices(services: string[]) {

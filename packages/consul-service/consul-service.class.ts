@@ -34,7 +34,10 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
     private readonly status: string;
     private readonly includes: string[];
 
-    constructor(@Inject('ConsulClient') private readonly consul: Consul, options: IConsulServiceOptions) {
+    constructor(
+        @Inject('ConsulClient') private readonly consul: Consul,
+        options: IConsulServiceOptions
+    ) {
         this.discoveryHost = get(options, 'discoveryHost', getIPAddress());
         this.serviceId = get(options, 'service.id');
         this.serviceName = get(options, 'service.name');
@@ -109,11 +112,11 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
         } else if (this.ttl) {
             check.ttl = this.ttl;
         } else {
-            check.http = `${this.protocol}://${this.discoveryHost}:${this.servicePort}${this.route}`;
+            check.http = `${ this.protocol }://${ this.discoveryHost }:${ this.servicePort }${ this.route }`;
         }
 
         return {
-            id: this.serviceId || md5encode(`${this.discoveryHost}:${this.servicePort}`),
+            id: this.serviceId || md5encode(`${ this.discoveryHost }:${ this.servicePort }`),
             name: this.serviceName,
             address: this.discoveryHost,
             port: parseInt(this.servicePort + ''),
@@ -137,9 +140,9 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
                 }
 
                 this.logger &&
-                    (this.logger as LoggerService).warn(
-                        `Register the service fail, will retry after ${this.retryInterval}`,
-                    );
+                (this.logger as LoggerService).warn(
+                    `Register the service fail, will retry after ${ this.retryInterval }`,
+                );
                 await this.sleep(this.retryInterval);
             }
         }
@@ -161,9 +164,9 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
                 }
 
                 this.logger &&
-                    (this.logger as LoggerService).warn(
-                        `Deregister the service fail, will retry after ${this.retryInterval}`,
-                    );
+                (this.logger as LoggerService).warn(
+                    `Deregister the service fail, will retry after ${ this.retryInterval }`,
+                );
                 await this.sleep(this.retryInterval);
             }
         }

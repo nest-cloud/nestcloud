@@ -24,7 +24,7 @@ A NestCloud component for getting and watching configurations from consul kv.
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/consul@next consul @nestcloud/consul-config@next
+$ npm i --save @nestcloud/consul consul @nestcloud/consul-config
 ```
 
 ## Quick Start

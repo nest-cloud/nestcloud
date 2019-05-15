@@ -24,7 +24,7 @@ NestCloud core component.
 ## Installation
 
 ```bash
-$ npm install @nestcloud/core@next --save
+$ npm install @nestcloud/core --save
 ```
 
 ## Usage

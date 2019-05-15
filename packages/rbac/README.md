@@ -22,7 +22,7 @@ Provides rbac for nestcloud.
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/rbac@next
+$ npm i --save @nestcloud/rbac
 ```
 
 ## Usage

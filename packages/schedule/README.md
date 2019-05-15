@@ -22,7 +22,7 @@ This is a [Nest](https://github.com/nestjs/nest) module for using decorator sche
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/schedule@next
+$ npm i --save @nestcloud/schedule
 ```
 
 ## Usage

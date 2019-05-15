@@ -24,7 +24,7 @@ NestCloud component for getting local configurations and environment values when
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/boot@next
+$ npm i --save @nestcloud/boot
 ```
 
 ## Quick Start

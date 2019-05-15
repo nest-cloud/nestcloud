@@ -24,7 +24,7 @@ The gateway module for nestcloud.
 ## Installation
 
 ```bash
-$ npm install --save @nestcloud/gateway@next
+$ npm install --save @nestcloud/gateway
 ```
 
 ## Notification
