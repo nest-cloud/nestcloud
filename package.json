@@ -1,5 +1,5 @@
 {
-  "name": "@nestcloud",
+  "name": "@nestcloud/core",
   "version": "0.3.7",
   "description": "Nest micro service solution.",
   "author": "Miaowing <i@zfeng.net>",
