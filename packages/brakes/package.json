@@ -1,20 +1,15 @@
 {
-  "name": "@nestcloud/memcached",
+  "name": "@nestcloud/brakes",
   "version": "0.3.7",
-  "description": "A memcached module for nest.js",
-  "author": "Miaowing <me@zf.ink>",
+  "description": "Hystrix compliant Node.js Circuit Breaker Library based on brakes.",
+  "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
-  "optionalDependencies": {
-    "@nestcloud/boot": "^0.3.7",
-    "@nestcloud/consul-config": "^0.3.7"
-  },
   "peerDependencies": {
-    "@nestcloud/common": "^0.3.7",
     "@nestjs/common": "^6.0.0",
-    "memcached": "^2.2.2"
+    "brakes": "^2.7.0"
   },
   "repository": {
     "type": "git",

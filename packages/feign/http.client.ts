@@ -2,18 +2,18 @@ import { HttpException, InternalServerErrorException, ServiceUnavailableExceptio
 import { AxiosRequestConfig, AxiosResponse, AxiosInstance } from 'axios';
 import { RESPONSE, RESPONSE_HEADER } from './constants';
 import * as LbModule from '@nestcloud/consul-loadbalance';
-import * as Circuit from 'brakes/lib/Circuit';
 import { IInterceptor } from './interfaces/interceptor.interface';
-import { BrakeException } from './exceptions/brake.exception';
 import { ILoadbalance } from '../common';
+import * as BrakesModule from '@nestcloud/brakes';
 
 export class HttpClient {
     private loadbalance: ILoadbalance;
     private http: AxiosInstance;
-    private circuit: (...params) => Promise<any>;
+    private brakesName: string | boolean;
     private interceptors: IInterceptor[];
 
-    constructor(private readonly service?: string) {}
+    constructor(private readonly service?: string) {
+    }
 
     setLoadbalance(lb: ILoadbalance) {
         this.loadbalance = lb;
@@ -23,8 +23,8 @@ export class HttpClient {
         this.http = instance;
     }
 
-    setCircuit(circuit: (...params) => Promise<any>) {
-        this.circuit = circuit;
+    setBrakes(brakesName: boolean) {
+        this.brakesName = brakesName;
     }
 
     setMiddleware(interceptors: IInterceptor[]) {
@@ -74,24 +74,14 @@ export class HttpClient {
         }
 
         let response;
-        if (this.circuit) {
+        if (this.brakesName) {
             try {
-                let httpError: HttpException = null;
-                const executor = this.circuit(async (config: AxiosRequestConfig) => {
-                    try {
-                        return await this.doRequest(config);
-                    } catch (e) {
-                        if (e instanceof HttpException) {
-                            httpError = e;
-                        } else {
-                            throw new BrakeException(e.message, e.stack);
-                        }
-                    }
-                }) as Circuit;
-                response = await executor.exec(config);
-                if (httpError) {
-                    throw httpError;
-                }
+                const brakesModule: typeof BrakesModule = require('@nestcloud/brakes');
+                response = await brakesModule.BrakesFactory.exec(
+                    this.brakesName as string,
+                    async (config: AxiosRequestConfig) => this.doRequest(config),
+                    config
+                );
             } catch (e) {
                 if (e instanceof HttpException) {
                     throw e;
@@ -109,8 +99,8 @@ export class HttpClient {
         return options.responseType === RESPONSE
             ? response
             : options.responseType === RESPONSE_HEADER
-            ? response.headers
-            : response.data;
+                ? response.headers
+                : response.data;
     }
 
     async send(config: AxiosRequestConfig): Promise<AxiosResponse> {

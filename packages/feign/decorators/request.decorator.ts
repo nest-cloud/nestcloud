@@ -8,14 +8,11 @@ import {
     REQUEST_PARAMS_METADATA,
     SERVICE,
     BRAKES,
-    BRAKES_CIRCUIT,
     INTERCEPTOR_METADATA
 } from '../constants';
 import { getParams } from '../utils/params.util';
 import { getMetadata } from '../utils/metadata.util';
 import { AxiosRequestConfig } from 'axios';
-import * as Brakes from 'brakes';
-import * as Circuit from 'brakes/lib/Circuit';
 import { RequestCreator } from '../request.creator';
 import { chooseModule, getInstance } from '../utils/module.util';
 
@@ -57,16 +54,9 @@ const createMappingDecorator = (method: string, path: string, options?: object) 
         const parameters = getParams(paramMetadata, params);
         const serviceName = getMetadata<string>(SERVICE, descriptor.value, target.constructor);
 
-        let circuit = getMetadata(BRAKES_CIRCUIT, descriptor.value, target.constructor) as Circuit;
-        if (!circuit) {
-            let brakes = getMetadata(BRAKES, descriptor.value, target.constructor) as Brakes;
-            if (brakes === void 0) {
-                brakes = Reflect.getMetadata(BRAKES, target.constructor);
-            }
-            if (brakes && brakes !== 'none') {
-                circuit = brakes.slaveCircuit.bind(brakes) as Circuit;
-                Reflect.defineMetadata(BRAKES_CIRCUIT, circuit, descriptor.value);
-            }
+        let brakesName = getMetadata(BRAKES, descriptor.value, target.constructor) as string;
+        if (brakesName === void 0) {
+            brakesName = Reflect.getMetadata(BRAKES, target.constructor);
         }
 
         const InterceptorMetatypes = (
@@ -87,7 +77,7 @@ const createMappingDecorator = (method: string, path: string, options?: object) 
             }
         }
 
-        return RequestCreator.create(url, method, parameters, options, serviceName, circuit, interceptors, responseType);
+        return RequestCreator.create(url, method, parameters, options, serviceName, brakesName, interceptors, responseType);
     };
     const metadataKeys = Reflect.getMetadataKeys(oldDescriptorValue);
     metadataKeys.forEach(key =>

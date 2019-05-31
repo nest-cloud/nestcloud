@@ -4,7 +4,7 @@ import * as uriParams from 'uri-params';
 import { NestCloud } from '@nestcloud/core';
 
 export class RequestCreator {
-    static async create(url, method, parameters, options, serviceName, circuit, interceptors, responseType) {
+    static async create(url, method, parameters, options, serviceName, brakesName, interceptors, responseType) {
         const axiosRequestConfig = {
             ...(NestCloud.global.axiosConfig || {}),
             ...options,
@@ -18,7 +18,7 @@ export class RequestCreator {
         const client = new HttpClient(serviceName);
         client.setLoadbalance(NestCloud.global.loadbalance);
         client.setAxiosInstance(NestCloud.global.axios);
-        client.setCircuit(circuit);
+        client.setBrakes(brakesName);
         client.setMiddleware(interceptors);
 
         return client.request(axiosRequestConfig, { responseType });

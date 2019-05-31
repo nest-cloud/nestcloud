@@ -1,7 +1,7 @@
 {
-  "name": "@nestcloud/memcached",
+  "name": "@nestcloud/redis",
   "version": "0.3.7",
-  "description": "A memcached module for nest.js",
+  "description": "A redis module for nest.js",
   "author": "Miaowing <me@zf.ink>",
   "license": "MIT",
   "publishConfig": {
@@ -14,7 +14,7 @@
   "peerDependencies": {
     "@nestcloud/common": "^0.3.7",
     "@nestjs/common": "^6.0.0",
-    "memcached": "^2.2.2"
+    "ioredis": "^4.9.3"
   },
   "repository": {
     "type": "git",

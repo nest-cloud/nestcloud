@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/nest-cloud/nestcloud#readme",
   "dependencies": {
-    "http-proxy": "^1.17.0"
+    "http-proxy": "^1.17.0",
+    "ratelimiter": "^3.3.0"
   }
 }
