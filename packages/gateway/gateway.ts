@@ -11,6 +11,7 @@ import { IResponse } from "./interfaces/response.interface";
 import { ClientRequest, IncomingMessage } from "http";
 import { IFilter } from "./interfaces/filter.interface";
 import { ProxyErrorException } from "./exceptions/proxy-error.exception";
+import { HEADER_PROXY_TIMEOUT, HEADER_TIMEOUT } from "./constants";
 
 export class Gateway implements IGateway {
     private readonly filters = new Map<string, IFilter>();
@@ -60,7 +61,7 @@ export class Gateway implements IGateway {
     }
 
     private initProxy() {
-        this.proxy = HttpProxy.createProxyServer({});
+        this.proxy = HttpProxy.createProxyServer(this.proxyOptions);
         this.proxy.on('error', async (err: Error, req: IRequest, res: IResponse) => {
             for (const filter of this.filters.values()) {
                 if (filter.error) {
@@ -100,8 +101,14 @@ export class Gateway implements IGateway {
                 }
             }
         }
+        const timeout = req.headers[HEADER_TIMEOUT] || 1000 * 30;
+        const proxyTimeout = req.headers[HEADER_PROXY_TIMEOUT] || 1000 * 30;
         const target = route.uri;
-        this.proxy.web(req, res, { target });
+        this.proxy.web(req, res, {
+            target,
+            timeout: Number(timeout),
+            proxyTimeout: Number(proxyTimeout),
+        });
     }
 
     private async forwardLbRequest(req: IRequest, res: IResponse, route: IRoute) {
@@ -128,10 +135,14 @@ export class Gateway implements IGateway {
         const target = `${ this.proxyOptions.secure ? 'https' : 'http' }://${ server.address }:${ server.port }${
             req.url
             }`;
+        const timeout = req.headers[HEADER_TIMEOUT] || 1000 * 30;
+        const proxyTimeout = req.headers[HEADER_PROXY_TIMEOUT] || 1000 * 30;
         this.proxy.web(req, res, {
             target,
             prependPath: true,
             ignorePath: true,
+            timeout: Number(timeout),
+            proxyTimeout: Number(proxyTimeout),
         });
     }
 
