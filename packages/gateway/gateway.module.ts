@@ -13,13 +13,10 @@ import {
 import { IProxyOptions } from './interfaces/proxy-options.interface';
 import { IGatewayOptions } from './interfaces/gateway-options.interface';
 import { Gateway } from './gateway';
-import { ErrorResponseFilter } from "./filters/error-response.filter";
-import { LoadbalanceFilter } from "./filters/loadbalance.filter";
-import { RateLimiterFilter } from "./filters/rate-limiter.filter";
 
 @Global()
 @Module({
-    providers: [ErrorResponseFilter, LoadbalanceFilter, RateLimiterFilter]
+    providers: []
 })
 export class GatewayModule {
     static register(options: IGatewayOptions = {}, proxy?: IProxyOptions): DynamicModule {

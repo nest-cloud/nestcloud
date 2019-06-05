@@ -1,4 +1,5 @@
-import { BrakesFactory, IBrakesConfig } from '@nestcloud/brakes';
+import { IBrakesConfig } from '@nestcloud/brakes';
+import * as BrakesModule from '@nestcloud/brakes';
 import { ServiceUnavailableException } from '@nestjs/common';
 import { BRAKES, BRAKES_FALLBACK_METADATA, BRAKES_HEALTH_CHECK_METADATA } from '../constants';
 import { getMetadata } from '../utils/metadata.util';
@@ -16,6 +17,7 @@ export const UseBrakes = (config?: IBrakesConfig | boolean) => (target, key?, de
     if (config || config === void 0) {
         const cfg = config as IBrakesConfig;
         cfg.name = cfg.name || v1();
+        const { BrakesFactory }: typeof BrakesModule = require('@nestcloud/brakes');
         const brakes = BrakesFactory.initBrakes(cfg.name, cfg);
 
         let descriptorValue = false;

@@ -1,9 +1,13 @@
-import { Controller, Get, Res } from '@nestjs/common';
-import * as Brakes from 'brakes';
+import { Controller, Get, OnModuleInit, Res } from '@nestjs/common';
 
 @Controller('/hystrix')
-export class HystrixController {
-    private readonly globalStats = Brakes.getGlobalStats();
+export class HystrixController implements OnModuleInit {
+    private globalStats = null;
+
+    onModuleInit(): any {
+        const Brakes = require('brakes');
+        this.globalStats = Brakes.getGlobalStats();
+    }
 
     @Get()
     async check(@Res() res) {

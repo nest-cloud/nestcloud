@@ -14,7 +14,7 @@
     "build": "npm run clean && node --max_old_space_size=4096 ./node_modules/.bin/gulp build",
     "prebuild:dev": "rm -rf node_modules/@nestcloud",
     "build:dev": "node --max_old_space_size=4096 ./node_modules/.bin/gulp build --dist node_modules/@nestcloud",
-    "prerelease": "gulp copy-misc && gulp build --dist node_modules/@nestcloud",
+    "prerelease": "gulp copy-misc && node --max_old_space_size=4096 ./node_modules/.bin/gulp build --dist node_modules/@nestcloud",
     "publish": "npm run prerelease && npm run build && ./node_modules/.bin/lerna publish --force-publish --access public --exact -m \"chore(@nestcloud) publish %s release\"",
     "publish:rc": "npm run prerelease && npm run build && ./node_modules/.bin/lerna publish --npm-tag=rc --access public -m \"chore(@nestcloud) publish %s release\"",
     "publish:next": "npm run prerelease && npm run build && ./node_modules/.bin/lerna publish --npm-tag=next --access public --skip-git -m \"chore(@nestcloud) publish %s release\"",

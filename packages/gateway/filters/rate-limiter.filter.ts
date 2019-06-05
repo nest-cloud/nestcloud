@@ -1,7 +1,6 @@
 import { IFilter } from "../interfaces/filter.interface";
 import { get } from 'lodash';
 import { Redis } from "ioredis";
-import { InjectRedis } from "@nestcloud/redis";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { IResponse } from "../interfaces/response.interface";
 import { IRequest } from "../interfaces/request.interface";
@@ -10,7 +9,7 @@ import * as Limiter from 'ratelimiter';
 @Injectable()
 export class RateLimiterFilter implements IFilter {
     constructor(
-        @InjectRedis() private readonly redis: Redis,
+        private readonly redis: Redis,
     ) {
     }
 
