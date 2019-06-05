@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/gateway",
-  "version": "0.3.8-5",
+  "version": "0.3.8",
   "description": "gateway module for nestcloud",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
@@ -8,12 +8,13 @@
     "access": "public"
   },
   "optionalDependencies": {
-    "@nestcloud/boot": "^0.3.7",
-    "@nestcloud/consul-config": "^0.3.7"
+    "@nestcloud/boot": "^0.3.8",
+    "@nestcloud/consul-config": "^0.3.8",
+    "@nestcloud/redis": "^0.3.8"
   },
   "peerDependencies": {
-    "@nestcloud/common": "^0.3.7",
-    "@nestcloud/consul-loadbalance": "^0.3.7",
+    "@nestcloud/common": "^0.3.8",
+    "@nestcloud/consul-loadbalance": "^0.3.8",
     "@nestjs/common": "^6.0.0"
   },
   "repository": {
