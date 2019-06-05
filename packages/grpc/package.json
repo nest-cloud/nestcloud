@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/grpc",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "loadbalance grpc module for nestcloud",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
@@ -16,8 +16,8 @@
   },
   "homepage": "https://github.com/nest-cloud/nestcloud#readme",
   "peerDependencies": {
-    "@nestcloud/common": "^0.3.8",
-    "@nestcloud/core": "^0.3.8",
+    "@nestcloud/common": "^0.3.9",
+    "@nestcloud/core": "^0.3.9",
     "@nestjs/microservices": "^6.1.1"
   }
 }

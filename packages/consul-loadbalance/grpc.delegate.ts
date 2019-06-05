@@ -25,7 +25,7 @@ export class GrpcDelegate<T extends {}> {
                     if (this.node) {
                         this.node.state.decrementServerActiveRequests();
                         this.node.state.incrementServerFailureCounts();
-                        this.node.state.noteConnectionFailedTime();
+                        this.node.state.noteConnectionFailedTime(err.message);
                     }
                     observer.error(err);
                 },

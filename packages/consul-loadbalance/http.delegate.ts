@@ -36,11 +36,11 @@ export class HttpDelegate {
                 throw new HttpException(e.response.data, e.response.status);
             } else if (e.request) {
                 this.server.state.incrementServerFailureCounts();
-                this.server.state.noteConnectionFailedTime();
+                this.server.state.noteConnectionFailedTime(e.message);
                 throw new ServerCriticalException(e.message);
             } else {
                 this.server.state.incrementServerFailureCounts();
-                this.server.state.noteConnectionFailedTime();
+                this.server.state.noteConnectionFailedTime(e.message);
                 throw new ServerCriticalException(e.message);
             }
         }

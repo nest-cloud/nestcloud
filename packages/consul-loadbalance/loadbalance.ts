@@ -5,9 +5,11 @@ import { ILoadbalance, IServiceNode, IServer, ILoadbalancer } from '@nestcloud/c
 import { IRuleOptions } from './interfaces/rule-options.interface';
 import { Loadbalancer } from './loadbalancer';
 import { Server } from './server';
-import { ServerState } from './server-state';
+import { PASSING, ServerState } from './server-state';
 import { IRule } from './interfaces/rule.interface';
 import { ServiceNotExistException } from './exceptions/service-not-exist.exception';
+
+const axios = require('axios');
 
 export class Loadbalance implements ILoadbalance {
     private readonly service: ConsulService;
@@ -15,6 +17,7 @@ export class Loadbalance implements ILoadbalance {
     private rules: IRuleOptions[];
     private globalRuleCls: IRule | Function;
     private readonly customRulePath: string;
+    private timer = null;
 
     constructor(service: ConsulService, customRulePath: string) {
         this.service = service;
@@ -28,6 +31,11 @@ export class Loadbalance implements ILoadbalance {
         const services: string[] = this.service.getServiceNames();
         await this.updateServices(services);
         this.service.watchServiceList((services: string[]) => this.updateServices(services));
+
+        if (this.timer) {
+            clearInterval(this.timer);
+        }
+        this.timer = setInterval(() => this.pingServers(), 30000);
     }
 
     public chooseLoadbalancer(serviceName: string): ILoadbalancer {
@@ -92,5 +100,34 @@ export class Loadbalance implements ILoadbalance {
             ruleCls,
             customRulePath: this.customRulePath,
         });
+    }
+
+    private pingServers() {
+        for (const service in this.loadbalancers) {
+            if (!this.loadbalancers.hasOwnProperty(service)) {
+                continue;
+            }
+            const loadbalancer = this.loadbalancers[service];
+            const servers = loadbalancer.servers;
+            const rule: IRuleOptions = this.rules.filter(rule => rule.service === service)[0] || {
+                service: '',
+                ruleCls: '',
+                check: {
+                    protocol: 'http',
+                    url: '/health'
+                }
+            };
+
+            servers.filter(server => server.state.status !== PASSING).map(async server => {
+                try {
+                    await axios.get(
+                        `${ get(rule, 'check.protocol', 'http') }://${ server.address }:${ server.port }${ get(rule, 'check.url', '/health') }`
+                    );
+                    server.state.status = PASSING;
+                } catch (e) {
+
+                }
+            })
+        }
     }
 }

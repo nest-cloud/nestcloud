@@ -9,6 +9,7 @@ export interface IServerState {
     lastActiveRequestsCountChangeTimestamp: number;
     firstConnectionTimestamp: number;
     lastConnectionFailedTimestamp: number;
+    lastConnectionFailedMessage: string;
     serverFailureCounts: number;
 
     getActiveRequestsCount(currentTime?: number): number;
@@ -23,7 +24,7 @@ export interface IServerState {
 
     decrementServerActiveRequests(): number;
 
-    noteConnectionFailedTime(): void;
+    noteConnectionFailedTime(message?: string): void;
 
     noteFirstConnectionTime(): void;
 

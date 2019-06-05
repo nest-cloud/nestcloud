@@ -17,6 +17,7 @@ export class ServerState implements IServerState {
     lastActiveRequestsCountChangeTimestamp: number = 0;
     firstConnectionTimestamp: number = 0;
     lastConnectionFailedTimestamp: number = null;
+    lastConnectionFailedMessage: string = '';
     serverFailureCounts: number = 0;
 
     constructor() {
@@ -80,8 +81,9 @@ export class ServerState implements IServerState {
         return --this.activeRequestsCount;
     }
 
-    noteConnectionFailedTime() {
+    noteConnectionFailedTime(message = '') {
         this.lastConnectionFailedTimestamp = new Date().getTime();
+        this.lastConnectionFailedMessage = message;
         this.status = CRITICAL;
     }
 
