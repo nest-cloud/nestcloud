@@ -6,12 +6,12 @@ import { get } from 'lodash';
 
 import { IRoute, IRouteFilter } from './interfaces/route.interface';
 import { IProxyOptions } from './interfaces/proxy-options.interface';
-import { IRequest } from "./interfaces/request.interface";
-import { IResponse } from "./interfaces/response.interface";
-import { ClientRequest, IncomingMessage } from "http";
-import { IFilter } from "./interfaces/filter.interface";
-import { ProxyErrorException } from "./exceptions/proxy-error.exception";
-import { HEADER_PROXY_TIMEOUT, HEADER_TIMEOUT } from "./constants";
+import { IRequest } from './interfaces/request.interface';
+import { IResponse } from './interfaces/response.interface';
+import { ClientRequest, IncomingMessage } from 'http';
+import { IFilter } from './interfaces/filter.interface';
+import { ProxyErrorException } from './exceptions/proxy-error.exception';
+import { HEADER_PROXY_TIMEOUT, HEADER_TIMEOUT } from './constants';
 
 export class Gateway implements IGateway {
     private readonly filters = new Map<string, IFilter>();
@@ -31,7 +31,6 @@ export class Gateway implements IGateway {
             prependPath: true,
             ignorePath: true,
         });
-
 
         this.initProxy();
     }
@@ -53,10 +52,13 @@ export class Gateway implements IGateway {
         if (!route) {
             throw new NotFoundException('No route config found in gateway config files, please check it.');
         }
+        if (!route.filters) {
+            route.filters = [];
+        }
         if (route.uri.indexOf('lb://') === 0) {
-            return await this.forwardLbRequest(req, res, route);
+            return this.forwardLbRequest(req, res, route);
         } else if (route.uri.indexOf('http://') === 0 || route.uri.indexOf('https://') === 0) {
-            return await this.forwardRequest(req, res, route);
+            return this.forwardRequest(req, res, route);
         }
     }
 
@@ -122,7 +124,7 @@ export class Gateway implements IGateway {
             service,
             uri: route.uri,
             id: route.id,
-            filters: route.filters.map(filter => filter.name)
+            filters: route.filters.map(filter => filter.name),
         };
         for (const filter of this.filters.values()) {
             if (filter.before) {
@@ -132,7 +134,7 @@ export class Gateway implements IGateway {
                 }
             }
         }
-        const target = `${ this.proxyOptions.secure ? 'https' : 'http' }://${ server.address }:${ server.port }${
+        const target = `${this.proxyOptions.secure ? 'https' : 'http'}://${server.address}:${server.port}${
             req.url
             }`;
         const timeout = req.headers[HEADER_TIMEOUT] || 1000 * 30;
