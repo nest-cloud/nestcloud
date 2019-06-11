@@ -1,8 +1,7 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
-import { createClient, createOptions } from "./redis.provider";
-import { RedisModuleOptions } from "./interfaces/redis-options.interface";
+import { create, createOptions } from './redis.provider';
+import { RedisModuleOptions } from './interfaces/redis-options.interface';
 import { NEST_BOOT_PROVIDER, NEST_BOOT, NEST_CONSUL_CONFIG_PROVIDER, NEST_CONSUL_CONFIG } from '@nestcloud/common';
-
 
 @Global()
 @Module({})
@@ -20,7 +19,7 @@ export class RedisModule {
             }
         }
 
-        const redisProvider = createClient(options.name, inject);
+        const redisProvider = create(options.name, inject);
         const optionsProvider = createOptions(options.name, inject, options);
 
         return {
