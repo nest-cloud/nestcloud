@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/consul-service",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "description": "A Nest framework (node.js) module for registering and getting consul service easily.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
