@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/redis",
-  "version": "0.3.11",
+  "version": "0.3.12",
   "description": "A redis module for nest.js",
   "author": "Miaowing <me@zf.ink>",
   "license": "MIT",
@@ -8,11 +8,11 @@
     "access": "public"
   },
   "optionalDependencies": {
-    "@nestcloud/boot": "^0.3.9",
-    "@nestcloud/consul-config": "^0.3.9"
+    "@nestcloud/boot": "^0.3.12",
+    "@nestcloud/consul-config": "^0.3.12"
   },
   "peerDependencies": {
-    "@nestcloud/common": "^0.3.9",
+    "@nestcloud/common": "^0.3.12",
     "@nestjs/common": "^6.0.0",
     "ioredis": "^4.9.3"
   },
