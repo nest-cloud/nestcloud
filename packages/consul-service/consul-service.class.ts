@@ -36,7 +36,7 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
 
     constructor(
         @Inject('ConsulClient') private readonly consul: Consul,
-        options: IConsulServiceOptions
+        options: IConsulServiceOptions,
     ) {
         this.discoveryHost = get(options, 'discoveryHost', getIPAddress());
         this.serviceId = get(options, 'service.id');
@@ -46,7 +46,7 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
         this.interval = get(options, 'healthCheck.interval', '10s');
         this.deregisterCriticalServiceAfter = get(options, 'healthCheck.deregisterCriticalServiceAfter');
         this.maxRetry = get(options, 'maxRetry', 5);
-        this.retryInterval = get(options, 'retryInterval', 3000);
+        this.retryInterval = get(options, 'retryInterval', 5000);
         this.logger = get(options, 'logger', false);
         this.protocol = get(options, 'healthCheck.protocol', 'http');
         this.route = get(options, 'healthCheck.route', '/health');
@@ -85,8 +85,8 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
         return this.store.getServiceNodes(service, passing);
     }
 
-    async onModuleInit(): Promise<any> {
-        await this.registerService();
+    onModuleInit(): any {
+        this.registerService();
     }
 
     async onModuleDestroy(): Promise<any> {
@@ -112,11 +112,11 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
         } else if (this.ttl) {
             check.ttl = this.ttl;
         } else {
-            check.http = `${ this.protocol }://${ this.discoveryHost }:${ this.servicePort }${ this.route }`;
+            check.http = `${this.protocol}://${this.discoveryHost}:${this.servicePort}${this.route}`;
         }
 
         return {
-            id: this.serviceId || md5encode(`${ this.discoveryHost }:${ this.servicePort }`),
+            id: this.serviceId || md5encode(`${this.discoveryHost}:${this.servicePort}`),
             name: this.serviceName,
             address: this.discoveryHost,
             port: parseInt(this.servicePort + ''),
@@ -127,21 +127,15 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
     private async registerService() {
         const service = this.generateService();
 
-        let current = 0;
         while (true) {
             try {
                 await this.consul.agent.service.register(service);
                 this.logger && (this.logger as LoggerService).log('Register the service success.');
                 break;
             } catch (e) {
-                if (this.maxRetry !== -1 && ++current > this.maxRetry) {
-                    this.logger && (this.logger as LoggerService).error('Register the service fail.', e);
-                    break;
-                }
-
                 this.logger &&
                 (this.logger as LoggerService).warn(
-                    `Register the service fail, will retry after ${ this.retryInterval }`,
+                    `Register the service fail, will retry after ${this.retryInterval}`,
                 );
                 await this.sleep(this.retryInterval);
             }
@@ -165,7 +159,7 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
 
                 this.logger &&
                 (this.logger as LoggerService).warn(
-                    `Deregister the service fail, will retry after ${ this.retryInterval }`,
+                    `Deregister the service fail, will retry after ${this.retryInterval}`,
                 );
                 await this.sleep(this.retryInterval);
             }
