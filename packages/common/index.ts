@@ -3,6 +3,7 @@ export * from './cache';
 export * from './utils/provider.util';
 export * from './utils/transform.util';
 export * from './utils/metadata.util';
+export * from './utils/sleep.util';
 
 export * from './interfaces/component.interface';
 export * from './interfaces/boot.interface';

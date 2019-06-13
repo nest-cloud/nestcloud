@@ -14,7 +14,8 @@ export class Store {
     private readonly serviceCallbackMaps: Map<string, ((nodes: IServiceNode[]) => void)[]> = new Map();
     private readonly servicesCallbacks: ((services: string[]) => void)[] = [];
 
-    constructor(private readonly consul: Consul, private readonly includes?: string[]) {}
+    constructor(private readonly consul: Consul, private readonly includes?: string[]) {
+    }
 
     public async init() {
         let services = await this.consul.catalog.service.list();
@@ -106,7 +107,7 @@ export class Store {
 
     private createServicesWatcher() {
         if (this.watcher) {
-            this.watcher.end();
+            this.watcher.clear();
         }
         const watcher = (this.watcher = new Watcher(this.consul, {
             method: this.consul.catalog.service.list,

@@ -3,7 +3,7 @@ import * as md5encode from 'blueimp-md5';
 import * as Consul from 'consul';
 import { get } from 'lodash';
 
-import { IConsulService } from '@nestcloud/common';
+import { IConsulService, sleep } from '@nestcloud/common';
 import { IConsulServiceOptions } from './interfaces/consul-service-options.interface';
 import { IConsulServiceCheck } from './interfaces/consul-service-check.interface';
 import { getIPAddress } from './utils/os.util';
@@ -62,7 +62,19 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
 
     async init() {
         this.store = new Store(this.consul, this.includes);
-        await this.store.init();
+        while (true) {
+            try {
+                await this.store.init();
+                this.logger && (this.logger as LoggerService).log('Initial service store succeed');
+                break;
+            } catch (e) {
+                this.logger &&
+                (this.logger as LoggerService).warn(
+                    `Initial service store fail, it will retry after ${this.retryInterval}`,
+                );
+                await sleep(this.retryInterval);
+            }
+        }
     }
 
     watch(service: string, callback: (services: IServiceNode[]) => void) {
@@ -85,8 +97,8 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
         return this.store.getServiceNodes(service, passing);
     }
 
-    onModuleInit(): any {
-        this.registerService();
+    async onModuleInit(): Promise<any> {
+        await this.registerService();
     }
 
     async onModuleDestroy(): Promise<any> {
@@ -137,7 +149,7 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
                 (this.logger as LoggerService).warn(
                     `Register the service fail, will retry after ${this.retryInterval}`,
                 );
-                await this.sleep(this.retryInterval);
+                await sleep(this.retryInterval);
             }
         }
     }
@@ -161,14 +173,8 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
                 (this.logger as LoggerService).warn(
                     `Deregister the service fail, will retry after ${this.retryInterval}`,
                 );
-                await this.sleep(this.retryInterval);
+                await sleep(this.retryInterval);
             }
         }
-    }
-
-    private sleep(time: number = 2000) {
-        return new Promise(resolve => {
-            setTimeout(() => resolve(), time);
-        });
     }
 }
