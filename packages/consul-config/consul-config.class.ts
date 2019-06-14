@@ -1,6 +1,7 @@
 import * as Consul from 'consul';
 import { get } from 'lodash';
 import * as YAML from 'yamljs';
+import { Logger } from '@nestjs/common';
 import { IConsulConfig, IKVResponse, sleep } from '@nestcloud/common';
 import { Store } from './store';
 import { ConsulConfigSyncException } from './exceptions/consul-config-sync.exception';
@@ -9,8 +10,9 @@ export class ConsulConfig implements IConsulConfig {
     private readonly store = Store;
     private readonly consul: Consul;
     private readonly key: string;
-    private readonly retryInterval: 3000;
+    private readonly retryInterval: 5000;
     private watcher = null;
+    private readonly logger = new Logger('ConsulConfigModule');
 
     constructor(consul: Consul, key: string) {
         this.consul = consul;
@@ -23,8 +25,10 @@ export class ConsulConfig implements IConsulConfig {
                 const result = await this.consul.kv.get<IKVResponse>(this.key);
                 this.store.data = result ? YAML.parse(result.Value) : {};
                 this.createWatcher();
+                this.logger.log('ConsulConfigModule initialized');
                 break;
             } catch (e) {
+                this.logger.error('Unable to initial ConsulConfigModule, retrying...', e);
                 await sleep(this.retryInterval);
             }
         }

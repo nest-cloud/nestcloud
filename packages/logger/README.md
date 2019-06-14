@@ -87,13 +87,12 @@ export class ApplicationModule {}
 ```
 
 ```typescript
-import { Injectable } from '@nestjs/common';
-import { ILogger } from '@nestcloud/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectLogger, Logger } from '@nestcloud/logger';
 
 @Injectable()
 export class TestService {
-  constructor(@InjectLogger() private readonly logger: ILogger) {}
+  constructor(@InjectLogger() private readonly logger: Logger) {}
 
   log() {
       this.logger.info('The first log');

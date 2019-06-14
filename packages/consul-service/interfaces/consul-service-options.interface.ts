@@ -13,5 +13,4 @@ export interface IConsulServiceOptions {
         port?: number;
         includes?: string[];
     };
-    logger?: boolean | LoggerService;
 }

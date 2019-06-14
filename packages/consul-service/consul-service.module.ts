@@ -17,10 +17,8 @@ export class ConsulServiceModule {
         const consulServiceProvider = {
             provide: NEST_CONSUL_SERVICE_PROVIDER,
             useFactory: async (consul: Consul, boot: Boot): Promise<ConsulService> => {
-                const logger = options.logger;
                 if (inject.includes(NEST_BOOT_PROVIDER)) {
                     options = boot.get<IConsulServiceOptions>('consul', {});
-                    options.logger = logger;
                 }
                 const service = new ConsulService(consul, options);
                 await service.init();

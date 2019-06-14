@@ -1,4 +1,4 @@
-import { Inject, LoggerService, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Inject, OnModuleDestroy, OnModuleInit, Logger } from '@nestjs/common';
 import * as md5encode from 'blueimp-md5';
 import * as Consul from 'consul';
 import { get } from 'lodash';
@@ -12,6 +12,7 @@ import { Store } from './store';
 
 export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulService {
     private store: Store;
+    private readonly logger = new Logger('ConsulServiceModule');
 
     private readonly discoveryHost: string;
     private readonly serviceId: string;
@@ -22,7 +23,6 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
     private readonly interval: string;
     private readonly maxRetry: number;
     private readonly retryInterval: number;
-    private readonly logger: boolean | LoggerService;
     private readonly protocol: string;
     private readonly route: string;
     private readonly tcp: string;
@@ -47,7 +47,6 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
         this.deregisterCriticalServiceAfter = get(options, 'healthCheck.deregisterCriticalServiceAfter');
         this.maxRetry = get(options, 'maxRetry', 5);
         this.retryInterval = get(options, 'retryInterval', 5000);
-        this.logger = get(options, 'logger', false);
         this.protocol = get(options, 'healthCheck.protocol', 'http');
         this.route = get(options, 'healthCheck.route', '/health');
         this.tcp = get(options, 'healthCheck.tcp');
@@ -65,13 +64,10 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
         while (true) {
             try {
                 await this.store.init();
-                this.logger && (this.logger as LoggerService).log('Initial service store succeed');
+                this.logger.log('ConsulServiceModule initialized');
                 break;
             } catch (e) {
-                this.logger &&
-                (this.logger as LoggerService).warn(
-                    `Initial service store fail, it will retry after ${this.retryInterval}`,
-                );
+                this.logger.error(`Unable to initial ConsulServiceModule, retrying...`, e);
                 await sleep(this.retryInterval);
             }
         }
@@ -142,13 +138,10 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
         while (true) {
             try {
                 await this.consul.agent.service.register(service);
-                this.logger && (this.logger as LoggerService).log('Register the service success.');
+                this.logger.log(`Register service ${service.name} success.`);
                 break;
             } catch (e) {
-                this.logger &&
-                (this.logger as LoggerService).warn(
-                    `Register the service fail, will retry after ${this.retryInterval}`,
-                );
+                this.logger.warn(`Register service ${service.name} fail, retrying...`, e);
                 await sleep(this.retryInterval);
             }
         }
@@ -161,18 +154,15 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
         while (true) {
             try {
                 await this.consul.agent.service.deregister(service);
-                this.logger && (this.logger as LoggerService).log('Deregister the service success.');
+                this.logger.log(`Deregister service ${service.name} success.`);
                 break;
             } catch (e) {
                 if (this.maxRetry !== -1 && ++current > this.maxRetry) {
-                    this.logger && (this.logger as LoggerService).error('Deregister the service fail.', e);
+                    this.logger.error(`Deregister service ${service.name} fail`, e);
                     break;
                 }
 
-                this.logger &&
-                (this.logger as LoggerService).warn(
-                    `Deregister the service fail, will retry after ${this.retryInterval}`,
-                );
+                this.logger.warn(`Deregister service ${service.name} fail, retrying...`, e);
                 await sleep(this.retryInterval);
             }
         }

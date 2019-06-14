@@ -1,28 +1,32 @@
-import { Module, DynamicModule, Global } from '@nestjs/common';
-import { Cache, NEST_LOGGER_PROVIDER, NEST_LOGGER, NEST_TYPEORM_LOGGER_PROVIDER } from '@nestcloud/common';
-import { LoggerInstance } from 'winston';
+import { Module, DynamicModule, Global, Logger } from '@nestjs/common';
+import { NEST_LOGGER_PROVIDER, NEST_TYPEORM_LOGGER_PROVIDER } from '@nestcloud/common';
 import { TypeormLogger } from './typeorm-logger';
 
 @Global()
 @Module({})
 export class LoggerModule {
+    private static logger: Logger;
+
     static register(): DynamicModule {
         const inject = [];
 
         const loggerProvider = {
             provide: NEST_LOGGER_PROVIDER,
-            useFactory: (): LoggerInstance => {
-                return Cache.getInstance(NEST_LOGGER).get('logger');
+            useFactory: (): Logger => {
+                if (!this.logger) {
+                    this.logger = new Logger();
+                }
+
+                return this.logger;
             },
             inject,
         };
 
         const typeormLoggerProvider = {
             provide: NEST_TYPEORM_LOGGER_PROVIDER,
-            useFactory: (logger: LoggerInstance) => {
-                return new TypeormLogger(logger);
+            useFactory: () => {
+                return new TypeormLogger();
             },
-            inject: [NEST_LOGGER_PROVIDER],
         };
 
         return {
