@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/validations",
-  "version": "0.3.14",
+  "version": "0.3.15",
   "description": "Nest - modern, fast, powerful node.js web framework (@nest-validations)",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
