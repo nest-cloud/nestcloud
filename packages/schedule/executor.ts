@@ -24,7 +24,7 @@ export class Executor {
                     return false;
                 }
             } catch (e) {
-                this.logger.error(`Try lock job ${jobKey} fail.`, e);
+                this.logger.error(`Try lock job ${jobKey} fail. ${e.message}`, e.stack);
                 return false;
             }
         }
@@ -34,7 +34,7 @@ export class Executor {
         try {
             typeof release === 'function' ? release() : void 0;
         } catch (e) {
-            this.logger.error(`Release job lock ${jobKey} fail.`, e);
+            this.logger.error(`Release job lock ${jobKey} fail. ${e.message}`, e.stack);
         }
 
         return result;
@@ -53,7 +53,7 @@ export class Executor {
                 this.configs.maxRetry !== -1 &&
                 this.currentRetryCount < this.configs.maxRetry
             ) {
-                this.logger.error(`Execute job ${jobKey} fail, retrying`, e);
+                this.logger.error(`Execute job ${jobKey} fail, retrying... ${e.message}`, e.stack);
 
                 if (this.timer) {
                     clearTimeout(this.timer);
@@ -67,7 +67,7 @@ export class Executor {
                 });
                 return false;
             } else {
-                this.logger.error(`Execute job ${jobKey} fail.`, e);
+                this.logger.error(`Execute job ${jobKey} fail. ${e.message}`, e.stack);
                 return false;
             }
         }
