@@ -1,11 +1,11 @@
-import { IFilter } from "../interfaces/filter.interface";
-import { ProxyErrorException } from "../exceptions/proxy-error.exception";
+import { IFilter } from '../interfaces/filter.interface';
+import { ProxyErrorException } from '../exceptions/proxy-error.exception';
 import { IResponse } from '../interfaces/response.interface';
 import { IRequest } from '../interfaces/request.interface';
 
 export class ErrorResponseFilter implements IFilter {
     getName(): string {
-        return "ErrorResponseFilter";
+        return 'ErrorResponseFilter';
     }
 
     error(error: ProxyErrorException, request: IRequest, response: IResponse) {

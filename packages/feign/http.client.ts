@@ -3,7 +3,7 @@ import { AxiosRequestConfig, AxiosResponse, AxiosInstance } from 'axios';
 import { RESPONSE, RESPONSE_HEADER } from './constants';
 import * as LbModule from '@nestcloud/consul-loadbalance';
 import { IInterceptor } from './interfaces/interceptor.interface';
-import { ILoadbalance } from '../common';
+import { ILoadbalance } from '@nestcloud/common';
 import * as BrakesModule from '@nestcloud/brakes';
 
 export class HttpClient {
@@ -80,7 +80,7 @@ export class HttpClient {
                 response = await brakesModule.BrakesFactory.exec(
                     this.brakesName as string,
                     async (config: AxiosRequestConfig) => this.doRequest(config),
-                    config
+                    config,
                 );
             } catch (e) {
                 if (e instanceof HttpException) {

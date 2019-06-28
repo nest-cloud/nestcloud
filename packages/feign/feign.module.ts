@@ -6,12 +6,12 @@ import {
     NEST_BOOT,
     NEST_BOOT_PROVIDER,
     NEST_CONSUL_CONFIG,
+    NEST_CONSUL_CONFIG_PROVIDER,
     IBoot,
     IConsulConfig,
 } from '@nestcloud/common';
 import { IFeignOptions } from './interfaces/feign-options.interface';
 import { NestCloud } from '@nestcloud/core';
-import { NEST_CONSUL_CONFIG_PROVIDER } from '../common';
 
 @Global()
 @Module({})

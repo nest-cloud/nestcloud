@@ -1,12 +1,12 @@
 import { get } from 'lodash';
-import { IFilter } from "../interfaces/filter.interface";
-import { IResponse } from "../interfaces/response.interface";
-import { IRequest } from "../interfaces/request.interface";
-import { ProxyErrorException } from "../exceptions/proxy-error.exception";
+import { IFilter } from '../interfaces/filter.interface';
+import { IResponse } from '../interfaces/response.interface';
+import { IRequest } from '../interfaces/request.interface';
+import { ProxyErrorException } from '../exceptions/proxy-error.exception';
 
 export class LoadbalanceFilter implements IFilter {
     getName(): string {
-        return "LoadbalanceFilter";
+        return 'LoadbalanceFilter';
     }
 
     error(error: ProxyErrorException, request: IRequest, response: IResponse) {

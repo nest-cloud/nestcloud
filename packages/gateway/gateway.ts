@@ -12,9 +12,11 @@ import { ClientRequest, IncomingMessage } from 'http';
 import { IFilter } from './interfaces/filter.interface';
 import { ProxyErrorException } from './exceptions/proxy-error.exception';
 import { HEADER_PROXY_TIMEOUT, HEADER_TIMEOUT } from './constants';
+import { ErrorResponseFilter, LoadbalanceFilter } from './filters';
 
 export class Gateway implements IGateway {
     private readonly filters = new Map<string, IFilter>();
+    private readonly defaultFilters = [new ErrorResponseFilter(), new LoadbalanceFilter()];
     private proxy: HttpProxy;
     private readonly proxyOptions: IProxyOptions;
     private readonly lb: Loadbalance;

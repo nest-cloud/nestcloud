@@ -1,7 +1,7 @@
-import { IFilter } from "../interfaces/filter.interface";
-import { IResponse } from "../interfaces/response.interface";
-import { IRequest } from "../interfaces/request.interface";
-import { ClientRequest } from "http";
+import { IFilter } from '../interfaces/filter.interface';
+import { IResponse } from '../interfaces/response.interface';
+import { IRequest } from '../interfaces/request.interface';
+import { ClientRequest } from 'http';
 import { get } from 'lodash';
 
 export class AddRequestHeaderFilter implements IFilter {
