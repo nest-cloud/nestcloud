@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/consul",
-  "version": "0.3.16-0",
+  "version": "0.3.16",
   "description": "A Consul module for Nest framework (node.js)",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
