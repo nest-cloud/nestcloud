@@ -5,7 +5,7 @@ Feign 是支持负载均衡和装饰器的 http 客户端，使用更加简单�
 ## 安装
 
 ```bash
-npm install @nestcloud/feign@next --save
+npm install @nestcloud/feign --save
 ```
 
 ## 注册模块
@@ -14,10 +14,10 @@ npm install @nestcloud/feign@next --save
 import { Module } from '@nestjs/common';
 import { ConsulModule } from '@nestcloud/consul';
 import { ConsulServiceModule } from '@nestcloud/consul-service';
-import { LoadbalanceModule } from '@nestcloud/consul-loadbalance';
+import { LoadbalanceModule } from '@nestcloud/loadbalance';
 import { BootModule } from '@nestcloud/boot';
 import { FeignModule } from '@nestcloud/feign';
-import { NEST_BOOT, NEST_CONSUL_LOADBALANCE } from '@nestcloud/common';
+import { NEST_BOOT, NEST_LOADBALANCE } from '@nestcloud/common';
 
 @Module({
   imports: [
@@ -25,7 +25,7 @@ import { NEST_BOOT, NEST_CONSUL_LOADBALANCE } from '@nestcloud/common';
       BootModule.register(__dirname, 'bootstrap.yml'),
       ConsulServiceModule.register({ dependencies: [NEST_BOOT] }),
       LoadbalanceModule.register({ dependencies: [NEST_BOOT] }),
-      FeignModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL_LOADBALANCE] }), // or NEST_CONSUL_CONFIG
+      FeignModule.register({ dependencies: [NEST_BOOT, NEST_LOADBALANCE] }), // or NEST_CONSUL_CONFIG
   ],
 })
 export class ApplicationModule {}
@@ -77,7 +77,7 @@ import { Injectable } from "@nestjs/common";
 import { Loadbalanced, Get, Query } from "@nestcloud/feign";
 
 @Injectable()
-@Loadbalanced('user-service') // 开启负载均衡支持，需要依赖 @nestcloud/consul-loadbalance 模块
+@Loadbalanced('user-service') // 开启负载均衡支持，需要依赖 @nestcloud/loadbalance 模块
 export class UserClient {
     @Get('/users')
     getUsers(@Query('role') role: string) {
@@ -278,7 +278,7 @@ interceptor1 response
 
 ### Loadbalanced\(service: string \| boolean\): ClassDecorator \| MethodDecorator
 
-开启或者关闭负载均衡支持，使用负载均衡需要依赖 @nestcloud/consul-loadbalance 模块。
+开启或者关闭负载均衡支持，使用负载均衡需要依赖 @nestcloud/loadbalance 模块。
 
 ### UseInterceptor\(interceptor: IInterceptor | Function\)
 

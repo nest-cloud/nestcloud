@@ -3,11 +3,11 @@ import { Global } from './global';
 import {
     NEST_BOOT_PROVIDER,
     NEST_CONSUL_CONFIG_PROVIDER,
-    NEST_CONSUL_LOADBALANCE_PROVIDER,
+    NEST_LOADBALANCE_PROVIDER,
     NEST_CONSUL_PROVIDER,
     NEST_CONSUL_SERVICE_PROVIDER,
     NEST_FEIGN_PROVIDER,
-    NEST_GATEWAY_PROVIDER,
+    NEST_PROXY_PROVIDER,
     NEST_LOGGER_PROVIDER,
     NEST_MEMCACHED_PROVIDER,
 } from '@nestcloud/common';
@@ -20,9 +20,9 @@ export class NestCloud {
         [NEST_CONSUL_PROVIDER]: 'consul',
         [NEST_CONSUL_CONFIG_PROVIDER]: 'consulConfig',
         [NEST_CONSUL_SERVICE_PROVIDER]: 'consulService',
-        [NEST_CONSUL_LOADBALANCE_PROVIDER]: 'loadbalance',
+        [NEST_LOADBALANCE_PROVIDER]: 'loadbalance',
         [NEST_FEIGN_PROVIDER]: 'feign',
-        [NEST_GATEWAY_PROVIDER]: 'gateway',
+        [NEST_PROXY_PROVIDER]: 'proxy',
         [NEST_LOGGER_PROVIDER]: 'logger',
         [NEST_MEMCACHED_PROVIDER]: 'memcached',
     };

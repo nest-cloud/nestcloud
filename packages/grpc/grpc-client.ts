@@ -2,7 +2,7 @@ import { IClientConfig } from "./interfaces/grpc-configuration.interface";
 import { ClientGrpcProxy } from '@nestjs/microservices/client';
 import { NestCloud } from "@nestcloud/core";
 import { ILoadbalance, IServer } from "@nestcloud/common";
-import { GrpcDelegate } from "@nestcloud/consul-loadbalance";
+import { GrpcDelegate } from "@nestcloud/loadbalance";
 
 export class GrpcClient {
     private readonly config: IClientConfig;

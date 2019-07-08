@@ -1,7 +1,7 @@
 {
-  "name": "@nestcloud/feign",
+  "name": "@nestcloud/loadbalance",
   "version": "0.3.17",
-  "description": "Feign is a nest http decorators library that makes writing nodejs http clients easier.",
+  "description": "A Nest framework (node.js) module for getting service from consul and sending http request by loadbalance.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
   "publishConfig": {
@@ -9,14 +9,14 @@
   },
   "optionalDependencies": {
     "@nestcloud/boot": "^0.3.17",
-    "@nestcloud/brakes": "^0.3.17",
-    "@nestcloud/consul-config": "^0.3.17",
-    "@nestcloud/loadbalance": "^0.3.17"
+    "@nestcloud/consul-config": "^0.3.17"
   },
   "peerDependencies": {
     "@nestcloud/common": "^0.3.17",
-    "@nestcloud/core": "^0.3.17",
-    "@nestjs/common": "^6.0.0"
+    "@nestcloud/consul": "^0.3.17",
+    "@nestcloud/consul-service": "^0.3.17",
+    "@nestjs/common": "^6.0.0",
+    "consul": "^0.30.0"
   },
   "repository": {
     "type": "git",
@@ -27,9 +27,8 @@
   },
   "homepage": "https://github.com/nest-cloud/nestcloud#readme",
   "dependencies": {
+    "axios": "^0.18.0",
     "lodash": "^4.17.11",
-    "reflect-metadata": "^0.1.12",
-    "uri-params": "^0.1.3",
-    "uuid": "^3.3.2"
+    "random-js": "^2.0.0-rc2"
   }
 }

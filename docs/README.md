@@ -30,11 +30,11 @@
   - [Consul](consul.md)
   - [服务注册发现 (Consul-Service)](consul-service.md)
   - [配置中心 (Consul-Service-Config)](consul-config.md)
-  - [负载均衡 (Consul-Loadbalance)](consul-loadbalance.md)
+  - [负载均衡 (Loadbalance)](loadbalance.md)
   - [Http客户端 (Feign)](feign.md)
   - [远程调用 (Grpc)](grpc.md)
   - [定时任务 (Schedule)](schedule.md)
-  - [Api网关 (Gateway)](gateway.md)
+  - [Api 代理 (Proxy)](proxy.md)
   - [日志 (Logger)](logger.md)
   
 - 旧版本迁移

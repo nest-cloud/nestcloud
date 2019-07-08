@@ -1,8 +1,8 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
 import {
-    NEST_CONSUL_LOADBALANCE,
+    NEST_LOADBALANCE,
     NEST_FEIGN_PROVIDER,
-    NEST_CONSUL_LOADBALANCE_PROVIDER,
+    NEST_LOADBALANCE_PROVIDER,
     NEST_BOOT,
     NEST_BOOT_PROVIDER,
     NEST_CONSUL_CONFIG,
@@ -24,11 +24,11 @@ export class FeignModule {
             if (options.dependencies.includes(NEST_BOOT)) {
                 inject.push(NEST_BOOT_PROVIDER);
             } else if (options.dependencies.includes(NEST_CONSUL_CONFIG)) {
-                inject.push(NEST_CONSUL_LOADBALANCE_PROVIDER);
+                inject.push(NEST_LOADBALANCE_PROVIDER);
             }
 
-            if (options.dependencies.includes(NEST_CONSUL_LOADBALANCE)) {
-                inject.push(NEST_CONSUL_LOADBALANCE_PROVIDER);
+            if (options.dependencies.includes(NEST_LOADBALANCE)) {
+                inject.push(NEST_LOADBALANCE_PROVIDER);
             }
         }
 

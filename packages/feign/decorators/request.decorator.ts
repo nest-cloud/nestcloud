@@ -8,7 +8,7 @@ import {
     REQUEST_PARAMS_METADATA,
     SERVICE,
     BRAKES,
-    INTERCEPTOR_METADATA
+    INTERCEPTOR_METADATA,
 } from '../constants';
 import { getParams } from '../utils/params.util';
 import { getMetadata } from '../utils/metadata.util';
@@ -61,8 +61,7 @@ const createMappingDecorator = (method: string, path: string, options?: object) 
 
         const InterceptorMetatypes = (
             getMetadata<Function[]>(INTERCEPTOR_METADATA, descriptor.value, target.constructor) || [])
-            .concat((Reflect.getMetadata(INTERCEPTOR_METADATA, target.constructor) || [])
-            );
+            .concat((Reflect.getMetadata(INTERCEPTOR_METADATA, target.constructor) || []));
 
         const interceptors = [];
         if (InterceptorMetatypes.length) {
@@ -81,7 +80,7 @@ const createMappingDecorator = (method: string, path: string, options?: object) 
     };
     const metadataKeys = Reflect.getMetadataKeys(oldDescriptorValue);
     metadataKeys.forEach(key =>
-        Reflect.defineMetadata(key, Reflect.getMetadata(key, oldDescriptorValue), descriptor.value)
+        Reflect.defineMetadata(key, Reflect.getMetadata(key, oldDescriptorValue), descriptor.value),
     );
     return descriptor;
 };

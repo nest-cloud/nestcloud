@@ -6,15 +6,15 @@ import {
     IConsulService,
     ILoadbalance,
     ILogger,
-    IGateway,
+    IProxy,
     IMemcached,
     IComponent,
     NEST_BOOT,
     NEST_CONSUL,
     NEST_CONSUL_CONFIG,
-    NEST_CONSUL_LOADBALANCE,
+    NEST_LOADBALANCE,
     NEST_CONSUL_SERVICE,
-    NEST_GATEWAY,
+    NEST_PROXY,
     NEST_LOGGER,
 } from '@nestcloud/common';
 import * as Consul from 'consul';
@@ -37,7 +37,7 @@ export class Global {
     private _consulService: IConsulService;
     private _loadbalance: ILoadbalance;
     private _logger: ILogger;
-    private _gateway: IGateway;
+    private _proxy: IProxy;
     private _memcached: IMemcached;
 
     /**
@@ -95,7 +95,7 @@ export class Global {
 
     public set loadbalance(loadbalance: ILoadbalance) {
         this._loadbalance = loadbalance;
-        this.trigger(NEST_CONSUL_LOADBALANCE, loadbalance);
+        this.trigger(NEST_LOADBALANCE, loadbalance);
     }
 
     public get logger(): ILogger {
@@ -107,13 +107,13 @@ export class Global {
         this.trigger(NEST_LOGGER, logger);
     }
 
-    public get gateway(): IGateway {
-        return this._gateway;
+    public get proxy(): IProxy {
+        return this._proxy;
     }
 
-    public set gateway(gateway: IGateway) {
-        this._gateway = gateway;
-        this.trigger(NEST_GATEWAY, gateway);
+    public set proxy(proxy: IProxy) {
+        this._proxy = proxy;
+        this.trigger(NEST_PROXY, proxy);
     }
 
     public get memcached(): IMemcached {

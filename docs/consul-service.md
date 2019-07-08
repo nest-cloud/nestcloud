@@ -5,7 +5,7 @@ Consul-Service 提供在服务启动的时候向 Consul 注册服务，服务退
 ## 安装
 
 ```bash
-npm install @nestcloud/consul-service@next @nestcloud/consul@next consul --save
+npm install @nestcloud/consul-service @nestcloud/consul consul --save
 ```
 
 ## 注册模块

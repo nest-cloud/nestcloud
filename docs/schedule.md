@@ -5,7 +5,7 @@ Schedule 采用 decorator 实现，配置定时任务更加简单快捷。
 ## 安装
 
 ```bash
-npm install @nestcloud/schedule@next --save
+npm install @nestcloud/schedule --save
 ```
 
 ## 如何使用

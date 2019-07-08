@@ -5,7 +5,7 @@ Consul 是对 consul api 的封装，基于 node-consul，是服务发现和负�
 ## 安装
 
 ```bash
-npm install consul @nestcloud/consul@next --save
+npm install consul @nestcloud/consul --save
 ```
 
 ## 注册模块

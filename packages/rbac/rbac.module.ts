@@ -5,8 +5,8 @@ import {
     NEST_CONSUL_PROVIDER,
     NEST_CONSUL_SERVICE,
     NEST_CONSUL_SERVICE_PROVIDER,
-    NEST_CONSUL_LOADBALANCE,
-    NEST_CONSUL_LOADBALANCE_PROVIDER,
+    NEST_LOADBALANCE,
+    NEST_LOADBALANCE_PROVIDER,
     NEST_BOOT,
     NEST_BOOT_PROVIDER,
     NEST_CONSUL_CONFIG,
@@ -36,7 +36,7 @@ export class RbacModule {
             useFactory: async (...args: any[]): Promise<Rbac> => {
                 const validator: IRbacValidator = args[inject.indexOf(NEST_RBAC_VALIDATOR_PROVIDER)];
                 const consul = args[inject.indexOf(NEST_CONSUL_PROVIDER)];
-                const loadbalance: ILoadbalance = args[inject.indexOf(NEST_CONSUL_LOADBALANCE_PROVIDER)];
+                const loadbalance: ILoadbalance = args[inject.indexOf(NEST_LOADBALANCE_PROVIDER)];
                 const boot: IBoot = args[inject.indexOf(NEST_BOOT_PROVIDER)];
                 const consulConfig: IConsulConfig = args[inject.indexOf(NEST_CONSUL_CONFIG_PROVIDER)];
                 if (boot) {
@@ -76,8 +76,8 @@ export class RbacModule {
         if (dependencies.includes(NEST_CONSUL)) {
             injects.push(NEST_CONSUL_PROVIDER);
         }
-        if (dependencies.includes(NEST_CONSUL_LOADBALANCE)) {
-            injects.push(NEST_CONSUL_LOADBALANCE_PROVIDER);
+        if (dependencies.includes(NEST_LOADBALANCE)) {
+            injects.push(NEST_LOADBALANCE_PROVIDER);
         }
         if (dependencies.includes(NEST_CONSUL_SERVICE)) {
             injects.push(NEST_CONSUL_SERVICE_PROVIDER);

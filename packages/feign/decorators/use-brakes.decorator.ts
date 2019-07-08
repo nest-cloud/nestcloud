@@ -1,4 +1,4 @@
-import { IBrakesConfig } from '@nestcloud/brakes';
+import { IBrakesConfig } from '@nestcloud/common';
 import * as BrakesModule from '@nestcloud/brakes';
 import { ServiceUnavailableException } from '@nestjs/common';
 import { BRAKES, BRAKES_FALLBACK_METADATA, BRAKES_HEALTH_CHECK_METADATA } from '../constants';

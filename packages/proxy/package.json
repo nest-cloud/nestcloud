@@ -1,7 +1,7 @@
 {
-  "name": "@nestcloud/feign",
+  "name": "@nestcloud/proxy",
   "version": "0.3.17",
-  "description": "Feign is a nest http decorators library that makes writing nodejs http clients easier.",
+  "description": "proxy module for nestcloud",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
   "publishConfig": {
@@ -9,13 +9,12 @@
   },
   "optionalDependencies": {
     "@nestcloud/boot": "^0.3.17",
-    "@nestcloud/brakes": "^0.3.17",
     "@nestcloud/consul-config": "^0.3.17",
-    "@nestcloud/loadbalance": "^0.3.17"
+    "@nestcloud/redis": "^0.3.17"
   },
   "peerDependencies": {
     "@nestcloud/common": "^0.3.17",
-    "@nestcloud/core": "^0.3.17",
+    "@nestcloud/loadbalance": "^0.3.17",
     "@nestjs/common": "^6.0.0"
   },
   "repository": {
@@ -27,9 +26,7 @@
   },
   "homepage": "https://github.com/nest-cloud/nestcloud#readme",
   "dependencies": {
-    "lodash": "^4.17.11",
-    "reflect-metadata": "^0.1.12",
-    "uri-params": "^0.1.3",
-    "uuid": "^3.3.2"
+    "http-proxy": "^1.17.0",
+    "ratelimiter": "^3.3.0"
   }
 }

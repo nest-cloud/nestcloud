@@ -11,7 +11,7 @@ const packages = {
     consul: ts.createProject('packages/consul/tsconfig.json'),
     'consul-config': ts.createProject('packages/consul-config/tsconfig.json'),
     'consul-service': ts.createProject('packages/consul-service/tsconfig.json'),
-    'consul-loadbalance': ts.createProject('packages/consul-loadbalance/tsconfig.json'),
+    loadbalance: ts.createProject('packages/loadbalance/tsconfig.json'),
     logger: ts.createProject('packages/logger/tsconfig.json'),
     memcached: ts.createProject('packages/memcached/tsconfig.json'),
     schedule: ts.createProject('packages/schedule/tsconfig.json'),
@@ -21,7 +21,7 @@ const packages = {
     grpc: ts.createProject('packages/grpc/tsconfig.json'),
     rbac: ts.createProject('packages/rbac/tsconfig.json'),
     redis: ts.createProject('packages/redis/tsconfig.json'),
-    gateway: ts.createProject('packages/gateway/tsconfig.json'),
+    proxy: ts.createProject('packages/proxy/tsconfig.json'),
 };
 const modules = Object.keys(packages);
 const source = 'packages';
@@ -47,7 +47,7 @@ gulp.task('copy-misc', function () {
         .pipe(gulp.dest(`${source}/consul`))
         .pipe(gulp.dest(`${source}/consul-config`))
         .pipe(gulp.dest(`${source}/consul-service`))
-        .pipe(gulp.dest(`${source}/consul-loadbalance`))
+        .pipe(gulp.dest(`${source}/loadbalance`))
         .pipe(gulp.dest(`${source}/logger`))
         .pipe(gulp.dest(`${source}/memcached`))
         .pipe(gulp.dest(`${source}/schedule`))
@@ -57,7 +57,7 @@ gulp.task('copy-misc', function () {
         .pipe(gulp.dest(`${source}/grpc`))
         .pipe(gulp.dest(`${source}/rbac`))
         .pipe(gulp.dest(`${source}/redis`))
-        .pipe(gulp.dest(`${source}/gateway`))
+        .pipe(gulp.dest(`${source}/proxy`))
 });
 
 gulp.task('clean:output', function () {

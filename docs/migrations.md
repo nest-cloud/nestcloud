@@ -256,7 +256,7 @@ Add options.customRulePath param, if you use custom lb rule, you should config t
 import { Module } from '@nestjs/common';
 import { ConsulModule } from '@nestcloud/consul';
 import { ConsulServiceModule } from '@nestcloud/consul-service';
-import { LoadbalanceModule } from '@nestcloud/consul-loadbalance';
+import { LoadbalanceModule } from '@nestcloud/loadbalance';
 import { BootModule } from '@nestcloud/boot';
 import { NEST_BOOT } from '@nestcloud/common';
 
@@ -277,8 +277,7 @@ Add a new Choose decorator, same as lb.choose method.
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { IServer } from '@nestcloud/common';
-import { Choose } from '@nestcloud/consul-loadbalance';
+import { Choose } from '@nestcloud/loadbalance';
 
 @Injectable()
 export class TestService {

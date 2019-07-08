@@ -26,7 +26,7 @@ This is a [Nest](https://github.com/nestjs/nest) module for writing nestjs http 
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/feign @nestcloud/consul-loadbalance @nestcloud/consul consul
+$ npm i --save @nestcloud/feign @nestcloud/loadbalance @nestcloud/consul consul
 ```
 
 ## Quick Start
@@ -37,10 +37,10 @@ $ npm i --save @nestcloud/feign @nestcloud/consul-loadbalance @nestcloud/consul 
 import { Module } from '@nestjs/common';
 import { ConsulModule } from '@nestcloud/consul';
 import { ConsulServiceModule } from '@nestcloud/consul-service';
-import { LoadbalanceModule } from '@nestcloud/consul-loadbalance';
+import { LoadbalanceModule } from '@nestcloud/loadbalance';
 import { BootModule } from '@nestcloud/boot';
 import { FeignModule } from '@nestcloud/feign';
-import { NEST_BOOT, NEST_CONSUL_LOADBALANCE } from '@nestcloud/common';
+import { NEST_BOOT, NEST_LOADBALANCE } from '@nestcloud/common';
 
 @Module({
   imports: [
@@ -48,7 +48,7 @@ import { NEST_BOOT, NEST_CONSUL_LOADBALANCE } from '@nestcloud/common';
       ConsulModule.register({dependencies: [NEST_BOOT]}),
       ConsulServiceModule.register({ dependencies: [NEST_BOOT] }),
       LoadbalanceModule.register({ dependencies: [NEST_BOOT] }),
-      FeignModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL_LOADBALANCE] }), // or NEST_CONSUL_CONFIG
+      FeignModule.register({ dependencies: [NEST_BOOT, NEST_LOADBALANCE] }), // or NEST_CONSUL_CONFIG
   ],
 })
 export class ApplicationModule {}
@@ -100,7 +100,7 @@ import { Injectable } from "@nestjs/common";
 import { Loadbalanced, Get, Query } from "@nestcloud/feign";
 
 @Injectable()
-@Loadbalanced('user-service') // open loadbalance supports, need @nestcloud/consul-loadbalance module.
+@Loadbalanced('user-service') // open loadbalance supports, need @nestcloud/loadbalance module.
 export class UserClient {
     @Get('/users')
     getUsers(@Query('role') role: string) {

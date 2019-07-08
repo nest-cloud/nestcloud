@@ -5,7 +5,7 @@ Logger 提供日志功能，基于 winston@2 实现。
 ## 安装
 
 ```bash
-npm install winston@2 @nestcloud/logger@next --save
+npm install winston@2 @nestcloud/logger --save
 ```
 
 ## 使用

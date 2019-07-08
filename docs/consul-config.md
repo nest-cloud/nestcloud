@@ -5,7 +5,7 @@ Consul-Config 以 Consul KV 作为微服务的配置中心，从 Consul KV 读�
 ## 安装
 
 ```bash
-npm install consul @nestcloud/consul@next @nestcloud/consul-config@next --save
+npm install consul @nestcloud/consul @nestcloud/consul-config --save
 ```
 
 ## 注册模块

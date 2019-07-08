@@ -1,7 +1,7 @@
 import * as Brakes from 'brakes';
-import { IBrakesConfig } from "./interfaces/brakes-config.interface";
-import { NotFoundBrakesException } from "./exceptions/not-found-brakes.exception";
-import { HttpException } from "@nestjs/common";
+import { IBrakesConfig } from '@nestcloud/common';
+import { NotFoundBrakesException } from './exceptions/not-found-brakes.exception';
+import { HttpException } from '@nestjs/common';
 
 export class BrakesFactory {
     private static brakesMap = new Map<string, Brakes>();
@@ -19,7 +19,7 @@ export class BrakesFactory {
     static async exec(service: string, call: Function, ...params) {
         const brakes = this.brakesMap.get(service);
         if (!brakes) {
-            throw new NotFoundBrakesException(`Cannot find brakes for ${ service }`);
+            throw new NotFoundBrakesException(`Cannot find brakes for ${service}`);
         }
 
         let httpException = null;

@@ -5,7 +5,7 @@
 ## 安装
 
 ```bash
-npm install @nestcloud/grpc@next
+npm install @nestcloud/grpc
 ```
 
 ## 使用

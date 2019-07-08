@@ -3,7 +3,7 @@
 ## 安装组件
 
 ```bash
-npm install --save @nestcloud/core @nestcloud/common @nestcloud/boot @nestcloud/consul @nestcloud/consul-service @nestcloud/consul-config @nestcloud/consul-loadbalance @nestcloud/feign @nestcloud/logger @nestcloud/schedule 
+npm install --save @nestcloud/core @nestcloud/common @nestcloud/boot @nestcloud/consul @nestcloud/consul-service @nestcloud/consul-config @nestcloud/loadbalance @nestcloud/feign @nestcloud/logger @nestcloud/schedule 
 ```
 
 ### main.ts
@@ -37,7 +37,7 @@ import { DatabaseHealthIndicator, TerminusModule, TerminusModuleOptions } from "
 
 import { 
     NEST_BOOT,
-    NEST_CONSUL_LOADBALANCE,
+    NEST_LOADBALANCE,
     NEST_CONSUL_CONFIG, 
     NEST_CONSUL_CONFIG_PROVIDER,
     IConsulConfig
@@ -46,7 +46,7 @@ import { BootModule } from '@nestcloud/boot';
 import { ConsulModule } from '@nestcloud/consul';
 import { ConsulConfigModule } from '@nestcloud/consul-config';
 import { ConsulServiceModule } from '@nestcloud/consul-service';
-import { LoadbalanceModule } from '@nestcloud/consul-loadbalance';
+import { LoadbalanceModule } from '@nestcloud/loadbalance';
 import { FeignModule } from '@nestcloud/feign';
 import { LoggerModule, TypeormLogger } from '@nestcloud/logger';
 
@@ -59,7 +59,7 @@ import { LoggerModule, TypeormLogger } from '@nestcloud/logger';
         ConsulConfigModule.register({ dependencies: [NEST_BOOT] }),
         ConsulServiceModule.register({ dependencies: [NEST_BOOT] }),
         LoadbalanceModule.register({ dependencies: [NEST_CONSUL_CONFIG] }),
-        FeignModule.register({ dependencies: [NEST_CONSUL_LOADBALANCE] }),
+        FeignModule.register({ dependencies: [NEST_LOADBALANCE] }),
         TerminusModule.forRootAsync({
             inject: [DatabaseHealthIndicator],
             useFactory: (db: DatabaseHealthIndicator) => ({

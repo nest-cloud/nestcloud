@@ -15,6 +15,7 @@ export * from './interfaces/server.interface';
 export * from './interfaces/server-state.interface';
 export * from './interfaces/service-node.interface';
 export * from './interfaces/logger.interface';
-export * from './interfaces/gateway.interface';
+export * from './interfaces/proxy.interface';
 export * from './interfaces/memcached.interface';
 export * from './interfaces/consul-kv-response.interface';
+export * from './interfaces/brakes-config.interface';
