@@ -56,6 +56,13 @@ proxy:
   routes:
     - id: user
       uri: lb://nestcloud-user-service
+      filters:
+       - name: AddRequestHeaderFilter
+         paramters: 
+           request-id: 123
+       - name: AddResponseHeaderFilter
+         parameters:
+           request-id: 456
     - id: pay
       uri: https://example.com/pay
 ```
@@ -86,11 +93,38 @@ export class ProxyController {
 }
 ```
 
+### Filters
+
+There are `AddRequestHeaderFilter` and `AddResponseHeaderFilter` filters in internal proxy,
+if you want to use your own filter, please implement `IFilter` interface, 
+then call `registerFilter(filter: IFilter)` function for registering filter.
+
+```typescript
+class CustomFilter implements IFilter {
+    before(request: IRequest, response: IResponse): boolean | Promise<boolean> {
+        return undefined;
+    }
+
+    error(error: ProxyErrorException, request: IRequest, response: IResponse) {
+    }
+
+    getName(): string {
+        return "CustomFilter";
+    }
+
+    request(proxyReq: ClientRequest, request: IRequest, response: IResponse) {
+    }
+
+    response(proxyRes: IncomingMessage, request: IRequest, response: IResponse) {
+    }
+}
+```
+
 ## API
 
 ### class ProxyModule
 
-#### static register\(options: IProxyOptions = {}, proxy?: IProxyOptions\): DynamicModule
+#### static register\(options: IProxyOptions = {}, proxy?: IExtraOptions\): DynamicModule
 
 Register proxy module.
 
@@ -98,7 +132,7 @@ Register proxy module.
 | :--- | :--- | :--- |
 | options.dependencies | string[] | NEST_BOOT or NEST_CONSUL_CONFIG |
 | options.routes | IRoute[] | routes of proxy |
-| proxy | IProxyOptions | please see http-proxy doc for detail |
+| proxy | IExtraOptions | please see http-proxy doc for detail |
 
 ### class Proxy
 
@@ -106,9 +140,9 @@ Register proxy module.
 
 Update proxy routes.
 
-## TODO
+#### registerFilter(filter: IFilter)
 
-filter support
+Register your custom filter.
 
 
 ## Stay in touch

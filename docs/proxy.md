@@ -1,23 +1,23 @@
-# API网关
+# API 代理
 
-Gateway 是基于 http-proxy 实现的一个简单 API 网关
+Proxy 是基于 http-proxy 实现的一个简单 API 网关
 
 ## 安装
 
 ```bash
-npm install @nestcloud/gateway --save
+npm install @nestcloud/proxy --save
 ```
 
 ## 注册模块
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { GatewayModule } from "@nestcloud/gateway";
+import { ProxyModule } from "@nestcloud/proxy";
 import { NEST_BOOT } from '@nestcloud/common';
 
 @Module({
     imports: [
-        GatewayModule.register({dependencies: [NEST_BOOT]}), // or NEST_CONSUL_CONFIG
+        ProxyModule.register({dependencies: [NEST_BOOT]}), // or NEST_CONSUL_CONFIG
     ]
 })
 export class AppModule {
@@ -27,7 +27,7 @@ export class AppModule {
 ## 配置
 
 ```yaml
-gateway:
+proxy:
   routes:
     - id: user
       uri: lb://nestcloud-user-service
@@ -40,18 +40,18 @@ gateway:
 ```typescript
 import { All, Controller, Param, Req, Res } from "@nestjs/common";
 import { Request, Response } from 'express';
-import { Gateway, InjectGateway } from "@nestcloud/gateway";
+import { Proxy, InjectProxy } from "@nestcloud/proxy";
 
-@Controller('/gateway/:service')
-export class GatewayController {
+@Controller('/proxy/:service')
+export class ProxyController {
     constructor(
-        @InjectGateway() private readonly gateway: Gateway,
+        @InjectProxy() private readonly proxy: Proxy,
     ) {
     }
 
     @All()
     do(@Req() req: Request, @Res() res: Response, @Param('service') id) {
-        this.gateway.forward(req, res, id);
+        this.proxy.forward(req, res, id);
     }
 }
 ```
@@ -64,13 +64,40 @@ export class GatewayController {
 const app = await NestFactory.create(AppModule, { bodyParser: false });
 ```
 
+### 过滤器
+
+Proxy 内置了两个过滤器，分别是 `AddRequestHeaderFilter` 和 `AddResponseHeaderFilter`，
+如果你想要使用自己的过滤器，可以通过实现 `IFilter` 接口来实现，然后调用 `registerFilter(filter: IFilter)`
+注册到 Proxy 中。
+
+```typescript
+class CustomFilter implements IFilter {
+    before(request: IRequest, response: IResponse): boolean | Promise<boolean> {
+        return undefined;
+    }
+
+    error(error: ProxyErrorException, request: IRequest, response: IResponse) {
+    }
+
+    getName(): string {
+        return "CustomFilter";
+    }
+
+    request(proxyReq: ClientRequest, request: IRequest, response: IResponse) {
+    }
+
+    response(proxyRes: IncomingMessage, request: IRequest, response: IResponse) {
+    }
+}
+```
+
 ## API 文档
 
-### class GatewayModule
+### class ProxyModule
 
-#### static register\(options: IGatewayOptions = {}, proxy?: IProxyOptions\): DynamicModule
+#### static register\(options: IProxyOptions = {}, proxy?: IProxyOptions\): DynamicModule
 
-注册 gateway 模块
+注册 proxy 模块
 
 | field | type | description |
 | :--- | :--- | :--- |
@@ -78,13 +105,13 @@ const app = await NestFactory.create(AppModule, { bodyParser: false });
 | options.routes | IRoute[] | 路由转发规则 |
 | proxy | IProxyOptions | 略，详情请查看 http-proxy 文档 |
 
-### class Gateway
+### class Proxy
 
 #### updateRoutes(routes: IRoute[], sync: boolean = true): void;
 
 更新路由规则列表，如果 sync 为 false，则不会同步更新到 Consul KV，在某一时刻，更新过的路由列表会被 Consul KV 中的覆盖掉。
 
-## TODO
+#### registerFilter(filter: IFilter)
 
-支持过滤器 \(filter\)
+注册自定义过滤器
 

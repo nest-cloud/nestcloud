@@ -50,7 +50,7 @@ Get & watch configurations from Consul KV.
 Register & cancel register service, discovery other service.
 
 
-### [Consul-Loadbalance](packages/consul-loadbalance)
+### [Loadbalance](packages/loadbalance)
 
 Software load balancers primary for rest calls.
 
@@ -63,6 +63,11 @@ A http client that supports decorator and loadbalance.
 ### [Grpc](packages/grpc)
 
 A grpc client that supports loadbalance.
+
+
+### [Proxy](packages/proxy)
+
+A API proxy module.
 
 
 ### [Memcached](packages/memcached)
@@ -118,16 +123,12 @@ app.module.ts
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { 
-    NEST_BOOT, 
-    NEST_CONSUL_LOADBALANCE, 
-    NEST_CONSUL_CONFIG
-} from '@nestcloud/common';
+import { NEST_BOOT, NEST_LOADBALANCE } from '@nestcloud/common';
 import { BootModule } from '@nestcloud/boot';
 import { ConsulModule } from '@nestcloud/consul';
 import { ConsulConfigModule } from '@nestcloud/consul-config';
 import { ConsulServiceModule } from '@nestcloud/consul-service';
-import { LoadbalanceModule } from '@nestcloud/consul-loadbalance';
+import { LoadbalanceModule } from '@nestcloud/loadbalance';
 import { FeignModule } from '@nestcloud/feign';
 import { LoggerModule } from '@nestcloud/logger';
 import { TerminusModule } from '@nestjs/terminus';
@@ -140,7 +141,7 @@ import { TerminusModule } from '@nestjs/terminus';
         ConsulConfigModule.register({ dependencies: [NEST_BOOT] }),
         ConsulServiceModule.register({ dependencies: [NEST_BOOT] }),
         LoadbalanceModule.register({ dependencies: [NEST_BOOT] }),
-        FeignModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL_LOADBALANCE] }),
+        FeignModule.register({ dependencies: [NEST_BOOT, NEST_LOADBALANCE] }),
         TerminusModule.forRootAsync({
             useFactory: () => ({ endpoints: [{ url: '/health', healthIndicators: [] }] }),
         }),
