@@ -7,7 +7,7 @@ export const ConfigValue = (path?: string, defaultValue?: any): PropertyDecorato
         const configPath = path || attributeName;
 
         Store.watch(configPath, value => {
-            target[attributeName] = value;
+            target[attributeName] = value === void 0 ? defaultValue : value;
         });
         target[attributeName] = Store.get(configPath, defaultValue);
     };
