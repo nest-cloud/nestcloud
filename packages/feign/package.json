@@ -8,14 +8,14 @@
     "access": "public"
   },
   "optionalDependencies": {
-    "@nestcloud/boot": "^0.3.17",
-    "@nestcloud/brakes": "^0.3.17",
-    "@nestcloud/consul-config": "^0.3.17",
-    "@nestcloud/loadbalance": "^0.3.17"
+    "@nestcloud/boot": "^0.3.18",
+    "@nestcloud/brakes": "^0.3.18",
+    "@nestcloud/consul-config": "^0.3.18",
+    "@nestcloud/loadbalance": "^0.3.18"
   },
   "peerDependencies": {
-    "@nestcloud/common": "^0.3.17",
-    "@nestcloud/core": "^0.3.17",
+    "@nestcloud/common": "^0.3.18",
+    "@nestcloud/core": "^0.3.18",
     "@nestjs/common": "^6.0.0"
   },
   "repository": {
