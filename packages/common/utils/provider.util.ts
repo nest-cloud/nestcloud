@@ -1,5 +1,10 @@
-import { Connection } from 'typeorm';
 import * as TypeormModule from '@nestjs/typeorm';
+
+interface Connection {
+    getRepository(target: any): any;
+
+    getCustomRepository(target: any): any;
+}
 
 export function components(...components: any[]) {
     const results = [];

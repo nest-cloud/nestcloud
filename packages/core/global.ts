@@ -5,7 +5,6 @@ import {
     IConsulConfig,
     IConsulService,
     ILoadbalance,
-    ILogger,
     IProxy,
     IMemcached,
     IComponent,
@@ -15,7 +14,6 @@ import {
     NEST_LOADBALANCE,
     NEST_CONSUL_SERVICE,
     NEST_PROXY,
-    NEST_LOGGER,
 } from '@nestcloud/common';
 import * as Consul from 'consul';
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
@@ -36,7 +34,6 @@ export class Global {
     private _consulConfig: IConsulConfig;
     private _consulService: IConsulService;
     private _loadbalance: ILoadbalance;
-    private _logger: ILogger;
     private _proxy: IProxy;
     private _memcached: IMemcached;
 
@@ -96,15 +93,6 @@ export class Global {
     public set loadbalance(loadbalance: ILoadbalance) {
         this._loadbalance = loadbalance;
         this.trigger(NEST_LOADBALANCE, loadbalance);
-    }
-
-    public get logger(): ILogger {
-        return this._logger;
-    }
-
-    public set logger(logger: ILogger) {
-        this._logger = logger;
-        this.trigger(NEST_LOGGER, logger);
     }
 
     public get proxy(): IProxy {

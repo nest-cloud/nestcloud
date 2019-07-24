@@ -1,20 +1,20 @@
 import * as mkdirp from 'mkdirp';
 import * as fs from 'fs';
 import * as winston from 'winston';
+import { LoggerInstance } from 'winston';
 import 'winston-daily-rotate-file';
 import { ILoggerOptions } from './interfaces/logger-options.interface';
 import { IConsoleTransport, IFileTransport, IDailyRotateFile } from './interfaces/transport.interface';
 import moment = require('moment');
 import { TransportInstance } from 'winston';
 import { Boot } from '@nestcloud/boot';
-import { ILogger } from '@nestcloud/common';
 import { resolve } from 'path';
 
 export class Logger {
     private readonly AVAILABLE_TRANSPORTS = ['console', 'file', 'dailyRotateFile'];
     private readonly path: string;
     private readonly options: ILoggerOptions;
-    private logger: ILogger;
+    private logger: LoggerInstance;
 
     constructor(options: ILoggerOptions) {
         if (options.path && options.filename) {
@@ -37,7 +37,7 @@ export class Logger {
         this.init();
     }
 
-    getLogger(): ILogger {
+    getLogger(): LoggerInstance {
         return this.logger;
     }
 
