@@ -8,8 +8,8 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@nestcloud/boot": "^0.4.0",
-    "@nestcloud/common": "^0.4.0",
+    "@nestcloud/boot": "^0.4.1",
+    "@nestcloud/common": "^0.4.1",
     "@nestjs/common": "^6.0.0"
   },
   "repository": {
