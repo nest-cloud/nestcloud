@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/consul-service",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "A Nest framework (node.js) module for registering and getting consul service easily.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
@@ -8,11 +8,11 @@
     "access": "public"
   },
   "optionalDependencies": {
-    "@nestcloud/boot": "^0.4.3"
+    "@nestcloud/boot": "^0.4.4"
   },
   "peerDependencies": {
-    "@nestcloud/common": "^0.4.3",
-    "@nestcloud/consul": "^0.4.3",
+    "@nestcloud/common": "^0.4.4",
+    "@nestcloud/consul": "^0.4.4",
     "@nestjs/common": "^6.0.0",
     "consul": "^0.34.1"
   },
