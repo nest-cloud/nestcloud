@@ -116,7 +116,7 @@ export class Proxy implements IProxy {
         }
         const timeout = req.headers[HEADER_TIMEOUT] || 1000 * 30;
         const proxyTimeout = req.headers[HEADER_TIMEOUT] || 1000 * 30;
-        const target = route.uri;
+        const target = route.uri + req.url;
         this.proxy.web(req, res, {
             target,
             timeout: Number(timeout),
@@ -145,9 +145,7 @@ export class Proxy implements IProxy {
                 }
             }
         }
-        const target = `${this.proxyOptions.secure ? 'https' : 'http'}://${server.address}:${server.port}${
-            req.url
-            }`;
+        const target = `${this.proxyOptions.secure ? 'https' : 'http'}://${server.address}:${server.port}${req.url}`;
         const timeout = req.headers[HEADER_TIMEOUT] || 1000 * 30;
         const proxyTimeout = req.headers[HEADER_TIMEOUT] || 1000 * 30;
         this.proxy.web(req, res, {
@@ -162,6 +160,7 @@ export class Proxy implements IProxy {
     private setParametersToReq(req: IRequest, id: string, filter: string) {
         const filtersOptions: IRouteFilter[] = get(this.routeMap[id], 'filters', []);
         const filterOptions = filtersOptions.filter(opt => opt.name === filter)[0];
-        req.proxy.parameters = filterOptions.parameters;
+        if (filterOptions)
+            req.proxy.parameters = filterOptions.parameters;
     }
 }
