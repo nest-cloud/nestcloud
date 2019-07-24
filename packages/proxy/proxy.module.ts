@@ -1,5 +1,4 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
-import { Loadbalance } from '@nestcloud/loadbalance';
 import {
     NEST_BOOT,
     NEST_BOOT_PROVIDER,
@@ -13,6 +12,7 @@ import {
 import { IExtraOptions } from './interfaces/extra-options.interface';
 import { IProxyOptions } from './interfaces/proxy-options.interface';
 import { Proxy } from './proxy';
+import { ILoadbalance } from '../common';
 
 @Global()
 @Module({
@@ -32,19 +32,22 @@ export class ProxyModule {
 
         const proxyProvider = {
             provide: NEST_PROXY_PROVIDER,
-            useFactory: (lb: Loadbalance, config: IBoot | IConsulConfig): Proxy => {
+            useFactory: (...args: any[]): Proxy => {
+                const loadblanace: ILoadbalance = args[inject.indexOf(NEST_LOADBALANCE_PROVIDER)];
+                const boot: IBoot = args[inject.indexOf(NEST_BOOT_PROVIDER)];
+                const config: IConsulConfig = args[inject.indexOf(NEST_CONSUL_CONFIG_PROVIDER)];
                 let proxy;
-                if (inject.includes(NEST_BOOT_PROVIDER)) {
-                    options = (config as IBoot).get('proxy');
-                    proxy = new Proxy(extra, lb, options.routes);
-                } else if (inject.includes(NEST_CONSUL_CONFIG_PROVIDER)) {
+                if (boot) {
+                    options = boot.get('proxy');
+                    proxy = new Proxy(extra, loadblanace, options.routes);
+                } else if (config) {
                     options = (config as IConsulConfig).get('proxy');
-                    proxy = new Proxy(extra, lb, options.routes, config as IConsulConfig);
+                    proxy = new Proxy(extra, loadblanace, options.routes, config as IConsulConfig);
                     (config as IConsulConfig).watch('proxy.routes', routes => {
                         proxy.updateRoutes(routes || [], false);
                     });
                 } else {
-                    proxy = new Proxy(extra, lb, options.routes);
+                    proxy = new Proxy(extra, loadblanace, options.routes);
                 }
                 return proxy;
             },
