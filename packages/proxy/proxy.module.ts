@@ -20,7 +20,10 @@ import { Proxy } from './proxy';
 })
 export class ProxyModule {
     static register(options: IProxyOptions = {}, extra?: IExtraOptions): DynamicModule {
-        const inject = [NEST_LOADBALANCE_PROVIDER];
+        const inject = [];
+        if (options.routes && options.routes.filter(route => route.uri.includes('lb://'))) {
+            inject.push(NEST_LOADBALANCE_PROVIDER);
+        }
         if (options.dependencies && options.dependencies.includes(NEST_BOOT)) {
             inject.push(NEST_BOOT_PROVIDER);
         } else if (options.dependencies.includes(NEST_CONSUL_CONFIG)) {
