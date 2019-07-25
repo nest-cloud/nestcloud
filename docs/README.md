@@ -22,14 +22,14 @@
   
   - [部署 Consul](deploy-consul.md)
   - [使用 Starter 快速开始](quickstart.md)
-  - [配置清单](config.md)
+  - [配置清单](config-list.md)
 
 - 组件
 
   - [本地配置 (Boot)](bootstrap.md)
   - [Consul](consul.md)
   - [服务注册发现 (Consul-Service)](consul-service.md)
-  - [配置中心 (Consul-Service-Config)](consul-config.md)
+  - [配置中心 (Config)](config.md)
   - [负载均衡 (Loadbalance)](loadbalance.md)
   - [Http客户端 (Feign)](feign.md)
   - [远程调用 (Grpc)](grpc.md)
