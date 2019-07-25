@@ -1,6 +1,6 @@
 import { get, set, isArray, isString, isObject } from 'lodash';
 import { objectToMap } from '@nestcloud/common';
-import { compile } from "handlebars";
+import { compile } from 'handlebars';
 
 export class Store {
     private static _data: any;

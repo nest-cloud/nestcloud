@@ -1,13 +1,13 @@
 import * as Redis from 'ioredis';
 import { ClusterNode, ClusterOptions, RedisOptions } from 'ioredis';
-import { IBoot, IConsulConfig } from '@nestcloud/common';
+import { IBoot, IConfig } from '@nestcloud/common';
 
 import { REDIS_CLIENT, REDIS_MODULE_OPTIONS } from './constants';
 import { RedisModuleOptions } from './interfaces/redis-options.interface';
 
 export const create = (name: string = 'default', inject?: string[]) => ({
     provide: REDIS_CLIENT + name,
-    useFactory: (options: RedisModuleOptions, config: IBoot | IConsulConfig): Redis.Redis | Redis.Cluster => {
+    useFactory: (options: RedisModuleOptions, config: IBoot | IConfig): Redis.Redis | Redis.Cluster => {
         if (config) {
             options = (config as IBoot).get<RedisModuleOptions>(`redis.${name}`, options);
         }

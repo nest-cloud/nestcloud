@@ -2,7 +2,7 @@ import { INestApplicationContext } from '@nestjs/common';
 import { Global } from './global';
 import {
     NEST_BOOT_PROVIDER,
-    NEST_CONSUL_CONFIG_PROVIDER,
+    NEST_CONFIG_PROVIDER,
     NEST_LOADBALANCE_PROVIDER,
     NEST_CONSUL_PROVIDER,
     NEST_CONSUL_SERVICE_PROVIDER,
@@ -18,7 +18,7 @@ export class NestCloud {
     private static readonly providerKeys = {
         [NEST_BOOT_PROVIDER]: 'boot',
         [NEST_CONSUL_PROVIDER]: 'consul',
-        [NEST_CONSUL_CONFIG_PROVIDER]: 'consulConfig',
+        [NEST_CONFIG_PROVIDER]: 'consulConfig',
         [NEST_CONSUL_SERVICE_PROVIDER]: 'consulService',
         [NEST_LOADBALANCE_PROVIDER]: 'loadbalance',
         [NEST_FEIGN_PROVIDER]: 'feign',

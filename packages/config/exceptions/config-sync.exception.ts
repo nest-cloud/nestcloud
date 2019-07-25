@@ -1,6 +1,6 @@
-export class ConsulConfigSyncException implements Error {
+export class ConfigSyncException implements Error {
     message: string;
-    name: string = 'ConsulConfigSyncException';
+    name: string = 'ConfigSyncException';
     stack: string;
 
     constructor(message: string, stack?: string) {

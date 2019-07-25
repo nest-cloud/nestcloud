@@ -4,7 +4,7 @@
 [linux-image]: https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux
 [linux-url]: https://travis-ci.org/nest-cloud/nestcloud
 
-# NestCloud - ConsulConfig
+# NestCloud - Config
 
 <p align="center">
     <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/v/@nestcloud/core.svg" alt="NPM Version"/></a>
@@ -19,12 +19,12 @@
 
 A NestCloud component for getting and watching configurations from consul kv.
 
-[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/consul-config.md)
+[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/config.md)
 
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/consul consul @nestcloud/consul-config
+$ npm i --save @nestcloud/consul consul @nestcloud/config
 ```
 
 ## Quick Start
@@ -34,7 +34,7 @@ $ npm i --save @nestcloud/consul consul @nestcloud/consul-config
 ```typescript
 import { Module } from '@nestjs/common';
 import { ConsulModule } from '@nestcloud/consul';
-import { ConsulConfigModule } from '@nestcloud/consul-config';
+import { ConfigModule } from '@nestcloud/config';
 import { BootModule } from '@nestcloud/boot';
 import { NEST_BOOT } from '@nestcloud/common';
 
@@ -42,7 +42,7 @@ import { NEST_BOOT } from '@nestcloud/common';
   imports: [
       ConsulModule.register({dependencies: [NEST_BOOT]}),
       BootModule.register(__dirname, 'bootstrap.yml'),
-      ConsulConfigModule.register({dependencies: [NEST_BOOT]})
+      ConfigModule.register({dependencies: [NEST_BOOT]})
   ],
 })
 export class ApplicationModule {}
@@ -75,12 +75,12 @@ user:
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { InjectConfig, ConsulConfig } from '@nestcloud/consul-config';
+import { InjectConfig, Config } from '@nestcloud/config';
 
 @Injectable()
 export class TestService {
   constructor(
-      @InjectConfig() private readonly config: ConsulConfig
+      @InjectConfig() private readonly config: Config
   ) {}
 
   getUserInfo() {
@@ -94,7 +94,7 @@ export class TestService {
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { ConfigValue } from '@nestcloud/consul-config';
+import { ConfigValue } from '@nestcloud/config';
 
 @Injectable()
 export class TestService {
@@ -109,7 +109,7 @@ export class TestService {
 
 ## API
 
-### class ConsulConfigModule
+    ### class ConfigModule
 
 #### static register\(options\): DynamicModule
 
@@ -120,7 +120,7 @@ Register consul config module.
 | options.dependencies | string[] | if you are using @nestcloud/boot module, please set [NEST_BOOT] |
 | options.retry | number | the max retry count when get configuration fail |
 
-### class ConsulConfig
+### class Config
 
 #### get\(path?: string, defaults?: any\): any
 

@@ -7,7 +7,7 @@ export * from './utils/sleep.util';
 
 export * from './interfaces/component.interface';
 export * from './interfaces/boot.interface';
-export * from './interfaces/consul-config.interface';
+export * from './interfaces/config.interface';
 export * from './interfaces/consul-service.interface';
 export * from './interfaces/loadbalance.interface';
 export * from './interfaces/loadbalancer.interface';

@@ -1,5 +1,5 @@
 import * as Consul from 'consul';
-import { ConsulConfig } from './consul-config.class';
+import { ConsulConfig } from './consul-config';
 import { expect } from 'chai';
 
 describe('Consul Config Store', () => {
@@ -7,7 +7,7 @@ describe('Consul Config Store', () => {
     const config = `
 web:
   service: user-service
-  port: 3000    
+  port: 3000
     `;
     let consul;
     let consulConfig: ConsulConfig;

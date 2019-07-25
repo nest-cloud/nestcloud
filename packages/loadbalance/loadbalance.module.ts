@@ -1,12 +1,12 @@
 import {
     NEST_BOOT,
     NEST_BOOT_PROVIDER,
-    NEST_CONSUL_CONFIG,
-    NEST_CONSUL_CONFIG_PROVIDER,
+    NEST_CONFIG,
+    NEST_CONFIG_PROVIDER,
     NEST_LOADBALANCE_PROVIDER,
     NEST_CONSUL_SERVICE_PROVIDER,
     IBoot,
-    IConsulConfig,
+    IConfig,
     IConsulService,
 } from '@nestcloud/common';
 import { DynamicModule, Global, Module } from '@nestjs/common';
@@ -26,23 +26,23 @@ export class LoadbalanceModule {
         const inject = [NEST_CONSUL_SERVICE_PROVIDER];
         if (options.dependencies.includes(NEST_BOOT)) {
             inject.push(NEST_BOOT_PROVIDER);
-        } else if (options.dependencies.includes(NEST_CONSUL_CONFIG)) {
-            inject.push(NEST_CONSUL_CONFIG_PROVIDER);
+        } else if (options.dependencies.includes(NEST_CONFIG)) {
+            inject.push(NEST_CONFIG_PROVIDER);
         }
 
         const loadbalanceProvider = {
             provide: NEST_LOADBALANCE_PROVIDER,
-            useFactory: async (service: IConsulService, config: IBoot | IConsulConfig): Promise<Loadbalance> => {
+            useFactory: async (service: IConsulService, config: IBoot | IConfig): Promise<Loadbalance> => {
                 const loadbalance = new Loadbalance(service, options.customRulePath);
                 let rules: IRuleOptions[] = options.rules || [];
                 let ruleCls: string = options.ruleCls || 'RandomRule';
                 if (inject.includes(NEST_BOOT_PROVIDER)) {
                     rules = (config as IBoot).get<IRuleOptions[]>(this.rulePath, []);
                     ruleCls = (config as IBoot).get<string>(this.ruleClsPath, 'RandomRule');
-                } else if (inject.includes(NEST_CONSUL_CONFIG_PROVIDER)) {
-                    rules = (config as IConsulConfig).get<IRuleOptions[]>(this.rulePath, []);
-                    ruleCls = (config as IConsulConfig).get<string>(this.ruleClsPath, 'RandomRule');
-                    (config as IConsulConfig).watch<{
+                } else if (inject.includes(NEST_CONFIG_PROVIDER)) {
+                    rules = (config as IConfig).get<IRuleOptions[]>(this.rulePath, []);
+                    ruleCls = (config as IConfig).get<string>(this.ruleClsPath, 'RandomRule');
+                    (config as IConfig).watch<{
                         routes: IRuleOptions[];
                         ruleCls: string;
                     }>(this.loadbalancePath, async ({ routes, ruleCls }) => {

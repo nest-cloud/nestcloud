@@ -1,6 +1,6 @@
 import { IComponent } from './component.interface';
 
-export interface IConsulConfig extends IComponent {
+export interface IConfig extends IComponent {
     watch<T extends any>(path: string, callback: (data: T) => void): void;
 
     getKey(): string;

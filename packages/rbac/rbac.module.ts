@@ -9,16 +9,16 @@ import {
     NEST_LOADBALANCE_PROVIDER,
     NEST_BOOT,
     NEST_BOOT_PROVIDER,
-    NEST_CONSUL_CONFIG,
-    NEST_CONSUL_CONFIG_PROVIDER,
+    NEST_CONFIG,
+    NEST_CONFIG_PROVIDER,
     ILoadbalance,
     IBoot,
-    IConsulConfig,
+    IConfig,
 } from '@nestcloud/common';
-import { Rbac } from "./rbac";
-import { IRbacConfig } from "./interfaces/rbac-config.interface";
-import { Backend, NEST_RBAC_VALIDATOR_PROVIDER } from "./constants";
-import { IRbacValidator } from "./interfaces/rbac-validator.interface";
+import { Rbac } from './rbac';
+import { IRbacConfig } from './interfaces/rbac-config.interface';
+import { Backend, NEST_RBAC_VALIDATOR_PROVIDER } from './constants';
+import { IRbacValidator } from './interfaces/rbac-validator.interface';
 
 @Global()
 @Module({})
@@ -38,7 +38,7 @@ export class RbacModule {
                 const consul = args[inject.indexOf(NEST_CONSUL_PROVIDER)];
                 const loadbalance: ILoadbalance = args[inject.indexOf(NEST_LOADBALANCE_PROVIDER)];
                 const boot: IBoot = args[inject.indexOf(NEST_BOOT_PROVIDER)];
-                const consulConfig: IConsulConfig = args[inject.indexOf(NEST_CONSUL_CONFIG_PROVIDER)];
+                const consulConfig: IConfig = args[inject.indexOf(NEST_CONFIG_PROVIDER)];
                 if (boot) {
                     config.parameters = boot.get<{ [key: string]: string }>('rbac.parameters', config.parameters);
                 }
@@ -85,8 +85,8 @@ export class RbacModule {
         if (dependencies.includes(NEST_BOOT)) {
             injects.push(NEST_BOOT_PROVIDER);
         }
-        if (dependencies.includes(NEST_CONSUL_CONFIG)) {
-            injects.push(NEST_CONSUL_CONFIG_PROVIDER);
+        if (dependencies.includes(NEST_CONFIG)) {
+            injects.push(NEST_CONFIG_PROVIDER);
         }
         return injects;
     }

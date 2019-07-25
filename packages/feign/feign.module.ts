@@ -5,10 +5,10 @@ import {
     NEST_LOADBALANCE_PROVIDER,
     NEST_BOOT,
     NEST_BOOT_PROVIDER,
-    NEST_CONSUL_CONFIG,
-    NEST_CONSUL_CONFIG_PROVIDER,
+    NEST_CONFIG,
+    NEST_CONFIG_PROVIDER,
     IBoot,
-    IConsulConfig,
+    IConfig,
 } from '@nestcloud/common';
 import { IFeignOptions } from './interfaces/feign-options.interface';
 import { NestCloud } from '@nestcloud/core';
@@ -23,7 +23,7 @@ export class FeignModule {
         if (options.dependencies) {
             if (options.dependencies.includes(NEST_BOOT)) {
                 inject.push(NEST_BOOT_PROVIDER);
-            } else if (options.dependencies.includes(NEST_CONSUL_CONFIG)) {
+            } else if (options.dependencies.includes(NEST_CONFIG)) {
                 inject.push(NEST_LOADBALANCE_PROVIDER);
             }
 
@@ -34,13 +34,13 @@ export class FeignModule {
 
         const feignProvider = {
             provide: NEST_FEIGN_PROVIDER,
-            useFactory: async (config: IBoot | IConsulConfig): Promise<any> => {
+            useFactory: async (config: IBoot | IConfig): Promise<any> => {
                 NestCloud.global.axiosConfig = options.axiosConfig;
                 if (inject.includes(NEST_BOOT_PROVIDER)) {
                     NestCloud.global.axiosConfig = (config as IBoot).get(this.configPath, {});
-                } else if (inject.includes(NEST_CONSUL_CONFIG_PROVIDER)) {
-                    NestCloud.global.axiosConfig = (config as IConsulConfig).get(this.configPath, {});
-                    (config as IConsulConfig).watch(this.configPath, config => {
+                } else if (inject.includes(NEST_CONFIG_PROVIDER)) {
+                    NestCloud.global.axiosConfig = (config as IConfig).get(this.configPath, {});
+                    (config as IConfig).watch(this.configPath, config => {
                         NestCloud.global.axiosConfig = config;
                     });
                 }

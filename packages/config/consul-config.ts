@@ -2,17 +2,17 @@ import * as Consul from 'consul';
 import { get } from 'lodash';
 import * as YAML from 'yamljs';
 import { Logger } from '@nestjs/common';
-import { IConsulConfig, IKVResponse, sleep } from '@nestcloud/common';
+import { IConfig, IKVResponse, sleep } from '@nestcloud/common';
 import { Store } from './store';
-import { ConsulConfigSyncException } from './exceptions/consul-config-sync.exception';
+import { ConfigSyncException } from './exceptions/config-sync.exception';
 
-export class ConsulConfig implements IConsulConfig {
+export class ConsulConfig implements IConfig {
     private readonly store = Store;
     private readonly consul: Consul;
     private readonly key: string;
     private readonly retryInterval: 5000;
     private watcher = null;
-    private readonly logger = new Logger('ConsulConfigModule');
+    private readonly logger = new Logger('ConfigModule');
 
     constructor(consul: Consul, key: string) {
         this.consul = consul;
@@ -25,10 +25,10 @@ export class ConsulConfig implements IConsulConfig {
                 const result = await this.consul.kv.get<IKVResponse>(this.key);
                 this.store.data = result ? YAML.parse(result.Value) : {};
                 this.createWatcher();
-                this.logger.log('ConsulConfigModule initialized');
+                this.logger.log('ConfigModule initialized');
                 break;
             } catch (e) {
-                this.logger.error('Unable to initial ConsulConfigModule, retrying...', e);
+                this.logger.error('Unable to initial ConfigModule, retrying...', e);
                 await sleep(this.retryInterval);
             }
         }
@@ -55,7 +55,7 @@ export class ConsulConfig implements IConsulConfig {
         try {
             await this.consul.kv.set(this.key, yamlString);
         } catch (e) {
-            throw new ConsulConfigSyncException(e.message, e.stack);
+            throw new ConfigSyncException(e.message, e.stack);
         }
     }
 

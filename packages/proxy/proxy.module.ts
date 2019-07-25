@@ -4,9 +4,9 @@ import {
     NEST_BOOT_PROVIDER,
     NEST_LOADBALANCE_PROVIDER,
     NEST_PROXY_PROVIDER,
-    NEST_CONSUL_CONFIG,
-    NEST_CONSUL_CONFIG_PROVIDER,
-    IConsulConfig,
+    NEST_CONFIG,
+    NEST_CONFIG_PROVIDER,
+    IConfig,
     IBoot,
 } from '@nestcloud/common';
 import { IExtraOptions } from './interfaces/extra-options.interface';
@@ -26,8 +26,8 @@ export class ProxyModule {
         }
         if (options.dependencies && options.dependencies.includes(NEST_BOOT)) {
             inject.push(NEST_BOOT_PROVIDER);
-        } else if (options.dependencies.includes(NEST_CONSUL_CONFIG)) {
-            inject.push(NEST_CONSUL_CONFIG_PROVIDER);
+        } else if (options.dependencies.includes(NEST_CONFIG)) {
+            inject.push(NEST_CONFIG_PROVIDER);
         }
 
         const proxyProvider = {
@@ -35,15 +35,15 @@ export class ProxyModule {
             useFactory: (...args: any[]): Proxy => {
                 const loadblanace: ILoadbalance = args[inject.indexOf(NEST_LOADBALANCE_PROVIDER)];
                 const boot: IBoot = args[inject.indexOf(NEST_BOOT_PROVIDER)];
-                const config: IConsulConfig = args[inject.indexOf(NEST_CONSUL_CONFIG_PROVIDER)];
+                const config: IConfig = args[inject.indexOf(NEST_CONFIG_PROVIDER)];
                 let proxy;
                 if (boot) {
                     options = boot.get('proxy');
                     proxy = new Proxy(extra, loadblanace, options.routes);
                 } else if (config) {
-                    options = (config as IConsulConfig).get('proxy');
-                    proxy = new Proxy(extra, loadblanace, options.routes, config as IConsulConfig);
-                    (config as IConsulConfig).watch('proxy.routes', routes => {
+                    options = (config as IConfig).get('proxy');
+                    proxy = new Proxy(extra, loadblanace, options.routes, config as IConfig);
+                    (config as IConfig).watch('proxy.routes', routes => {
                         proxy.updateRoutes(routes || [], false);
                     });
                 } else {

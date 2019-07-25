@@ -9,7 +9,7 @@ const packages = {
     boot: ts.createProject('packages/boot/tsconfig.json'),
     core: ts.createProject('packages/core/tsconfig.json'),
     consul: ts.createProject('packages/consul/tsconfig.json'),
-    'consul-config': ts.createProject('packages/consul-config/tsconfig.json'),
+    config: ts.createProject('packages/config/tsconfig.json'),
     'consul-service': ts.createProject('packages/consul-service/tsconfig.json'),
     loadbalance: ts.createProject('packages/loadbalance/tsconfig.json'),
     logger: ts.createProject('packages/logger/tsconfig.json'),
@@ -22,13 +22,14 @@ const packages = {
     rbac: ts.createProject('packages/rbac/tsconfig.json'),
     redis: ts.createProject('packages/redis/tsconfig.json'),
     proxy: ts.createProject('packages/proxy/tsconfig.json'),
+    etcd: ts.createProject('packages/etcd/tsconfig.json'),
 };
 const modules = Object.keys(packages);
 const source = 'packages';
 const distId = process.argv.indexOf('--dist');
 const dist = distId < 0 ? source : process.argv[distId + 1];
 
-gulp.task('default', function () {
+gulp.task('default', function() {
     modules.forEach(module => {
         gulp.watch(
             [`${source}/${module}/**/*.ts`, `${source}/${module}/*.ts`],
@@ -38,14 +39,14 @@ gulp.task('default', function () {
 });
 
 
-gulp.task('copy-misc', function () {
+gulp.task('copy-misc', function() {
     return gulp
         .src(['LICENSE', '.npmignore'])
         .pipe(gulp.dest(`${source}/common`))
         .pipe(gulp.dest(`${source}/boot`))
         .pipe(gulp.dest(`${source}/core`))
         .pipe(gulp.dest(`${source}/consul`))
-        .pipe(gulp.dest(`${source}/consul-config`))
+        .pipe(gulp.dest(`${source}/config`))
         .pipe(gulp.dest(`${source}/consul-service`))
         .pipe(gulp.dest(`${source}/loadbalance`))
         .pipe(gulp.dest(`${source}/logger`))
@@ -58,9 +59,10 @@ gulp.task('copy-misc', function () {
         .pipe(gulp.dest(`${source}/rbac`))
         .pipe(gulp.dest(`${source}/redis`))
         .pipe(gulp.dest(`${source}/proxy`))
+        .pipe(gulp.dest(`${source}/etcd`));
 });
 
-gulp.task('clean:output', function () {
+gulp.task('clean:output', function() {
     return gulp
         .src(
             [`${source}/**/*.js`, `${source}/**/*.d.ts`, `${source}/**/*.js.map`],
@@ -71,7 +73,7 @@ gulp.task('clean:output', function () {
         .pipe(clean());
 });
 
-gulp.task('clean:dirs', function (done) {
+gulp.task('clean:dirs', function(done) {
     deleteEmpty.sync(`${source}/`);
     done();
 });

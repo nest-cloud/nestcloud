@@ -1,6 +1,6 @@
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import * as HttpProxy from 'http-proxy';
-import { IProxy, IConsulConfig, ILoadbalance } from '@nestcloud/common';
+import { IProxy, IConfig, ILoadbalance } from '@nestcloud/common';
 import { get } from 'lodash';
 
 import { IRoute, IRouteFilter } from './interfaces/route.interface';
@@ -18,10 +18,10 @@ export class Proxy implements IProxy {
     private proxy: HttpProxy;
     private readonly proxyOptions: IExtraOptions;
     private readonly lb: ILoadbalance;
-    protected readonly config: IConsulConfig;
+    protected readonly config: IConfig;
     private routeMap = {};
 
-    constructor(proxyOptions: IExtraOptions, lb: ILoadbalance, routes: IRoute[], config?: IConsulConfig) {
+    constructor(proxyOptions: IExtraOptions, lb: ILoadbalance, routes: IRoute[], config?: IConfig) {
         this.lb = lb;
         this.config = config;
         this.proxyOptions = Object.assign({}, proxyOptions, {
