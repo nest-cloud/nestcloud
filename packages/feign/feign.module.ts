@@ -34,12 +34,14 @@ export class FeignModule {
 
         const feignProvider = {
             provide: NEST_FEIGN_PROVIDER,
-            useFactory: async (config: IBoot | IConfig): Promise<any> => {
+            useFactory: async (...args: any[]): Promise<any> => {
+                const boot: IBoot = args[inject.indexOf(NEST_BOOT_PROVIDER)];
+                const config: IConfig = args[inject.indexOf(NEST_CONFIG_PROVIDER)];
                 NestCloud.global.axiosConfig = options.axiosConfig;
-                if (inject.includes(NEST_BOOT_PROVIDER)) {
-                    NestCloud.global.axiosConfig = (config as IBoot).get(this.configPath, {});
-                } else if (inject.includes(NEST_CONFIG_PROVIDER)) {
-                    NestCloud.global.axiosConfig = (config as IConfig).get(this.configPath, {});
+                if (boot) {
+                    NestCloud.global.axiosConfig = boot.get(this.configPath, {});
+                } else if (config) {
+                    NestCloud.global.axiosConfig = config.get(this.configPath, {});
                     (config as IConfig).watch(this.configPath, config => {
                         NestCloud.global.axiosConfig = config;
                     });

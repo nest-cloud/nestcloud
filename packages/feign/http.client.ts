@@ -41,6 +41,11 @@ export class HttpClient {
                 throw new InternalServerErrorException(`No available server can handle this request`);
             }
             response = await new module.HttpDelegate(server).send(this.http as any, config as any);
+        } else if (enableLb) {
+            if (config.url && config.url.charAt(0) !== '/') {
+                config.url = '/' + config.url;
+            }
+            config.url = `http://${this.service}${config.url}`;
         } else {
             response = await this.send(config);
         }
