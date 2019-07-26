@@ -7,8 +7,15 @@ export const BootValue = (path?: string, defaultValue?: any): PropertyDecorator 
         const configPath = path || attributeName;
 
         Store.watch(configPath, value => {
-            target[attributeName] = value;
+            if (value !== void 0) {
+                target[attributeName] = value;
+            } else if (defaultValue !== void 0) {
+                target[attributeName] = defaultValue;
+            }
         });
-        target[attributeName] = Store.get(configPath, defaultValue);
+        const value = Store.get(configPath, defaultValue);
+        if (value !== void 0) {
+            target[attributeName] = value;
+        }
     };
 };
