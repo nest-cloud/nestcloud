@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/grpc",
-  "version": "0.4.4",
+  "version": "0.5.0-0",
   "description": "loadbalance grpc module for nestcloud",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
