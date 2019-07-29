@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/etcd",
-  "version": "0.5.0-0",
+  "version": "0.5.0-1",
   "description": "A etcd3 module for nest.js",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
