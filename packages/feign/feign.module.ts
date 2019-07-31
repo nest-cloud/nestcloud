@@ -24,7 +24,7 @@ export class FeignModule {
             if (options.dependencies.includes(NEST_BOOT)) {
                 inject.push(NEST_BOOT_PROVIDER);
             } else if (options.dependencies.includes(NEST_CONFIG)) {
-                inject.push(NEST_LOADBALANCE_PROVIDER);
+                inject.push(NEST_CONFIG_PROVIDER);
             }
 
             if (options.dependencies.includes(NEST_LOADBALANCE)) {

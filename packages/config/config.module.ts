@@ -50,6 +50,8 @@ export class ConfigModule {
                     return client;
                 } else if (etcd) {
                     return new EtcdConfig(etcd, key);
+                } else {
+                    throw new Error('Please add NEST_CONSUL or NEST_ETCD to dependencies attribute');
                 }
             },
             inject,

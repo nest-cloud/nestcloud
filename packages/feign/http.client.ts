@@ -46,6 +46,7 @@ export class HttpClient {
                 config.url = '/' + config.url;
             }
             config.url = `http://${this.service}${config.url}`;
+            response = await this.send(config);
         } else {
             response = await this.send(config);
         }

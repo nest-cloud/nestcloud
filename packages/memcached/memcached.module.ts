@@ -15,20 +15,20 @@ import {
 export class MemcachedModule {
     static register(options: IMemcachedOptions = {}): DynamicModule {
         const inject = [];
-        if (options.dependencies.includes(NEST_BOOT)) {
-            inject.push(NEST_BOOT_PROVIDER);
-        }
-        if (options.dependencies.includes(NEST_CONFIG)) {
-            inject.push(NEST_CONFIG_PROVIDER);
+        if (options.dependencies) {
+            if (options.dependencies.includes(NEST_BOOT)) {
+                inject.push(NEST_BOOT_PROVIDER);
+            } else if (options.dependencies.includes(NEST_CONFIG)) {
+                inject.push(NEST_CONFIG_PROVIDER);
+            }
         }
 
         const connectionProvider = {
             provide: NEST_MEMCACHED_PROVIDER,
             useFactory: async (config: IBoot | IConfig): Promise<Memcached> => {
-                if (options.dependencies.includes(NEST_BOOT)) {
+                if (inject.includes(NEST_BOOT_PROVIDER)) {
                     options = (config as IBoot).get('memcached', {});
-                }
-                if (options.dependencies.includes(NEST_CONFIG)) {
+                } else if (inject.includes(NEST_CONFIG_PROVIDER)) {
                     options = await (config as IConfig).get('memcached', {});
                 }
                 return new Memcached(options.uri, options);

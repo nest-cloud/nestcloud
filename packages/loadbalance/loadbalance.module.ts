@@ -24,10 +24,12 @@ export class LoadbalanceModule {
 
     static register(options: ILoadbalanceOptions = {}): DynamicModule {
         const inject = [NEST_CONSUL_SERVICE_PROVIDER];
-        if (options.dependencies.includes(NEST_BOOT)) {
-            inject.push(NEST_BOOT_PROVIDER);
-        } else if (options.dependencies.includes(NEST_CONFIG)) {
-            inject.push(NEST_CONFIG_PROVIDER);
+        if (options.dependencies) {
+            if (options.dependencies.includes(NEST_BOOT)) {
+                inject.push(NEST_BOOT_PROVIDER);
+            } else if (options.dependencies.includes(NEST_CONFIG)) {
+                inject.push(NEST_CONFIG_PROVIDER);
+            }
         }
 
         const loadbalanceProvider = {
