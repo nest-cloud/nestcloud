@@ -9,6 +9,7 @@ import {
     IConfig,
     IBoot,
     ILoadbalance,
+    NEST_LOADBALANCE,
 } from '@nestcloud/common';
 import { IExtraOptions } from './interfaces/extra-options.interface';
 import { IProxyOptions } from './interfaces/proxy-options.interface';
@@ -21,13 +22,15 @@ import { Proxy } from './proxy';
 export class ProxyModule {
     static register(options: IProxyOptions = {}, extra?: IExtraOptions): DynamicModule {
         const inject = [];
-        if (options.enableLb) {
-            inject.push(NEST_LOADBALANCE_PROVIDER);
-        }
-        if (options.dependencies && options.dependencies.includes(NEST_BOOT)) {
-            inject.push(NEST_BOOT_PROVIDER);
-        } else if (options.dependencies.includes(NEST_CONFIG)) {
-            inject.push(NEST_CONFIG_PROVIDER);
+        if (options.dependencies) {
+            if (options.dependencies.includes(NEST_LOADBALANCE)) {
+                inject.push(NEST_LOADBALANCE_PROVIDER);
+            }
+            if (options.dependencies.includes(NEST_BOOT)) {
+                inject.push(NEST_BOOT_PROVIDER);
+            } else if (options.dependencies.includes(NEST_CONFIG)) {
+                inject.push(NEST_CONFIG_PROVIDER);
+            }
         }
 
         const proxyProvider = {
