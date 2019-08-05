@@ -8,11 +8,11 @@ import {
     NEST_CONFIG_PROVIDER,
     IConfig,
     IBoot,
+    ILoadbalance,
 } from '@nestcloud/common';
 import { IExtraOptions } from './interfaces/extra-options.interface';
 import { IProxyOptions } from './interfaces/proxy-options.interface';
 import { Proxy } from './proxy';
-import { ILoadbalance } from '../common';
 
 @Global()
 @Module({
@@ -21,7 +21,7 @@ import { ILoadbalance } from '../common';
 export class ProxyModule {
     static register(options: IProxyOptions = {}, extra?: IExtraOptions): DynamicModule {
         const inject = [];
-        if (options.routes && options.routes.filter(route => route.uri.includes('lb://'))) {
+        if (options.enableLb) {
             inject.push(NEST_LOADBALANCE_PROVIDER);
         }
         if (options.dependencies && options.dependencies.includes(NEST_BOOT)) {

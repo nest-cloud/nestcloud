@@ -3,11 +3,10 @@ import * as md5encode from 'blueimp-md5';
 import * as Consul from 'consul';
 import { get } from 'lodash';
 
-import { IConsulService, sleep } from '@nestcloud/common';
+import { IConsulService, sleep, IServiceNode } from '@nestcloud/common';
 import { IConsulServiceOptions } from './interfaces/consul-service-options.interface';
 import { IConsulServiceCheck } from './interfaces/consul-service-check.interface';
 import { getIPAddress } from './utils/os.util';
-import { IServiceNode } from '../common';
 import { Store } from './store';
 
 export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulService {
