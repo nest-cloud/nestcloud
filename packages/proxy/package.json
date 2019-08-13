@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/proxy",
-  "version": "0.5.0-6",
+  "version": "0.5.0-7",
   "description": "proxy module for nestcloud",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
