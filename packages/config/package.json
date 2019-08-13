@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/config",
-  "version": "0.5.0-4",
+  "version": "0.5.0-5",
   "description": "A Nest framework (node.js) module for getting configurations from consul kv",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
@@ -10,8 +10,7 @@
   "optionalDependencies": {
     "@nestcloud/boot": "^0.4.4",
     "@nestcloud/consul": "^0.4.4",
-    "consul": "^0.30.0",
-    "etcd3": "^0.2.13"
+    "consul": "^0.30.0"
   },
   "peerDependencies": {
     "@nestcloud/common": "^0.4.4",
@@ -26,6 +25,7 @@
   },
   "homepage": "https://github.com/nest-cloud/nestcloud#readme",
   "dependencies": {
+    "json-stream": "^1.0.0",
     "lodash": "^4.17.11",
     "reflect-metadata": "^0.1.12",
     "yamljs": "^0.3.0"

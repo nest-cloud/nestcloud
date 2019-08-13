@@ -1,15 +1,11 @@
 {
-  "name": "@nestcloud/boot",
+  "name": "@nestcloud/kubernetes",
   "version": "0.5.0-5",
-  "description": "A Nest framework (node.js) module for getting config parameters when the app start running.",
+  "description": "kubernetes client module for nestcloud",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
-  },
-  "peerDependencies": {
-    "@nestcloud/common": "^0.4.4",
-    "@nestjs/common": "^6.0.0"
   },
   "repository": {
     "type": "git",
@@ -19,10 +15,9 @@
     "url": "https://github.com/nest-cloud/nestcloud/issues"
   },
   "homepage": "https://github.com/nest-cloud/nestcloud#readme",
-  "dependencies": {
-    "handlebars": "^4.1.1",
-    "lodash": "^4.17.11",
-    "reflect-metadata": "^0.1.12",
-    "yamljs": "^0.3.0"
+  "peerDependencies": {
+    "@nestcloud/common": "^0.4.4",
+    "@nestcloud/core": "^0.4.4",
+    "kubernetes-client": "^8.3.3"
   }
 }

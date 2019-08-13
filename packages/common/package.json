@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/common",
-  "version": "0.5.0-4",
+  "version": "0.5.0-5",
   "description": "common module for nestcloud",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
@@ -16,6 +16,7 @@
   },
   "homepage": "https://github.com/nest-cloud/nestcloud#readme",
   "dependencies": {
+    "kubernetes-client": "^8.3.3",
     "lodash": "^4.17.11"
   }
 }
