@@ -71,10 +71,10 @@ consul:
 ## Usage
 
 ```typescript
-import { Component } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectService, Service } from '@nestcloud/service';
 
-@Component()
+@Injectable()
 export class TestService {
   constructor(@InjectService() private readonly service: Service) {}
 

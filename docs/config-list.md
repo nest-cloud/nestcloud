@@ -15,13 +15,16 @@ consul:
     id: null
     name: service
     port: 3000
-  config:
-    # 如果服务名字是 user-service 并且 env 是 production，
-    # 则 consul kv 中 key 为 config__user-service__production
-    key: config__${{ consul.service.name }}__${ NODE_ENV }}
-    retry: 5
+    
+config:
+  # 如果服务名字是 user-service 并且 env 是 production，
+  # 则 consul kv 中 key 为 config__user-service__production
+  key: config__${{ consul.service.name }}__${ NODE_ENV }}
+  # 如果后端是 Kubernetes 下列配置有效
+  namespace: default
+  path: config.yaml
 
-# 支持通过 consul-config 加载
+# 支持通过 config 加载
 proxy:
   routes:
     - id: user
@@ -29,12 +32,12 @@ proxy:
     - id: pay
       uri: http://pay.example.com
       
-# 支持通过 consul-config 加载
+# 支持通过 config 加载
 feign:
   axios:
     timeout: 1000
     
-# 支持通过 consul-config 加载
+# 支持通过 config 加载
 loadbalance:
   ruleCls: RandomRule
   

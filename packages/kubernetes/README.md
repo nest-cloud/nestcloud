@@ -29,6 +29,8 @@ $ npm install --save @nestcloud/kubernetes
 
 ## Usage
 
+### Use External Cluster
+
 ```typescript
 import { Module } from '@nestjs/common';
 import { KubernetesModule } from '@nestcloud/kubernetes';
@@ -39,6 +41,37 @@ import { KubernetesModule } from '@nestcloud/kubernetes';
   ],
 })
 export class ApplicationModule {}
+```
+
+### Use Internal Cluster
+
+```typescript
+import { Module } from '@nestjs/common';
+import { KubernetesModule } from '@nestcloud/kubernetes';
+
+@Module({
+  imports: [
+      KubernetesModule.register()
+  ],
+})
+export class ApplicationModule {}
+```
+
+### Use Client
+
+```typescript
+import { Injectable, IKubernetes } from '@nestjs/common';
+import { InjectKubernetes } from '@nestcloud/kubernetes';
+
+@Injectable()
+export class TestService {
+  constructor(@InjectKubernetes() private readonly client: IKubernetes) {}
+
+  async getConfigMaps() {
+      const result = await this.client.api.v1.namespaces('default').configmaps('test-configmap').get();
+      console.log(result);
+  }
+}
 ```
 
 ## Stay in touch
