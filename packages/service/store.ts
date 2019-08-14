@@ -2,7 +2,7 @@ import * as Consul from 'consul';
 import { intersection } from 'lodash';
 import { IServiceNode, PASSING } from '@nestcloud/common';
 import { handleConsulNodes } from './utils/service.util';
-import { Watcher } from './consul-service.watcher';
+import { Watcher } from './service-watcher';
 import { toList, toValueList } from './utils/array.util';
 
 export class Store {

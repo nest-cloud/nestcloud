@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import {
     IBoot,
     IConfig,
-    IConsulService,
+    IService,
     ILoadbalance,
     IProxy,
     IMemcached,
@@ -12,7 +12,7 @@ import {
     NEST_CONSUL,
     NEST_CONFIG,
     NEST_LOADBALANCE,
-    NEST_CONSUL_SERVICE,
+    NEST_SERVICE,
     NEST_PROXY,
 } from '@nestcloud/common';
 import * as Consul from 'consul';
@@ -32,7 +32,7 @@ export class Global {
     private _boot: IBoot;
     private _consul: Consul;
     private _config: IConfig;
-    private _consulService: IConsulService;
+    private _service: IService;
     private _loadbalance: ILoadbalance;
     private _proxy: IProxy;
     private _memcached: IMemcached;
@@ -77,13 +77,13 @@ export class Global {
         this.trigger(NEST_CONFIG, config);
     }
 
-    public get consulService(): IConsulService {
-        return this._consulService;
+    public get consulService(): IService {
+        return this._service;
     }
 
-    public set consulService(consulService: IConsulService) {
-        this._consulService = consulService;
-        this.trigger(NEST_CONSUL_SERVICE, consulService);
+    public set consulService(consulService: IService) {
+        this._service = consulService;
+        this.trigger(NEST_SERVICE, consulService);
     }
 
     public get loadbalance(): ILoadbalance {

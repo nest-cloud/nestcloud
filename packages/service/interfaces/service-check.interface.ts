@@ -1,4 +1,4 @@
-export interface IConsulServiceCheck {
+export interface IServiceCheck {
     http?: string;
     tcp?: string;
     script?: string;

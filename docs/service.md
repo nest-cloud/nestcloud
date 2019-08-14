@@ -5,7 +5,7 @@ Consul-Service 提供在服务启动的时候向 Consul 注册服务，服务退
 ## 安装
 
 ```bash
-npm install @nestcloud/consul-service @nestcloud/consul consul --save
+npm install @nestcloud/service @nestcloud/consul consul --save
 ```
 
 ## 注册模块
@@ -13,7 +13,7 @@ npm install @nestcloud/consul-service @nestcloud/consul consul --save
 ```typescript
 import { Module } from '@nestjs/common';
 import { ConsulModule } from '@nestcloud/consul';
-import { ConsulServiceModule } from '@nestcloud/consul-service';
+import { ServiceModule } from '@nestcloud/service';
 import { BootModule } from '@nestcloud/boot';
 import { NEST_BOOT } from '@nestcloud/common';
 
@@ -21,7 +21,7 @@ import { NEST_BOOT } from '@nestcloud/common';
   imports: [
       ConsulModule.register({dependencies: [NEST_BOOT]}),
       BootModule.register(__dirname, 'bootstrap.yml'),
-      ConsulServiceModule.register({dependencies: [NEST_BOOT]}),
+      ServiceModule.register({dependencies: [NEST_BOOT]}),
   ],
 })
 export class ApplicationModule {}
@@ -55,12 +55,12 @@ consul:
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { InjectConsulService, ConsulService } from '@nestcloud/consul-service';
+import { InjectService, Service } from '@nestcloud/service';
 
 @Injectable()
 export class TestService {
   constructor(
-      @InjectConsulService() private readonly service: ConsulService
+      @InjectService() private readonly service: Service
   ) {}
 
   getServices() {
@@ -124,7 +124,7 @@ consul:
 
 ## API 文档
 
-### class ConsulServiceModule
+### class ServiceModule
 
 #### static register\(options: RegisterOptions\): DynamicModule
 

@@ -14,7 +14,7 @@
   "peerDependencies": {
     "@nestcloud/common": "^0.4.4",
     "@nestcloud/consul": "^0.4.4",
-    "@nestcloud/consul-service": "^0.4.4",
+    "@nestcloud/service": "^0.4.4",
     "@nestjs/common": "^6.0.0",
     "consul": "^0.30.0"
   },

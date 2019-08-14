@@ -3,15 +3,15 @@ import * as md5encode from 'blueimp-md5';
 import * as Consul from 'consul';
 import { get } from 'lodash';
 
-import { IConsulService, sleep, IServiceNode } from '@nestcloud/common';
-import { IConsulServiceOptions } from './interfaces/consul-service-options.interface';
-import { IConsulServiceCheck } from './interfaces/consul-service-check.interface';
+import { IService, sleep, IServiceNode } from '@nestcloud/common';
+import { IServiceOptions } from './interfaces/service-options.interface';
+import { IServiceCheck } from './interfaces/service-check.interface';
 import { getIPAddress } from './utils/os.util';
 import { Store } from './store';
 
-export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulService {
+export class Service implements OnModuleInit, OnModuleDestroy, IService {
     private store: Store;
-    private readonly logger = new Logger('ConsulServiceModule');
+    private readonly logger = new Logger('ServiceModule');
 
     private readonly discoveryHost: string;
     private readonly serviceId: string;
@@ -35,7 +35,7 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
 
     constructor(
         @Inject('ConsulClient') private readonly consul: Consul,
-        options: IConsulServiceOptions,
+        options: IServiceOptions,
     ) {
         this.discoveryHost = get(options, 'discoveryHost', getIPAddress());
         this.serviceId = get(options, 'service.id');
@@ -63,10 +63,10 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
         while (true) {
             try {
                 await this.store.init();
-                this.logger.log('ConsulServiceModule initialized');
+                this.logger.log('ServiceModule initialized');
                 break;
             } catch (e) {
-                this.logger.error(`Unable to initial ConsulServiceModule, retrying...`, e);
+                this.logger.error(`Unable to initial ServiceModule, retrying...`, e);
                 await sleep(this.retryInterval);
             }
         }
@@ -107,7 +107,7 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IConsulServ
             deregistercriticalserviceafter: this.deregisterCriticalServiceAfter,
             notes: this.notes,
             status: this.status,
-        } as IConsulServiceCheck;
+        } as IServiceCheck;
 
         if (this.tcp) {
             check.tcp = this.tcp;

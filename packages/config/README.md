@@ -17,7 +17,7 @@
 
 ## Description
 
-A NestCloud component for getting and watching configurations from consul kv.
+A NestCloud component for getting and watching configurations from consul kv or kubernetes configmaps.
 
 [中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/config.md)
 
@@ -31,24 +31,46 @@ $ npm i --save @nestcloud/consul consul @nestcloud/config
 
 ### Import Module
 
+#### Use Consul KV As Backend
+
 ```typescript
 import { Module } from '@nestjs/common';
 import { ConsulModule } from '@nestcloud/consul';
 import { ConfigModule } from '@nestcloud/config';
 import { BootModule } from '@nestcloud/boot';
-import { NEST_BOOT } from '@nestcloud/common';
+import { NEST_BOOT, NEST_CONSUL } from '@nestcloud/common';
 
 @Module({
   imports: [
       ConsulModule.register({dependencies: [NEST_BOOT]}),
       BootModule.register(__dirname, 'bootstrap.yml'),
-      ConfigModule.register({dependencies: [NEST_BOOT]})
+      ConfigModule.register({dependencies: [NEST_BOOT, NEST_CONSUL]})
+  ],
+})
+export class ApplicationModule {}
+```
+
+#### Use Kubernetes As Backend
+
+```typescript
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestcloud/config';
+import { BootModule } from '@nestcloud/boot';
+import { NEST_BOOT, NEST_KUBERNETES } from '@nestcloud/common';
+
+@Module({
+  imports: [
+      BootModule.register(__dirname, 'bootstrap.yml'),
+      ConfigModule.register({dependencies: [NEST_BOOT, NEST_KUBERNETES]})
   ],
 })
 export class ApplicationModule {}
 ```
 
 ### Configurations
+
+You should specific `config.key` for consul kv or 
+specific `config.key`, `config.namespace`, `config.path` for kubernetes configMap.
 
 ```yaml
 consul:
@@ -57,13 +79,13 @@ consul:
   service: 
     id: null
     name: example-service
-  config:
-    key: config__${{ consul.service.name }}__${{ NODE_ENV }}
+config:
+  key: nestcloud-conf
+  namespace: default
+  path: config.yaml
 ```
 
-## How to get remote configurations
-
-In consul kv, the key is "config__example-service__development".
+#### Configurations In Consul KV
 
 ```yaml
 user:
@@ -71,7 +93,24 @@ user:
     name: 'test'
 ```
 
-### Inject Config Client
+#### Configurations In Kubernetes ConfigMap
+
+```yaml
+apiVersion: v1
+data:
+  config.yaml: |-
+    user:
+      info:
+        name: 'test'
+
+kind: ConfigMap
+metadata:
+  name: nestcloud-conf
+  namespace: default
+
+```
+
+#### Inject Config Client
 
 ```typescript
 import { Injectable } from '@nestjs/common';
@@ -90,7 +129,7 @@ export class TestService {
 }
 ```
 
-### Inject value
+#### Inject value
 
 ```typescript
 import { Injectable } from '@nestjs/common';
@@ -109,7 +148,7 @@ export class TestService {
 
 ## API
 
-    ### class ConfigModule
+### class ConfigModule
 
 #### static register\(options\): DynamicModule
 
@@ -117,8 +156,10 @@ Register consul config module.
 
 | field | type | description |
 | :--- | :--- | :--- |
-| options.dependencies | string[] | if you are using @nestcloud/boot module, please set [NEST_BOOT] |
-| options.retry | number | the max retry count when get configuration fail |
+| options.dependencies | string[] | NEST_BOOT, NEST_CONSUL, NEST_KUBERNETES |
+| options.key | key of the consul kv or name of the kubernetes configMap |
+| options.namespace | the kubernetes namespace |
+| options.path | the path of the kubernetes configMap |
 
 ### class Config
 

@@ -1,5 +1,5 @@
 {
-  "name": "@nestcloud/consul-service",
+  "name": "@nestcloud/service",
   "version": "0.5.0-8",
   "description": "A Nest framework (node.js) module for registering and getting consul service easily.",
   "author": "Miaowing <i@zfeng.net>",

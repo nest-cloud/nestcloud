@@ -1,10 +1,9 @@
-import { LoggerService } from '@nestjs/common';
-import { IConsulServiceCheck } from './consul-service-check.interface';
+import { IServiceCheck } from './service-check.interface';
 
-export interface IConsulServiceOptions {
+export interface IServiceOptions {
     dependencies?: string[];
     discoveryHost?: string;
-    healthCheck?: IConsulServiceCheck;
+    healthCheck?: IServiceCheck;
     maxRetry?: number;
     retryInterval?: number;
     service?: {

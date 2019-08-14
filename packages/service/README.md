@@ -4,7 +4,7 @@
 [linux-image]: https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux
 [linux-url]: https://travis-ci.org/nest-cloud/nestcloud
 
-# NestCloud - ConsulService
+# NestCloud - Service
 
 <p align="center">
     <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/v/@nestcloud/core.svg" alt="NPM Version"/></a>
@@ -24,7 +24,7 @@ A NestCloud component for service registration and service discovery.
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/consul-service @nestcloud/consul consul
+$ npm i --save @nestcloud/service @nestcloud/consul consul
 ```
 
 ## Quick Start
@@ -34,7 +34,7 @@ $ npm i --save @nestcloud/consul-service @nestcloud/consul consul
 ```typescript
 import { Module } from '@nestjs/common';
 import { ConsulModule } from '@nestcloud/consul';
-import { ConsulServiceModule } from '@nestcloud/consul-service';
+import { ServiceModule } from '@nestcloud/service';
 import { BootModule } from '@nestcloud/boot';
 import { NEST_BOOT } from '@nestcloud/common';
 
@@ -42,7 +42,7 @@ import { NEST_BOOT } from '@nestcloud/common';
   imports: [
       ConsulModule.register({dependencies: [NEST_BOOT]}),
       BootModule.register(__dirname, 'bootstrap.yml'),
-      ConsulServiceModule.register({dependencies: [NEST_BOOT]}),
+      ServiceModule.register({dependencies: [NEST_BOOT]}),
   ],
 })
 export class ApplicationModule {}
@@ -72,11 +72,11 @@ consul:
 
 ```typescript
 import { Component } from '@nestjs/common';
-import { InjectConsulService, ConsulService } from '@nestcloud/consul-service';
+import { InjectService, Service } from '@nestcloud/service';
 
 @Component()
 export class TestService {
-  constructor(@InjectConsulService() private readonly service: ConsulService) {}
+  constructor(@InjectService() private readonly service: Service) {}
 
   getServiceNodes() {
       const nodes = this.service.getServiceNodes('user-service', {passing: true});
@@ -139,7 +139,7 @@ consul:
 
 ## API
 
-### class ConsulServiceModule
+### class ServiceModule
 
 #### static register\(options: RegisterOptions\): DynamicModule
 
@@ -168,7 +168,7 @@ Import nest consul service module.
 | options.consul.maxRetry | number | the max retry count when register service fail |
 | options.consul.retryInterval | number | the retry interval when register service fail |
 
-### class ConsulService
+### class Service
 
 #### getServices\(\): ServiceNode[]
 

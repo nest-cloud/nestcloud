@@ -1,10 +1,10 @@
-import { ConsulService } from './consul-service.class';
+import { Service } from './service';
 import * as Consul from 'consul';
 import { expect } from 'chai';
 
 describe('Consul Service Store', () => {
     let consul: Consul;
-    let service: ConsulService;
+    let service: Service;
 
     before(async () => {
         consul = new Consul({ host: '127.0.0.1', port: 8500, promisify: true });
@@ -19,7 +19,7 @@ describe('Consul Service Store', () => {
             },
             status: 'passing',
         });
-        service = new ConsulService(consul, {
+        service = new Service(consul, {
             discoveryHost: '127.0.0.1',
             healthCheck: {
                 http: 'http://127.0.0.1:8500',

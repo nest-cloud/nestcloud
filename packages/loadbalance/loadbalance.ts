@@ -1,5 +1,5 @@
 import { get, keyBy } from 'lodash';
-import { ILoadbalance, IServiceNode, IServer, ILoadbalancer, IConsulService } from '@nestcloud/common';
+import { ILoadbalance, IServiceNode, IServer, ILoadbalancer, IService } from '@nestcloud/common';
 
 import { IRuleOptions } from './interfaces/rule-options.interface';
 import { Loadbalancer } from './loadbalancer';
@@ -11,14 +11,14 @@ import { ServiceNotExistException } from './exceptions/service-not-exist.excepti
 const axios = require('axios');
 
 export class Loadbalance implements ILoadbalance {
-    private readonly service: IConsulService;
+    private readonly service: IService;
     private readonly loadbalancers: { [service: string]: Loadbalancer } = {};
     private rules: IRuleOptions[];
     private globalRuleCls: IRule | Function;
     private readonly customRulePath: string;
     private timer = null;
 
-    constructor(service: IConsulService, customRulePath: string) {
+    constructor(service: IService, customRulePath: string) {
         this.service = service;
         this.customRulePath = customRulePath;
     }

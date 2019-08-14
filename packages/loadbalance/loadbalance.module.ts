@@ -4,10 +4,10 @@ import {
     NEST_CONFIG,
     NEST_CONFIG_PROVIDER,
     NEST_LOADBALANCE_PROVIDER,
-    NEST_CONSUL_SERVICE_PROVIDER,
+    NEST_SERVICE_PROVIDER,
     IBoot,
     IConfig,
-    IConsulService,
+    IService,
 } from '@nestcloud/common';
 import { DynamicModule, Global, Module } from '@nestjs/common';
 
@@ -23,7 +23,7 @@ export class LoadbalanceModule {
     private static readonly ruleClsPath = 'loadbalance.ruleCls';
 
     static register(options: ILoadbalanceOptions = {}): DynamicModule {
-        const inject = [NEST_CONSUL_SERVICE_PROVIDER];
+        const inject = [NEST_SERVICE_PROVIDER];
         if (options.dependencies) {
             if (options.dependencies.includes(NEST_BOOT)) {
                 inject.push(NEST_BOOT_PROVIDER);
@@ -34,7 +34,7 @@ export class LoadbalanceModule {
 
         const loadbalanceProvider = {
             provide: NEST_LOADBALANCE_PROVIDER,
-            useFactory: async (service: IConsulService, config: IBoot | IConfig): Promise<Loadbalance> => {
+            useFactory: async (service: IService, config: IBoot | IConfig): Promise<Loadbalance> => {
                 const loadbalance = new Loadbalance(service, options.customRulePath);
                 let rules: IRuleOptions[] = options.rules || [];
                 let ruleCls: string = options.ruleCls || 'RandomRule';

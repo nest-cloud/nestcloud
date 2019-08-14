@@ -3,8 +3,8 @@ import {
     NEST_RBAC_PROVIDER,
     NEST_CONSUL,
     NEST_CONSUL_PROVIDER,
-    NEST_CONSUL_SERVICE,
-    NEST_CONSUL_SERVICE_PROVIDER,
+    NEST_SERVICE,
+    NEST_SERVICE_PROVIDER,
     NEST_LOADBALANCE,
     NEST_LOADBALANCE_PROVIDER,
     NEST_BOOT,
@@ -79,8 +79,8 @@ export class RbacModule {
         if (dependencies.includes(NEST_LOADBALANCE)) {
             injects.push(NEST_LOADBALANCE_PROVIDER);
         }
-        if (dependencies.includes(NEST_CONSUL_SERVICE)) {
-            injects.push(NEST_CONSUL_SERVICE_PROVIDER);
+        if (dependencies.includes(NEST_SERVICE)) {
+            injects.push(NEST_SERVICE_PROVIDER);
         }
         if (dependencies.includes(NEST_BOOT)) {
             injects.push(NEST_BOOT_PROVIDER);
