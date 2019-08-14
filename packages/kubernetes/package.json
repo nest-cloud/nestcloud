@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/kubernetes",
-  "version": "0.5.0-8",
+  "version": "0.5.0-9",
   "description": "kubernetes client module for nestcloud",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",

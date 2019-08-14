@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/redis",
-  "version": "0.5.0-8",
+  "version": "0.5.0-9",
   "description": "A redis module for nest.js",
   "author": "Miaowing <me@zf.ink>",
   "license": "MIT",
