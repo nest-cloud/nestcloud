@@ -22,7 +22,7 @@ const packages = {
     rbac: ts.createProject('packages/rbac/tsconfig.json'),
     redis: ts.createProject('packages/redis/tsconfig.json'),
     proxy: ts.createProject('packages/proxy/tsconfig.json'),
-    etcd: ts.createProject('packages/etcd/tsconfig.json'),
+    kubernetes: ts.createProject('packages/kubernetes/tsconfig.json'),
 };
 const modules = Object.keys(packages);
 const source = 'packages';
@@ -59,7 +59,7 @@ gulp.task('copy-misc', function() {
         .pipe(gulp.dest(`${source}/rbac`))
         .pipe(gulp.dest(`${source}/redis`))
         .pipe(gulp.dest(`${source}/proxy`))
-        .pipe(gulp.dest(`${source}/etcd`));
+        .pipe(gulp.dest(`${source}/kubernetes`));
 });
 
 gulp.task('clean:output', function() {

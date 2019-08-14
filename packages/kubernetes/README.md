@@ -4,7 +4,7 @@
 [linux-image]: https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux
 [linux-url]: https://travis-ci.org/nest-cloud/nestcloud
 
-# NestCloud - Etcd
+# NestCloud - Kubernetes
 
 <p align="center">
     <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/v/@nestcloud/core.svg" alt="NPM Version"/></a>
@@ -17,16 +17,29 @@
 
 ## Description
 
-NestCloud etcd component.
+The kubernetes client module for nestcloud.
 
-[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/core.md)
+[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/kuberentes.md)
 
 ## Installation
 
 ```bash
-$ npm install @nestcloud/etcd --save
+$ npm install --save @nestcloud/kubernetes
 ```
 
+## Usage
+
+```typescript
+import { Module } from '@nestjs/common';
+import { KubernetesModule } from '@nestcloud/kubernetes';
+
+@Module({
+  imports: [
+      KubernetesModule.register({kubeConfig: '/root/.kube/config'})
+  ],
+})
+export class ApplicationModule {}
+```
 
 ## Stay in touch
 

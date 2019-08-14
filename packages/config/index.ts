@@ -1,5 +1,5 @@
 export * from './consul-config';
-export * from './etcd-config';
+export * from './kubernetes-config';
 export * from './decorators/inject.config.decorator';
 export * from './decorators/config-value.decorator';
 export * from './interfaces/config-options.interface';

@@ -18,3 +18,4 @@ export * from './interfaces/proxy.interface';
 export * from './interfaces/memcached.interface';
 export * from './interfaces/consul-kv-response.interface';
 export * from './interfaces/brakes-config.interface';
+export * from './interfaces/kubernetes.interface';
