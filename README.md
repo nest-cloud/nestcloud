@@ -20,13 +20,25 @@ A NodeJS micro-service solution based on Consul, writing by Typescript language 
 ## Install
 
 ```bash
-npm install --save @nestcloud/core @nestcloud/common @nestcloud/boot @nestcloud/consul @nestcloud/consul-service @nestcloud/consul-config @nestcloud/consul-loadbalance @nestcloud/feign @nestcloud/logger @nestcloud/schedule 
+npm install --save @nestcloud/core @nestcloud/common @nestcloud/boot @nestcloud/consul @nestcloud/service @nestcloud/config @nestcloud/loadbalance @nestcloud/feign @nestcloud/logger @nestcloud/schedule 
 ```
 
 ## Docs
 
 [中文文档](docs)
 
+## Examples
+
+[nestcloud-typeorm-example](https://github.com/nest-cloud/nestcloud-typeorm-example)
+
+[nestcloud-grpc-example](https://github.com/nest-cloud/nestcloud-grpc-example)
+
+[nestcloud-kubernetes-example](https://github.com/nest-cloud/nestcloud-kubernetes-example)
+
+
+## Starter
+
+You can use the [NestCloud-Starter](https://github.com/nest-cloud/nestcloud-starter) start your project quickly.
 
 ## Components
 
@@ -40,12 +52,12 @@ Get local configurations and environment values when the app bootstrap.
 Consul module.
 
 
-### [Consul-Config](packages/consul-config)
+### [Config](packages/consul-config)
 
-Get & watch configurations from Consul KV.
+Get & watch configurations from Consul KV or Kubernetes ConfigMap.
 
 
-### [Consul-Service](packages/consul-service)
+### [Service](packages/consul-service)
 
 Register & cancel register service, discovery other service.
 
@@ -94,6 +106,10 @@ Validate request params.
 
 Role based access control.
 
+### [Kubernetes](packages/kubernetes)
+
+The kubernetes client for nest.
+
 
 ## Quick Start
 
@@ -123,11 +139,11 @@ app.module.ts
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { NEST_BOOT, NEST_LOADBALANCE } from '@nestcloud/common';
+import { NEST_BOOT, NEST_LOADBALANCE, NEST_CONSUL } from '@nestcloud/common';
 import { BootModule } from '@nestcloud/boot';
 import { ConsulModule } from '@nestcloud/consul';
-import { ConsulConfigModule } from '@nestcloud/consul-config';
-import { ConsulServiceModule } from '@nestcloud/consul-service';
+import { ConfigModule } from '@nestcloud/config';
+import { ServiceModule } from '@nestcloud/service';
 import { LoadbalanceModule } from '@nestcloud/loadbalance';
 import { FeignModule } from '@nestcloud/feign';
 import { LoggerModule } from '@nestcloud/logger';
@@ -138,8 +154,8 @@ import { TerminusModule } from '@nestjs/terminus';
         LoggerModule.register(),
         BootModule.register(__dirname, `config.yaml`),
         ConsulModule.register({ dependencies: [NEST_BOOT] }),
-        ConsulConfigModule.register({ dependencies: [NEST_BOOT] }),
-        ConsulServiceModule.register({ dependencies: [NEST_BOOT] }),
+        ConfigModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL] }),
+        ServiceModule.register({ dependencies: [NEST_BOOT] }),
         LoadbalanceModule.register({ dependencies: [NEST_BOOT] }),
         FeignModule.register({ dependencies: [NEST_BOOT, NEST_LOADBALANCE] }),
         TerminusModule.forRootAsync({
@@ -150,12 +166,6 @@ import { TerminusModule } from '@nestjs/terminus';
 export class AppModule {
 }
 ```
-
-
-## Starter
-
-You can use the [NestCloud-Starter](https://github.com/nest-cloud/nestcloud-starter) start your project quickly.
-
 
 ## Samples
 
