@@ -42,49 +42,55 @@ You can use the [NestCloud-Starter](https://github.com/nest-cloud/nestcloud-star
 
 ## Components
 
-### [Boot](packages/boot)
-
-Get local configurations and environment values when the app bootstrap.
-
-
-### [Consul](packages/consul)
+#### [Consul](packages/consul)
 
 Consul module.
 
 
-### [Config](packages/consul-config)
+#### [Memcached](packages/memcached)
 
-Get & watch configurations from Consul KV or Kubernetes ConfigMap.
-
-
-### [Service](packages/consul-service)
-
-Register & cancel register service, discovery other service.
+Memcached module.
 
 
-### [Loadbalance](packages/loadbalance)
+#### [Kubernetes](packages/kubernetes)
+
+Kubernetes client module.
+
+
+#### [Boot](packages/boot)
+
+Get local configurations.
+
+
+#### [Config](packages/config)
+
+Get & watch remote configurations from Consul KV or Kubernetes ConfigMap.
+
+
+#### [Service](packages/service)
+
+Service registration and service discovery
+
+
+#### [Loadbalance](packages/loadbalance)
 
 Software load balancers primary for rest calls.
 
 
-### [Feign](packages/feign)
+#### [Feign](packages/feign)
 
-A http client that supports decorator and loadbalance.
-
-
-### [Grpc](packages/grpc)
-
-A grpc client that supports loadbalance.
+A decorator and loadbalance http client.
 
 
-### [Proxy](packages/proxy)
+#### [Grpc](packages/grpc)
+
+A loadbalance grpc client.
+
+
+#### [Proxy](packages/proxy)
 
 A API proxy module.
 
-
-### [Memcached](packages/memcached)
-
-Memcached module.
 
 
 ### [Schedule](packages/schedule)
@@ -105,10 +111,6 @@ Validate request params.
 ### [Rbac](packages/rbac)
 
 Role based access control.
-
-### [Kubernetes](packages/kubernetes)
-
-The kubernetes client for nest.
 
 
 ## Quick Start
