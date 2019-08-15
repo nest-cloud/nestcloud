@@ -15,7 +15,8 @@
     <a href="https://coveralls.io/github/nest-cloud/nestcloud?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nest-cloud/nestcloud/badge.svg?branch=master" alt="Coverage"/></a>
 </p>
 
-A NodeJS micro-service solution based on Consul, writing by Typescript language and NestJS framework.
+A NodeJS micro-service solution, writing by Typescript language and NestJS framework that based on Consul or Kubernetes.
+
 
 ## Install
 
