@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/feign",
-  "version": "0.5.0-9",
+  "version": "0.5.1",
   "description": "Feign is a nest http decorators library that makes writing nodejs http clients easier.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
@@ -8,14 +8,14 @@
     "access": "public"
   },
   "optionalDependencies": {
-    "@nestcloud/boot": "^0.4.4",
-    "@nestcloud/brakes": "^0.4.4",
-    "@nestcloud/consul-config": "^0.4.4",
-    "@nestcloud/loadbalance": "^0.4.4"
+    "@nestcloud/boot": "^0.5.0",
+    "@nestcloud/brakes": "^0.5.0",
+    "@nestcloud/consul-config": "^0.5.0",
+    "@nestcloud/loadbalance": "^0.5.0"
   },
   "peerDependencies": {
-    "@nestcloud/common": "^0.4.4",
-    "@nestcloud/core": "^0.4.4",
+    "@nestcloud/common": "^0.5.0",
+    "@nestcloud/core": "^0.5.0",
     "@nestjs/common": "^6.0.0"
   },
   "repository": {
