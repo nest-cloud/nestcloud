@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/loadbalance",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A Nest framework (node.js) module for getting service from consul and sending http request by loadbalance.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
