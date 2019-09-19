@@ -16,8 +16,8 @@
   },
   "homepage": "https://github.com/nest-cloud/nestcloud#readme",
   "peerDependencies": {
-    "@nestcloud/common": "^0.5.0",
-    "@nestcloud/core": "^0.5.0",
+    "@nestcloud/common": "^0.5.2",
+    "@nestcloud/core": "^0.5.2",
     "kubernetes-client": "^8.3.3"
   }
 }

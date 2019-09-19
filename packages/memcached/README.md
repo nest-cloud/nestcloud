@@ -73,19 +73,19 @@ memcached:
   retries: 3
 ```
 
-If you use [@nestcloud/consul-config](https://github.com/nest-cloud/consul-config) module.
+If you use [@nestcloud/config](https://github.com/nest-cloud/nestcloud/pakcages/config) module.
 
 ```typescript
 import { Module } from '@nestjs/common';
 import { MemcachedModule } from '@nestcloud/memcached';
 import { ConsulModule } from '@nestcloud/consul';
-import { ConsulConfigModule } from '@nestcloud/consul-config';
+import { ConfigModule } from '@nestcloud/config';
 import { NEST_CONSUL_CONFIG } from '@nestcloud/common';
 
 @Module({
   imports: [
       ConsulModule.register({/* ignore */}),
-      ConsulConfigModule.register({/* ignore */}),
+      ConfigModule.register({/* ignore */}),
       MemcachedModule.register({dependencies: [NEST_CONSUL_CONFIG]})
   ],
 })

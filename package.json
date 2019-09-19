@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/core",
-  "version": "0.5.0",
+  "version": "0.5.2",
   "description": "Nest micro service solution.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
