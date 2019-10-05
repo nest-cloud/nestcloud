@@ -59,6 +59,7 @@ consul:
     id: your-service-id
     name: your-service-name
     port: 3000
+    tags: ['v1.0.1']
   healthCheck:
     timeout: 1s
     interval: 10s
@@ -150,7 +151,8 @@ Import nest consul service module.
 | options.dependencies | string[] | if you are using @nestcloud/boot module, please set [NEST_BOOT] |
 | options.service.id | string | the service id |
 | options.service.name | string | the service name |
-| options.service.port | number | the service port |
+| options.service.port | number | the service port, if not set, it will use random port |
+| options.service.tags | number | the service tags |
 | options.service.includes | string[] | sync services from consul, if not set, it will sync all services |
 | options.consul.discoveryHost | string | the discovery ip |
 | options.consul.healthCheck.timeout | number | the health check timeout, default 1s |
