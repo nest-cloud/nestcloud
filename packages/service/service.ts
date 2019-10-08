@@ -17,6 +17,7 @@ export class Service implements OnModuleInit, OnModuleDestroy, IService {
     private readonly serviceId: string;
     private readonly serviceName: string;
     private readonly servicePort: number;
+    private readonly serviceTags: string[];
     private readonly timeout: string;
     private readonly deregisterCriticalServiceAfter: string;
     private readonly interval: string;
@@ -40,7 +41,8 @@ export class Service implements OnModuleInit, OnModuleDestroy, IService {
         this.discoveryHost = get(options, 'discoveryHost', getIPAddress());
         this.serviceId = get(options, 'service.id');
         this.serviceName = get(options, 'service.name');
-        this.servicePort = get(options, 'service.port');
+        this.servicePort = get(options, 'service.port', 40000 + ~~(Math.random() * (40000 - 30000)));
+        this.serviceTags = get(options, 'service.tags');
         this.timeout = get(options, 'healthCheck.timeout', '1s');
         this.interval = get(options, 'healthCheck.interval', '10s');
         this.deregisterCriticalServiceAfter = get(options, 'healthCheck.deregisterCriticalServiceAfter');
@@ -127,6 +129,7 @@ export class Service implements OnModuleInit, OnModuleDestroy, IService {
             name: this.serviceName,
             address: this.discoveryHost,
             port: parseInt(this.servicePort + ''),
+            tags: this.serviceTags,
             check,
         };
     }
