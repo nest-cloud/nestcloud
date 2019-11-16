@@ -7,22 +7,33 @@ export const WatchKV = (key?: string, type?: 'json' | 'yaml' | 'text', defaults?
 const createKVDecorator = (key?: string, type?: 'json' | 'yaml' | 'text', defaults?: any): PropertyDecorator => {
     return (target: any, propertyName: string | Symbol) => {
         const Core: typeof CoreModule = require('@nestcloud/core');
-        Core.NestCloud.global.watch<any>(NEST_CONSUL, async consul => {
-            try {
-                const result = await consul.kv.get(key) as IKVResponse;
-                updatePropertyValue(result, target, propertyName, type, defaults);
 
-                const watcher = consul.watch({
-                    method: consul.kv.get,
-                    options: { key, wait: '5m', timeout: 3000000 }
-                });
-                watcher.on('change', result => updatePropertyValue(result, target, propertyName, type, defaults));
-                watcher.on('error', () => void 0);
-            } catch (e) {
-            }
-        });
+        // @ts-ignore
+        target.constructor.prototype[propertyName] = defaults;
+        if (Core.NestCloud.global.consul) {
+            handlePropertyValue(Core.NestCloud.global.consul, key, target, propertyName, type, defaults);
+        } else {
+            Core.NestCloud.global.watch<any>(NEST_CONSUL, async consul => {
+                await handlePropertyValue(consul, key, target, propertyName, type, defaults);
+            });
+        }
     };
 };
+
+async function handlePropertyValue(consul, key, target, propertyName, type, defaults) {
+    try {
+        const result = await consul.kv.get(key) as IKVResponse;
+        updatePropertyValue(result, target, propertyName, type, defaults);
+
+        const watcher = consul.watch({
+            method: consul.kv.get,
+            options: { key, wait: '5m', timeout: 3000000 },
+        });
+        watcher.on('change', result => updatePropertyValue(result, target, propertyName, type, defaults));
+        watcher.on('error', () => void 0);
+    } catch (e) {
+    }
+}
 
 function updatePropertyValue(result, target, propertyName, type, defaults) {
     if (result) {
