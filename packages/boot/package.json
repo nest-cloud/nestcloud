@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/boot",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "A Nest framework (node.js) module for getting config parameters when the app start running.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
