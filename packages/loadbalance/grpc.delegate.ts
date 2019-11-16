@@ -1,5 +1,5 @@
-import { Server } from "./server";
-import { Observable } from "rxjs";
+import { Server } from './server';
+import { Observable } from 'rxjs';
 
 export class GrpcDelegate<T extends {}> {
     constructor(
@@ -25,7 +25,6 @@ export class GrpcDelegate<T extends {}> {
                     if (this.node) {
                         this.node.state.decrementServerActiveRequests();
                         this.node.state.incrementServerFailureCounts();
-                        this.node.state.noteConnectionFailedTime(err.message);
                     }
                     observer.error(err);
                 },
@@ -39,7 +38,7 @@ export class GrpcDelegate<T extends {}> {
                 },
                 next: (data) => {
                     observer.next(data);
-                }
+                },
             });
         });
     }
