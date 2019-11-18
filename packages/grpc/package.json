@@ -16,8 +16,8 @@
   },
   "homepage": "https://github.com/nest-cloud/nestcloud#readme",
   "peerDependencies": {
-    "@nestcloud/common": "^0.5.3",
-    "@nestcloud/core": "^0.5.3",
+    "@nestcloud/common": "^0.6.0",
+    "@nestcloud/core": "^0.6.0",
     "@nestjs/microservices": "^6.1.1"
   }
 }

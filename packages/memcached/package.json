@@ -8,11 +8,11 @@
     "access": "public"
   },
   "optionalDependencies": {
-    "@nestcloud/boot": "^0.5.3",
-    "@nestcloud/config": "^0.5.3"
+    "@nestcloud/boot": "^0.6.0",
+    "@nestcloud/config": "^0.6.0"
   },
   "peerDependencies": {
-    "@nestcloud/common": "^0.5.3",
+    "@nestcloud/common": "^0.6.0",
     "@nestjs/common": "^6.0.0",
     "memcached": "^2.2.2"
   },
