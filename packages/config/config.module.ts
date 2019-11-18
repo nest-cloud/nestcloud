@@ -9,12 +9,15 @@ import {
     IConfig,
     IBoot,
     IKubernetes,
+    IEtcd,
+    NEST_ETCD, NEST_ETCD_PROVIDER,
 } from '@nestcloud/common';
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import * as Consul from 'consul';
 import { IConfigOptions } from './interfaces/config-options.interface';
 import { ConsulConfig } from './consul-config';
 import { KubernetesConfig } from './kubernetes-config';
+import { EtcdConfig } from './etcd-config';
 
 @Global()
 @Module({})
@@ -29,15 +32,18 @@ export class ConfigModule {
                 inject.push(NEST_CONSUL_PROVIDER);
             } else if (options.dependencies.includes(NEST_KUBERNETES)) {
                 inject.push(NEST_KUBERNETES_PROVIDER);
+            } else if (options.dependencies.includes(NEST_ETCD)) {
+                inject.push(NEST_ETCD_PROVIDER);
             }
         }
 
-        const consulConfigProvider = {
+        const configProvider = {
             provide: NEST_CONFIG_PROVIDER,
             useFactory: async (...args: any[]): Promise<IConfig> => {
                 const boot: IBoot = args[inject.indexOf(NEST_BOOT_PROVIDER)];
                 const consul: Consul = args[inject.indexOf(NEST_CONSUL_PROVIDER)];
                 const kubernetes: IKubernetes = args[inject.indexOf(NEST_KUBERNETES_PROVIDER)];
+                const etcd: IEtcd = args[inject.indexOf(NEST_ETCD_PROVIDER)];
                 if (boot) {
                     options = boot.get('config');
                     if (!options.key) {
@@ -47,29 +53,31 @@ export class ConfigModule {
                 if (!options.key) {
                     throw new Error('Please set key when register module');
                 }
+
+                let client;
                 if (consul) {
-                    const client = new ConsulConfig(consul, options.key);
-                    await client.init();
-                    return client;
+                    client = new ConsulConfig(consul, options.key);
                 } else if (kubernetes) {
                     options.namespace = options.namespace || 'default';
                     if (!options.path) {
                         throw new Error('Please set configmap path when use config module in kubernetes');
                     }
-                    const client = new KubernetesConfig(kubernetes, options.key, options.namespace, options.path);
-                    await client.init();
-                    return client;
+                    client = new KubernetesConfig(kubernetes, options.key, options.namespace, options.path);
+                } else if (etcd) {
+                    client = new EtcdConfig(etcd, options.key);
                 } else {
-                    throw new Error('Please add NEST_CONSUL or NEST_KUBERNETES to dependencies attribute');
+                    throw new Error('Please specific NEST_CONSUL, NEST_KUBERNETES or NEST_ETCD in dependencies attribute');
                 }
+                await client.init();
+                return client;
             },
             inject,
         };
 
         return {
             module: ConfigModule,
-            providers: [consulConfigProvider],
-            exports: [consulConfigProvider],
+            providers: [configProvider],
+            exports: [configProvider],
         };
     }
 }

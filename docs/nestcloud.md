@@ -2,8 +2,47 @@
 
 ## 安装组件
 
+需要根据不同的服务注册中心选择安装不同的包，目前 NestCloud 支持 Consul，Etcd 和 Kubernetes。
+
+### Consul Backend
+
 ```bash
-npm install --save @nestcloud/core @nestcloud/common @nestcloud/boot @nestcloud/consul @nestcloud/consul-service @nestcloud/consul-config @nestcloud/loadbalance @nestcloud/feign @nestcloud/logger @nestcloud/schedule 
+$ npm install --save @nestcloud/core
+$ npm install --save @nestcloud/common
+$ npm install --save @nestcloud/boot 
+$ npm install --save @nestcloud/consul 
+$ npm install --save @nestcloud/service 
+$ npm install --save @nestcloud/config 
+$ npm install --save @nestcloud/loadbalance 
+$ npm install --save @nestcloud/feign 
+$ npm install --save @nestcloud/logger 
+```
+
+### Etcd Backend
+
+```bash
+$ npm install --save @nestcloud/core
+$ npm install --save @nestcloud/common
+$ npm install --save @nestcloud/boot 
+$ npm install --save @nestcloud/etcd 
+$ npm install --save @nestcloud/service 
+$ npm install --save @nestcloud/config 
+$ npm install --save @nestcloud/loadbalance 
+$ npm install --save @nestcloud/feign 
+$ npm install --save @nestcloud/logger 
+```
+
+### Kubernetes Backend
+
+```bash
+$ npm install --save @nestcloud/core
+$ npm install --save @nestcloud/common
+$ npm install --save @nestcloud/boot 
+$ npm install --save @nestcloud/config 
+$ npm install --save @nestcloud/loadbalance 
+$ npm install --save @nestcloud/feign 
+$ npm install --save @nestcloud/logger 
+$ npm install --save @nestcloud/kubernetes 
 ```
 
 ### main.ts
@@ -31,62 +70,28 @@ bootstrap();
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { TerminusModule } from '@nestjs/terminus';
-import { DatabaseHealthIndicator, TerminusModule, TerminusModuleOptions } from "@nestjs/terminus";
-
-import { 
-    NEST_BOOT,
-    NEST_LOADBALANCE,
-    NEST_CONSUL_CONFIG, 
-    NEST_CONSUL_CONFIG_PROVIDER,
-    IConsulConfig
-} from '@nestcloud/common';
+import { NEST_BOOT, NEST_LOADBALANCE, NEST_CONSUL } from '@nestcloud/common';
 import { BootModule } from '@nestcloud/boot';
 import { ConsulModule } from '@nestcloud/consul';
-import { ConsulConfigModule } from '@nestcloud/consul-config';
-import { ConsulServiceModule } from '@nestcloud/consul-service';
+import { ConfigModule } from '@nestcloud/config';
+import { ServiceModule } from '@nestcloud/service';
 import { LoadbalanceModule } from '@nestcloud/loadbalance';
 import { FeignModule } from '@nestcloud/feign';
-import { LoggerModule, TypeormLogger } from '@nestcloud/logger';
-
+import { LoggerModule } from '@nestcloud/logger';
+import { TerminusModule } from '@nestjs/terminus';
 
 @Module({
     imports: [
         LoggerModule.register(),
-        BootModule.register(__dirname, `bootstrap.yaml`),
+        BootModule.register(__dirname, `config.yaml`),
         ConsulModule.register({ dependencies: [NEST_BOOT] }),
-        ConsulConfigModule.register({ dependencies: [NEST_BOOT] }),
-        ConsulServiceModule.register({ dependencies: [NEST_BOOT] }),
-        LoadbalanceModule.register({ dependencies: [NEST_CONSUL_CONFIG] }),
-        FeignModule.register({ dependencies: [NEST_LOADBALANCE] }),
+        ConfigModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL] }),
+        ServiceModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL] }),
+        LoadbalanceModule.register({ dependencies: [NEST_BOOT] }),
+        FeignModule.register({ dependencies: [NEST_BOOT, NEST_LOADBALANCE] }),
         TerminusModule.forRootAsync({
-            inject: [DatabaseHealthIndicator],
-            useFactory: (db: DatabaseHealthIndicator) => ({
-                endpoints: [{
-                    url: '/health',
-                    healthIndicators: [
-                        async () => db.pingCheck('database', { timeout: 300 }),
-                    ],
-                }],
-            }),
+            useFactory: () => ({ endpoints: [{ url: '/health', healthIndicators: [] }] }),
         }),
-        TypeOrmModule.forRootAsync({
-            useFactory: (config: IConsulConfig) => ({
-                type: 'mysql',
-                host: config.get('dataSource.host', 'localhost'),
-                port: config.get('dataSource.port', 3306),
-                username: config.get('dataSource.username', 'root'),
-                password: config.get('dataSource.password', ''),
-                database: config.get('dataSource.database', 'dev-db'),
-                entities: [__dirname + '/entities/*{.ts,.js}'],
-                synchronize: config.get('dataSource.synchronize', false),
-                maxQueryExecutionTime: config.get('dataSource.maxQueryExecutionTime', 1000),
-                logging: ['error', 'warn'],
-                logger: new TypeormLogger(),
-            }),
-            inject: [NEST_CONSUL_CONFIG_PROVIDER],
-        })
     ]
 })
 export class AppModule {

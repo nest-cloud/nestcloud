@@ -5,51 +5,79 @@ Consul-Service 提供在服务启动的时候向 Consul 注册服务，服务退
 ## 安装
 
 ```bash
-npm install @nestcloud/service @nestcloud/consul consul --save
+# consul backend
+$ npm install @nestcloud/service @nestcloud/consul consul --save
+# etcd backend
+$ npm install @nestcloud/service @nestcloud/etcd etcd3 --save
 ```
 
 ## 注册模块
 
-```typescript
-import { Module } from '@nestjs/common';
-import { ConsulModule } from '@nestcloud/consul';
-import { ServiceModule } from '@nestcloud/service';
-import { BootModule } from '@nestcloud/boot';
-import { NEST_BOOT } from '@nestcloud/common';
-
-@Module({
-  imports: [
-      ConsulModule.register({dependencies: [NEST_BOOT]}),
-      BootModule.register(__dirname, 'bootstrap.yml'),
-      ServiceModule.register({dependencies: [NEST_BOOT]}),
-  ],
-})
-export class ApplicationModule {}
-```
-
-## 配置
+### 使用 Consul 作为服务注册中心
 
 ```yaml
-consul:
-  host: localhost
-  port: 8500
+service:
   discoveryHost: localhost
   healthCheck:
     timeout: 1s
     interval: 10s
     route: /health
     protocol: http
-  # when register / deregister the service to consul fail, it will retry five times.
   maxRetry: 5
   retryInterval: 5000
-  service:
-    id: your-service-id
-    name: your-service-name
-    port: 3000
-  config:
-    key: config__{serviceName}__{env}
-    retry: 5
+  id: your-service-id
+  name: your-service-name
+  port: 3000
 ```
+
+```typescript
+import { Module } from '@nestjs/common';
+import { ConsulModule } from '@nestcloud/consul';
+import { ServiceModule } from '@nestcloud/service';
+import { BootModule } from '@nestcloud/boot';
+import { NEST_BOOT, NEST_CONSUL } from '@nestcloud/common';
+
+@Module({
+  imports: [
+      ConsulModule.register({dependencies: [NEST_BOOT]}),
+      BootModule.register(__dirname, 'bootstrap.yml'),
+      ServiceModule.register({dependencies: [NEST_BOOT, NEST_CONSUL]}),
+  ],
+})
+export class ApplicationModule {}
+```
+
+### 使用 Etcd 作为服务注册中心
+
+```yaml
+service:
+  discoveryHost: localhost
+  healthCheck:
+    ttl: 20
+  maxRetry: 5
+  retryInterval: 5000
+  id: your-service-id
+  name: your-service-name
+  port: 3000
+```
+
+```typescript
+import { Module } from '@nestjs/common';
+import { EtcdModule } from '@nestcloud/etcd';
+import { ServiceModule } from '@nestcloud/service';
+import { BootModule } from '@nestcloud/boot';
+import { NEST_BOOT, NEST_CONSUL } from '@nestcloud/common';
+
+@Module({
+  imports: [
+      EtcdModule.register({dependencies: [NEST_BOOT]}),
+      BootModule.register(__dirname, 'bootstrap.yml'),
+      ServiceModule.register({dependencies: [NEST_BOOT, NEST_CONSUL]}),
+  ],
+})
+export class ApplicationModule {}
+```
+
 
 ## 获取可用服务
 
@@ -133,10 +161,10 @@ consul:
 | field | type | description |
 | :--- | :--- | :--- |
 | options.dependencies | string\[\] | 如果 dependencies 设置为 \[NEST\_BOOT\]，则通过 @nestcloud/boot 模块加载配置 |
-| options.service.id | string | 服务 ID |
-| options.service.name | string | 服务名称 |
-| options.service.port | number | 服务端口号 |
-| options.service.includes | string[] | 设置需要同步到本地的服务名字，默认会从 Consul 同步所有服务 |
+| options.id | string | 服务 ID |
+| options.name | string | 服务名称 |
+| options.port | number | 服务端口号 |
+| options.includes | string[] | 设置需要同步到本地的服务名字，默认会从 Consul 同步所有服务 |
 | options.discoveryHost | string | 服务对外提供服务的IP，如果服务器有多块网卡则需要手动指定，否则不需要 |
 | options.healthCheck.timeout | number | 服务健康检查超时时间，默认1s |
 | options.healthCheck.interval | number | 服务健康检查心跳时间，默认10s |

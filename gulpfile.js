@@ -9,6 +9,7 @@ const packages = {
     boot: ts.createProject('packages/boot/tsconfig.json'),
     core: ts.createProject('packages/core/tsconfig.json'),
     consul: ts.createProject('packages/consul/tsconfig.json'),
+    etcd: ts.createProject('packages/etcd/tsconfig.json'),
     config: ts.createProject('packages/config/tsconfig.json'),
     service: ts.createProject('packages/service/tsconfig.json'),
     loadbalance: ts.createProject('packages/loadbalance/tsconfig.json'),
@@ -45,6 +46,7 @@ gulp.task('copy-misc', function() {
         .pipe(gulp.dest(`${source}/common`))
         .pipe(gulp.dest(`${source}/boot`))
         .pipe(gulp.dest(`${source}/core`))
+        .pipe(gulp.dest(`${source}/etcds`))
         .pipe(gulp.dest(`${source}/consul`))
         .pipe(gulp.dest(`${source}/config`))
         .pipe(gulp.dest(`${source}/service`))

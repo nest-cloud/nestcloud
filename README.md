@@ -15,13 +15,53 @@
     <a href="https://coveralls.io/github/nest-cloud/nestcloud?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nest-cloud/nestcloud/badge.svg?branch=master" alt="Coverage"/></a>
 </p>
 
-A NodeJS micro-service solution, writing by Typescript language and NestJS framework that based on Consul or Kubernetes.
+NestCloud is a NodeJS micro-service solution, writing by Typescript language and NestJS framework.
+Consul, Etcd or Kubernetes all can be the service discovery center for NestCloud.
 
 
 ## Install
 
+You need install the packages by the service discovery that which you select.
+
+### Consul Backend
+
 ```bash
-npm install --save @nestcloud/core @nestcloud/common @nestcloud/boot @nestcloud/consul @nestcloud/service @nestcloud/config @nestcloud/loadbalance @nestcloud/feign @nestcloud/logger @nestcloud/schedule 
+$ npm install --save @nestcloud/core
+$ npm install --save @nestcloud/common
+$ npm install --save @nestcloud/boot 
+$ npm install --save @nestcloud/consul 
+$ npm install --save @nestcloud/service 
+$ npm install --save @nestcloud/config 
+$ npm install --save @nestcloud/loadbalance 
+$ npm install --save @nestcloud/feign 
+$ npm install --save @nestcloud/logger 
+```
+
+### Etcd Backend
+
+```bash
+$ npm install --save @nestcloud/core
+$ npm install --save @nestcloud/common
+$ npm install --save @nestcloud/boot 
+$ npm install --save @nestcloud/etcd 
+$ npm install --save @nestcloud/service 
+$ npm install --save @nestcloud/config 
+$ npm install --save @nestcloud/loadbalance 
+$ npm install --save @nestcloud/feign 
+$ npm install --save @nestcloud/logger 
+```
+
+### Kubernetes Backend
+
+```bash
+$ npm install --save @nestcloud/core
+$ npm install --save @nestcloud/common
+$ npm install --save @nestcloud/boot 
+$ npm install --save @nestcloud/config 
+$ npm install --save @nestcloud/loadbalance 
+$ npm install --save @nestcloud/feign 
+$ npm install --save @nestcloud/logger 
+$ npm install --save @nestcloud/kubernetes 
 ```
 
 ## Docs
@@ -39,13 +79,21 @@ npm install --save @nestcloud/core @nestcloud/common @nestcloud/boot @nestcloud/
 
 ## Starter
 
-You can use the [NestCloud-Starter](https://github.com/nest-cloud/nestcloud-starter) start your project quickly.
+[nestcloud-consul-starter](https://github.com/nest-cloud/nestcloud-consul-starter) 
+
+[nestcloud-etcd-starter](https://github.com/nest-cloud/nestcloud-etcd-starter) 
+
 
 ## Components
 
 #### [Consul](packages/consul)
 
 Consul module.
+
+
+#### [Etcd](packages/etcd)
+
+Etcd module.
 
 
 #### [Memcached](packages/memcached)
@@ -93,23 +141,22 @@ A loadbalance grpc client.
 A API proxy module.
 
 
-
-### [Schedule](packages/schedule)
+#### [Schedule](packages/schedule)
 
 A job scheduler that supports distributed and decorator.
 
 
-### [Logger](packages/logger)
+#### [Logger](packages/logger)
 
 Logger module based on winston@2.x
 
 
-### [Validations](packages/validations)
+#### [Validations](packages/validations)
 
 Validate request params.
 
 
-### [Rbac](packages/rbac)
+#### [Rbac](packages/rbac)
 
 Role based access control.
 
@@ -158,7 +205,7 @@ import { TerminusModule } from '@nestjs/terminus';
         BootModule.register(__dirname, `config.yaml`),
         ConsulModule.register({ dependencies: [NEST_BOOT] }),
         ConfigModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL] }),
-        ServiceModule.register({ dependencies: [NEST_BOOT] }),
+        ServiceModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL] }),
         LoadbalanceModule.register({ dependencies: [NEST_BOOT] }),
         FeignModule.register({ dependencies: [NEST_BOOT, NEST_LOADBALANCE] }),
         TerminusModule.forRootAsync({

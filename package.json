@@ -81,6 +81,7 @@
     "cache-manager-memory-store": "^1.1.0",
     "class-transformer": "^0.1.9",
     "class-validator": "^0.8.5",
+    "etcd3": "^0.2.13",
     "handlebars": "^4.1.1",
     "http-proxy": "^1.17.0",
     "kubernetes-client": "^8.3.3",

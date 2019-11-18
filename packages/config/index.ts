@@ -1,6 +1,6 @@
 export * from './consul-config';
 export * from './kubernetes-config';
-export * from './decorators/inject.config.decorator';
+export * from './decorators/inject-config.decorator';
 export * from './decorators/config-value.decorator';
 export * from './interfaces/config-options.interface';
 export * from './config.module';

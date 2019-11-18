@@ -1,10 +1,10 @@
-import { Service } from './service';
+import { ConsulService } from './consul-service';
 import * as Consul from 'consul';
 import { expect } from 'chai';
 
 describe('Consul Service Store', () => {
     let consul: Consul;
-    let service: Service;
+    let service: ConsulService;
 
     before(async () => {
         consul = new Consul({ host: '127.0.0.1', port: 8500, promisify: true });
@@ -19,17 +19,15 @@ describe('Consul Service Store', () => {
             },
             status: 'passing',
         });
-        service = new Service(consul, {
+        service = new ConsulService(consul, {
             discoveryHost: '127.0.0.1',
             healthCheck: {
                 http: 'http://127.0.0.1:8500',
                 interval: '5s',
             },
-            service: {
-                id: 'my-test-service',
-                name: 'my-test-service',
-                port: 8500,
-            },
+            id: 'my-test-service',
+            name: 'my-test-service',
+            port: 8500,
         });
         await service.init();
     });

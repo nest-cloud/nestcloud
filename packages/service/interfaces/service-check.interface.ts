@@ -6,7 +6,7 @@ export interface IServiceCheck {
     shell?: string;
     interval?: string;
     timeout?: string;
-    ttl?: string;
+    ttl?: string | number;
     notes?: string;
     status?: string;
     deregistercriticalserviceafter?: string;

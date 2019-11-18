@@ -1,4 +1,4 @@
-import { Inject, OnModuleDestroy, OnModuleInit, Logger } from '@nestjs/common';
+import { OnModuleDestroy, OnModuleInit, Logger } from '@nestjs/common';
 import * as md5encode from 'blueimp-md5';
 import * as Consul from 'consul';
 import { get } from 'lodash';
@@ -7,10 +7,10 @@ import { IService, sleep, IServiceNode } from '@nestcloud/common';
 import { IServiceOptions } from './interfaces/service-options.interface';
 import { IServiceCheck } from './interfaces/service-check.interface';
 import { getIPAddress } from './utils/os.util';
-import { Store } from './store';
+import { ConsulStore } from './consul-store';
 
-export class Service implements OnModuleInit, OnModuleDestroy, IService {
-    private store: Store;
+export class ConsulService implements OnModuleInit, OnModuleDestroy, IService {
+    private store: ConsulStore;
     private readonly logger = new Logger('ServiceModule');
 
     private readonly discoveryHost: string;
@@ -35,14 +35,15 @@ export class Service implements OnModuleInit, OnModuleDestroy, IService {
     private readonly includes: string[];
 
     constructor(
-        @Inject('ConsulClient') private readonly consul: Consul,
+        private readonly consul: Consul,
         options: IServiceOptions,
     ) {
         this.discoveryHost = get(options, 'discoveryHost', getIPAddress());
-        this.serviceId = get(options, 'service.id');
-        this.serviceName = get(options, 'service.name');
-        this.servicePort = get(options, 'service.port', 40000 + ~~(Math.random() * (40000 - 30000)));
-        this.serviceTags = get(options, 'service.tags');
+        this.serviceId = get(options, 'id');
+        this.serviceName = get(options, 'name');
+        // tslint:disable-next-line:no-bitwise
+        this.servicePort = get(options, 'port', 40000 + ~~(Math.random() * (40000 - 30000)));
+        this.serviceTags = get(options, 'tags');
         this.timeout = get(options, 'healthCheck.timeout', '1s');
         this.interval = get(options, 'healthCheck.interval', '10s');
         this.deregisterCriticalServiceAfter = get(options, 'healthCheck.deregisterCriticalServiceAfter');
@@ -61,7 +62,7 @@ export class Service implements OnModuleInit, OnModuleDestroy, IService {
     }
 
     async init() {
-        this.store = new Store(this.consul, this.includes);
+        this.store = new ConsulStore(this.consul, this.includes);
         while (true) {
             try {
                 await this.store.init();

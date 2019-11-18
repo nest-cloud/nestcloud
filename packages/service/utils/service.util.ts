@@ -23,9 +23,10 @@ export function handleConsulNodes(nodes): IServiceNode[] {
     }).map(node => {
         const serviceNode = new ServiceNode(
             get(node, 'Service.Address', '127.0.0.1'),
-            get(node, 'Service.Port')
+            get(node, 'Service.Port'),
         );
         serviceNode.name = get(node, 'Node.Node');
+        serviceNode.tags = get(node, 'Service.Tags', []);
         serviceNode.service = get(node, 'Service.Service');
         serviceNode.status = get(node, 'status', CRITICAL);
         return serviceNode;

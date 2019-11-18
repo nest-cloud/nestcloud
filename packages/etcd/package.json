@@ -1,7 +1,7 @@
 {
-  "name": "@nestcloud/schedule",
+  "name": "@nestcloud/etcd",
   "version": "0.6.0-y.1",
-  "description": "Nest - modern, fast, powerful node.js web framework (@schedule)",
+  "description": "A Nest framework (node.js) module for registering and getting consul service easily.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
   "publishConfig": {
@@ -14,9 +14,8 @@
   "bugs": {
     "url": "https://github.com/nest-cloud/nestcloud/issues"
   },
-  "homepage": "https://github.com/nest-cloud/nestcloud#readme",
-  "dependencies": {
-    "node-schedule": "^1.3.0",
-    "reflect-metadata": "^0.1.12"
-  }
+  "peerDependencies": {
+    "etcd3": "^0.2.13"
+  },
+  "homepage": "https://github.com/nest-cloud/nestcloud#readme"
 }

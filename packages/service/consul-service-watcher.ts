@@ -8,7 +8,8 @@ export class Watcher {
     constructor(
         private readonly consul: Consul,
         private readonly options: { retry?: number; method: any; params?: object },
-    ) {}
+    ) {
+    }
 
     getLastChangeTime() {
         return this.lastChangeTime;

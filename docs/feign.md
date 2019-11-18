@@ -13,17 +13,17 @@ npm install @nestcloud/feign --save
 ```typescript
 import { Module } from '@nestjs/common';
 import { ConsulModule } from '@nestcloud/consul';
-import { ConsulServiceModule } from '@nestcloud/consul-service';
+import { ServiceModule } from '@nestcloud/service';
 import { LoadbalanceModule } from '@nestcloud/loadbalance';
 import { BootModule } from '@nestcloud/boot';
 import { FeignModule } from '@nestcloud/feign';
-import { NEST_BOOT, NEST_LOADBALANCE } from '@nestcloud/common';
+import { NEST_BOOT, NEST_LOADBALANCE, NEST_CONSUL } from '@nestcloud/common';
 
 @Module({
   imports: [
       ConsulModule.register({dependencies: [NEST_BOOT]}),
       BootModule.register(__dirname, 'bootstrap.yml'),
-      ConsulServiceModule.register({ dependencies: [NEST_BOOT] }),
+      ServiceModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL] }),
       LoadbalanceModule.register({ dependencies: [NEST_BOOT] }),
       FeignModule.register({ dependencies: [NEST_BOOT, NEST_LOADBALANCE] }), // or NEST_CONSUL_CONFIG
   ],

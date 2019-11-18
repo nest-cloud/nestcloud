@@ -24,14 +24,19 @@ A NestCloud component for getting and watching configurations from consul kv or 
 ## Installation
 
 ```bash
+# consul backend
 $ npm i --save @nestcloud/consul consul @nestcloud/config
+# etcd backend
+$ npm i --save @nestcloud/etcd etcd3 @nestcloud/config
+# kubernetes backend
+$ npm i --save @nestcloud/config
 ```
 
 ## Quick Start
 
 ### Import Module
 
-#### Use Consul KV As Backend
+#### Consul Backend
 
 ```typescript
 import { Module } from '@nestjs/common';
@@ -50,7 +55,7 @@ import { NEST_BOOT, NEST_CONSUL } from '@nestcloud/common';
 export class ApplicationModule {}
 ```
 
-#### Use Kubernetes As Backend
+#### Kubernetes Backend
 
 ```typescript
 import { Module } from '@nestjs/common';
@@ -67,25 +72,38 @@ import { NEST_BOOT, NEST_KUBERNETES } from '@nestcloud/common';
 export class ApplicationModule {}
 ```
 
+#### Etcd Backend
+
+```typescript
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestcloud/config';
+import { EtcdModule } from '@nestcloud/etcd';
+import { BootModule } from '@nestcloud/boot';
+import { NEST_BOOT, NEST_ETCD } from '@nestcloud/common';
+
+@Module({
+  imports: [
+      BootModule.register(__dirname, 'bootstrap.yml'),
+      EtcdModule.register({dependencies: [NEST_BOOT]}),
+      ConfigModule.register({dependencies: [NEST_BOOT, NEST_ETCD]})
+  ],
+})
+export class ApplicationModule {}
+```
+
 ### Configurations
 
-You should specific `config.key` for consul kv or 
-specific `config.key`, `config.namespace`, `config.path` for kubernetes configMap.
+`config.key` is available for consul backend and etcd backend.
+`config.key`, `config.namespace`, `config.path` are only available for kubernetes configMap.
 
 ```yaml
-consul:
-  host: localhost
-  port: 8500
-  service: 
-    id: null
-    name: example-service
 config:
   key: nestcloud-conf
   namespace: default
   path: config.yaml
 ```
 
-#### Configurations In Consul KV
+#### Configurations In Consul KV Or Etcd
 
 ```yaml
 user:

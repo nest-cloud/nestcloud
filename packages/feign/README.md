@@ -40,13 +40,13 @@ import { ServiceModule } from '@nestcloud/service';
 import { LoadbalanceModule } from '@nestcloud/loadbalance';
 import { BootModule } from '@nestcloud/boot';
 import { FeignModule } from '@nestcloud/feign';
-import { NEST_BOOT, NEST_LOADBALANCE } from '@nestcloud/common';
+import { NEST_BOOT, NEST_LOADBALANCE, NEST_CONSUL } from '@nestcloud/common';
 
 @Module({
   imports: [
       BootModule.register(__dirname, 'bootstrap.yml'),
-      ConsulModule.register({dependencies: [NEST_BOOT]}),
-      ServiceModule.register({ dependencies: [NEST_BOOT] }),
+      ConsulModule.register({dependencies: [NEST_BOOT, NEST_CONSUL]}),
+      ServiceModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL] }),
       LoadbalanceModule.register({ dependencies: [NEST_BOOT] }),
       FeignModule.register({ dependencies: [NEST_BOOT, NEST_LOADBALANCE] }), // or NEST_CONSUL_CONFIG
   ],

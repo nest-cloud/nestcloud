@@ -1,6 +1,6 @@
 # 快速开始
 
-## 克隆 nest-cloud-starter
+## 克隆 nestcloud-starter
 
 ```bash
 git clone https://github.com/nest-cloud/nestcloud-starter.git your-project-name

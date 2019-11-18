@@ -4,6 +4,11 @@
 consul:
   host: localhost
   port: 8500
+
+etcd:
+  hosts: localhost:2379
+
+service:
   # 多网卡或者容器场景下需要手动指定服务IP，否则可能会自动选择内网IP
   discoveryHost: localhost
   healthCheck:
@@ -11,10 +16,9 @@ consul:
     interval: 10s
   maxRetry: 5
   retryInterval: 5000
-  service:
-    id: null
-    name: service
-    port: 3000
+  id: null
+  name: service
+  port: 3000
     
 config:
   # 如果服务名字是 user-service 并且 env 是 production，

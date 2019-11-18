@@ -6,10 +6,9 @@ export interface IServiceOptions {
     healthCheck?: IServiceCheck;
     maxRetry?: number;
     retryInterval?: number;
-    service?: {
-        id?: string;
-        name?: string;
-        port?: number;
-        includes?: string[];
-    };
+    id?: string;
+    name?: string;
+    port?: number;
+    includes?: string[];
+    tags?: string[];
 }

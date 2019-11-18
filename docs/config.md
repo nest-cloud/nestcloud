@@ -5,39 +5,86 @@ Config 以 Consul KV 作为微服务的配置中心，从 Consul KV 读取所需
 ## 安装
 
 ```bash
-npm install consul @nestcloud/consul @nestcloud/config --save
+# consul backend
+$ npm i --save @nestcloud/consul consul @nestcloud/config
+# etcd backend
+$ npm i --save @nestcloud/etcd etcd3 @nestcloud/config
+# kubernetes backend
+$ npm i --save @nestcloud/config
 ```
 
 ## 注册模块
+
+### 使用 Consul 作为存储后端
 
 ```typescript
 import { Module } from '@nestjs/common';
 import { ConsulModule } from '@nestcloud/consul';
 import { ConfigModule } from '@nestcloud/config';
 import { BootModule } from '@nestcloud/boot';
-import { NEST_BOOT } from '@nestcloud/common';
+import { NEST_BOOT, NEST_CONSUL } from '@nestcloud/common';
 
 @Module({
   imports: [
       ConsulModule.register({dependencies: [NEST_BOOT]}),
       BootModule.register(__dirname, 'bootstrap.yml'),
-      ConfigModule.register({dependencies: [NEST_BOOT]}),
+      ConfigModule.register({dependencies: [NEST_BOOT, NEST_CONSUL]}),
   ],
 })
 export class ApplicationModule {}
 ```
 
-## 配置
+### 使用 Etcd 作为存储后端
 
 ```yaml
-consul:
-  host: localhost
-  port: 8500
-  service: 
-    id: null
-    name: example-service
-  config:
+config:
     key: config__${{ consul.service.name }}__${{ consul.service.id }}
+```
+
+```typescript
+import { Module } from '@nestjs/common';
+import { EtcdModule } from '@nestcloud/etcd';
+import { ConfigModule } from '@nestcloud/config';
+import { BootModule } from '@nestcloud/boot';
+import { NEST_BOOT, NEST_ETCD } from '@nestcloud/common';
+
+@Module({
+  imports: [
+      EtcdModule.register({dependencies: [NEST_BOOT]}),
+      BootModule.register(__dirname, 'bootstrap.yml'),
+      ConfigModule.register({dependencies: [NEST_BOOT, NEST_ETCD]}),
+  ],
+})
+export class ApplicationModule {}
+```
+
+### 使用 Kubernetes ConfigMap 作为存储后端
+
+```typescript
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestcloud/config';
+import { BootModule } from '@nestcloud/boot';
+import { NEST_BOOT, NEST_KUBERNETES } from '@nestcloud/common';
+
+@Module({
+  imports: [
+      BootModule.register(__dirname, 'bootstrap.yml'),
+      ConfigModule.register({dependencies: [NEST_BOOT, NEST_KUBERNETES]})
+  ],
+})
+export class ApplicationModule {}
+```
+
+### 配置
+
+`config.key` 对 Consul 和 Etcd 作为存储后端的时候有效
+`config.key`, `config.namespace`, `config.path` 只对 Kubernetes 作为存储后端的时候有效
+
+```yaml
+config:
+  key: nestcloud-conf
+  namespace: default
+  path: config.yaml
 ```
 
 ## 从配置中心获取配置
@@ -89,6 +136,8 @@ export class TestService {
 | :--- | :--- | :--- |
 | options.dependencies | string\[\] | 如果 dependencies 设置为 \[NEST\_BOOT\]，则通过 @nestcloud/boot 模块加载配置。 |
 | options.key | string | consul kv 的 key |
+| options.namespace | string | kubernetes 命名空间 |
+| options.path | string | kubernetes configMap 路径 |
 
 ### class IConfig
 

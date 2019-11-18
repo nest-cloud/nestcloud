@@ -24,49 +24,80 @@ A NestCloud component for service registration and service discovery.
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/service @nestcloud/consul consul
+# consul backend
+$ npm install @nestcloud/service @nestcloud/consul consul --save
+# etcd backend
+$ npm install @nestcloud/service @nestcloud/etcd etcd3 --save
 ```
 
 ## Quick Start
 
 ### Import Module
 
+#### Consul Backend
+
+```yaml
+service:
+  discoveryHost: localhost
+  id: your-service-id
+  name: your-service-name
+  port: 3000
+  tags: ['v1.0.1']
+  healthCheck:
+    timeout: 1s
+    interval: 10s
+    route: /health
+  maxRetry: 5
+  retryInterval: 5000
+```
+
 ```typescript
 import { Module } from '@nestjs/common';
 import { ConsulModule } from '@nestcloud/consul';
 import { ServiceModule } from '@nestcloud/service';
 import { BootModule } from '@nestcloud/boot';
-import { NEST_BOOT } from '@nestcloud/common';
+import { NEST_BOOT, NEST_CONSUL } from '@nestcloud/common';
 
 @Module({
   imports: [
       ConsulModule.register({dependencies: [NEST_BOOT]}),
       BootModule.register(__dirname, 'bootstrap.yml'),
-      ServiceModule.register({dependencies: [NEST_BOOT]}),
+      ServiceModule.register({dependencies: [NEST_BOOT, NEST_CONSUL]}),
   ],
 })
 export class ApplicationModule {}
 ```
 
-### Configurations
+#### Etcd Backend
 
 ```yaml
-consul:
-  host: localhost
-  port: 8500
+service:
   discoveryHost: localhost
-  service:
-    id: your-service-id
-    name: your-service-name
-    port: 3000
-    tags: ['v1.0.1']
+  id: your-service-id
+  name: your-service-name
+  port: 3000
+  tags: ['v1.0.1']
   healthCheck:
-    timeout: 1s
-    interval: 10s
-    route: /health
-  # when register / deregister the service to consul fail, it will retry five times.
+    ttl: 20
   maxRetry: 5
   retryInterval: 5000
+```
+
+```typescript
+import { Module } from '@nestjs/common';
+import { EtcdModule } from '@nestcloud/etcd';
+import { ServiceModule } from '@nestcloud/service';
+import { BootModule } from '@nestcloud/boot';
+import { NEST_BOOT, NEST_ETCD } from '@nestcloud/common';
+
+@Module({
+  imports: [
+      EtcdModule.register({dependencies: [NEST_BOOT]}),
+      BootModule.register(__dirname, 'bootstrap.yml'),
+      ServiceModule.register({dependencies: [NEST_BOOT, NEST_ETCD]}),
+  ],
+})
+export class ApplicationModule {}
 ```
 
 ## Usage
@@ -94,7 +125,7 @@ export class TestService {
 ### Script + Interval
 
 ```yaml
-consul:
+service:
   healthCheck:
     timeout: 1s
     interval: 10s
@@ -104,7 +135,7 @@ consul:
 ### Http + Interval
 
 ```yaml
-consul:
+service:
   healthCheck:
     timeout: 1s
     interval: 10s
@@ -115,7 +146,7 @@ consul:
 ### Tcp + Interval
 
 ```yaml
-consul:
+service:
   healthCheck:
     timeout: 1s
     interval: 10s
@@ -125,7 +156,7 @@ consul:
 ### Time To Live
 
 ```yaml
-consul:
+service:
   healthCheck:
     ttl: 60s
 ```
@@ -133,7 +164,7 @@ consul:
 ### Docker + Interval
 
 ```yaml
-consul:
+service:
   healthCheck:
     dockerContainerId: 2ddd99fd268c
 ```
@@ -149,26 +180,26 @@ Import nest consul service module.
 | field | type | description |
 | :--- | :--- | :--- |
 | options.dependencies | string[] | if you are using @nestcloud/boot module, please set [NEST_BOOT] |
-| options.service.id | string | the service id |
-| options.service.name | string | the service name |
-| options.service.port | number | the service port, if not set, it will use random port |
-| options.service.tags | number | the service tags |
-| options.service.includes | string[] | sync services from consul, if not set, it will sync all services |
-| options.consul.discoveryHost | string | the discovery ip |
-| options.consul.healthCheck.timeout | number | the health check timeout, default 1s |
-| options.consul.healthCheck.interval | number | the health check interval，default 10s |
-| options.consul.healthCheck.deregisterCriticalServiceAfter | string | timeout after which to automatically deregister service if check remains in critical state | 
-| options.consul.healthCheck.protocol | string | https or http, default is http. | 
-| options.consul.healthCheck.tcp | string | host:port to test, passes if connection is established, fails otherwise. | 
-| options.consul.healthCheck.script | string | path to check script, requires interval. | 
-| options.consul.healthCheck.dockerContainerId | string | Docker container ID to run script. | 
-| options.consul.healthCheck.shell | string | shell in which to run script (currently only supported with Docker). | 
-| options.consul.healthCheck.ttl | string | time to live before check must be updated, instead of http/tcp/script and interval (ex: 60s). | 
-| options.consul.healthCheck.notes | string | human readable description of check. | 
-| options.consul.healthCheck.status | string | initial service status. | 
-| options.consul.healthCheck.route | string | the health check url, default is /health. | 
-| options.consul.maxRetry | number | the max retry count when register service fail |
-| options.consul.retryInterval | number | the retry interval when register service fail |
+| options.id | string | the service id |
+| options.name | string | the service name |
+| options.port | number | the service port, if not set, it will use random port |
+| options.tags | number | the service tags |
+| options.includes | string[] | sync services from consul, if not set, it will sync all services |
+| options.discoveryHost | string | the discovery ip |
+| options.healthCheck.timeout | number | the health check timeout, default 1s |
+| options.healthCheck.interval | number | the health check interval，default 10s |
+| options.healthCheck.deregisterCriticalServiceAfter | string | timeout after which to automatically deregister service if check remains in critical state | 
+| options.healthCheck.protocol | string | https or http, default is http. | 
+| options.healthCheck.tcp | string | host:port to test, passes if connection is established, fails otherwise. | 
+| options.healthCheck.script | string | path to check script, requires interval. | 
+| options.healthCheck.dockerContainerId | string | Docker container ID to run script. | 
+| options.healthCheck.shell | string | shell in which to run script (currently only supported with Docker). | 
+| options.healthCheck.ttl | string | time to live before check must be updated, instead of http/tcp/script and interval (ex: 60s). | 
+| options.healthCheck.notes | string | human readable description of check. | 
+| options.healthCheck.status | string | initial service status. | 
+| options.healthCheck.route | string | the health check url, default is /health. | 
+| options.maxRetry | number | the max retry count when register service fail |
+| options.retryInterval | number | the retry interval when register service fail |
 
 ### class Service
 

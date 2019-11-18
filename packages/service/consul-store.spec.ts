@@ -1,11 +1,11 @@
-import { Store } from './store';
+import { ConsulStore } from './consul-store';
 import * as Consul from 'consul';
 import { expect } from 'chai';
 import { IServiceNode } from '@nestcloud/common';
 
 describe('Consul Service Store', () => {
     let consul: Consul;
-    let store: Store;
+    let store: ConsulStore;
 
     before(async () => {
         consul = new Consul({ host: '127.0.0.1', port: 8500, promisify: true });
@@ -20,7 +20,7 @@ describe('Consul Service Store', () => {
             },
             status: 'passing',
         });
-        store = new Store(consul);
+        store = new ConsulStore(consul);
         await store.init();
     });
 

@@ -13,16 +13,16 @@ npm install consul @nestcloud/consul @nestcloud/consul-service @nestcloud/loadba
 ```typescript
 import { Module } from '@nestjs/common';
 import { ConsulModule } from '@nestcloud/consul';
-import { ConsulServiceModule } from '@nestcloud/consul-service';
+import { ServiceModule } from '@nestcloud/service';
 import { LoadbalanceModule } from '@nestcloud/loadbalance';
 import { BootModule } from '@nestcloud/boot';
-import { NEST_BOOT } from '@nestcloud/common';
+import { NEST_BOOT, NEST_CONSUL } from '@nestcloud/common';
 
 @Module({
   imports: [
       ConsulModule.register({dependencies: [NEST_BOOT]}),
       BootModule.register(__dirname, 'bootstrap.yml'),
-      ConsulServiceModule.register({ dependencies: [NEST_BOOT] }), // or NEST_CONSUL_CONFIG
+      ServiceModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL] }), // or NEST_CONSUL_CONFIG
       LoadbalanceModule.register({ dependencies: [NEST_BOOT], customRulePath: __dirname }),
   ],
 })

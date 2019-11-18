@@ -8,6 +8,7 @@ export class ServiceNode implements IServiceNode {
     port: string;
     zone?: string;
     status: string;
+    tags?: string[];
 
     constructor(address: string, port: string) {
         this.address = address;
