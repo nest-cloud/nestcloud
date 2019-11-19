@@ -81,6 +81,7 @@ export class EtcdService implements IService, OnModuleInit, OnModuleDestroy {
                 await lease.put(key).value(YAML.stringify(this.self));
                 lease.on('lost', async () => {
                     lease.removeAllListeners('lost');
+                    await sleep(5000);
                     await this.registerService();
                 });
 
