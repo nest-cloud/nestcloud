@@ -22,11 +22,13 @@ export class EtcdConfig implements IConfig {
         while (true) {
             try {
                 const data = await this.client.namespace(this.namespace).get(this.name).string();
-                try {
-                    this.store.data = YAML.parse(data);
-                } catch (e) {
-                    this.logger.error('parse config data error', e);
-                    this.store.data = {};
+                if (data) {
+                    try {
+                        this.store.data = YAML.parse(data);
+                    } catch (e) {
+                        this.logger.error('parse config data error', e);
+                        this.store.data = {};
+                    }
                 }
 
                 this.createWatcher();
@@ -72,10 +74,14 @@ export class EtcdConfig implements IConfig {
                 if (event.type === 'Delete') {
                     this.store.data = {};
                 } else if (event.type === 'Put') {
-                    try {
-                        this.store.data = YAML.parse(event.kv.value.toString());
-                    } catch (e) {
-                        this.logger.error('parse config data error', e);
+                    if (event.kv.value && event.kv.value.toString()) {
+                        try {
+                            this.store.data = YAML.parse(event.kv.value.toString());
+                        } catch (e) {
+                            this.logger.error('parse config data error', e);
+                            this.store.data = {};
+                        }
+                    } else {
                         this.store.data = {};
                     }
                 }
