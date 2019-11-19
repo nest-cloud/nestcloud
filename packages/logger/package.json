@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/logger",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "Nestcloud logger module",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
@@ -8,8 +8,8 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@nestcloud/boot": "^0.6.2",
-    "@nestcloud/common": "^0.6.2",
+    "@nestcloud/boot": "^0.6.4",
+    "@nestcloud/common": "^0.6.4",
     "@nestjs/common": "^6.0.0"
   },
   "repository": {
