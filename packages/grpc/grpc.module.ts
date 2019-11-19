@@ -10,7 +10,6 @@ export class GrpcModule {
     static register(): DynamicModule {
         const inject = [NEST_LOADBALANCE_PROVIDER];
 
-
         const grpcProvider = {
             provide: NEST_GRPC_PROVIDER,
             useFactory: async (): Promise<any> => {

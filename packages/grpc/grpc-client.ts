@@ -1,8 +1,8 @@
-import { IClientConfig } from "./interfaces/grpc-configuration.interface";
+import { IClientConfig } from './interfaces/grpc-configuration.interface';
 import { ClientGrpcProxy } from '@nestjs/microservices/client';
-import { NestCloud } from "@nestcloud/core";
-import { ILoadbalance, IServer } from "@nestcloud/common";
-import { GrpcDelegate } from "@nestcloud/loadbalance";
+import { NestCloud } from '@nestcloud/core';
+import { ILoadbalance, IServer } from '@nestcloud/common';
+import { GrpcDelegate } from '@nestcloud/loadbalance';
 
 export class GrpcClient {
     private readonly config: IClientConfig;
@@ -44,11 +44,11 @@ export class GrpcClient {
             return { service: null, node: null };
         }
         const node = lb.choose(this.config.service);
-        const methodKey = `${ node.id }/${ method }`;
+        const methodKey = `${node.id}/${method}`;
         if (!this.serviceCache.get(methodKey)) {
             if (!this.proxyCache.has(node.id)) {
                 const proxy = new ClientGrpcProxy({
-                    url: `${ node.address }:${ node.port }`,
+                    url: `${node.address}:${node.port}`,
                     package: this.config.package,
                     protoPath: this.config.protoPath,
                 });

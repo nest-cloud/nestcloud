@@ -12,6 +12,7 @@ export const NEST_COMMON = 'NEST_COMMON';
 export const NEST_GRPC = 'NEST_GRPC';
 export const NEST_RBAC = 'NEST_RBAC';
 export const NEST_KUBERNETES = 'NEST_KUBERNETES';
+export const NEST_MEMCACHED = 'NEST_MEMCACHED';
 
 export const NEST_BOOT_PROVIDER = 'NEST_BOOT_PROVIDER';
 export const NEST_ETCD_PROVIDER = 'NEST_ETCD_PROVIDER';

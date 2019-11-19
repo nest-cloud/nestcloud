@@ -10,6 +10,8 @@ import {
     NEST_PROXY_PROVIDER,
     NEST_LOGGER_PROVIDER,
     NEST_MEMCACHED_PROVIDER,
+    NEST_ETCD_PROVIDER,
+    NEST_KUBERNETES_PROVIDER,
 } from '@nestcloud/common';
 import { STATIC_CONTEXT } from '@nestjs/core/injector/constants';
 
@@ -25,6 +27,8 @@ export class NestCloud {
         [NEST_PROXY_PROVIDER]: 'proxy',
         [NEST_LOGGER_PROVIDER]: 'logger',
         [NEST_MEMCACHED_PROVIDER]: 'memcached',
+        [NEST_ETCD_PROVIDER]: 'etcd',
+        [NEST_KUBERNETES_PROVIDER]: 'kubernetes',
     };
 
     static create<T extends INestApplicationContext = INestApplicationContext>(application: T): T {

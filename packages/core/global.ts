@@ -14,6 +14,11 @@ import {
     NEST_LOADBALANCE,
     NEST_SERVICE,
     NEST_PROXY,
+    IEtcd,
+    IKubernetes,
+    NEST_ETCD,
+    NEST_KUBERNETES,
+    NEST_MEMCACHED,
 } from '@nestcloud/common';
 import * as Consul from 'consul';
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
@@ -36,6 +41,8 @@ export class Global {
     private _loadbalance: ILoadbalance;
     private _proxy: IProxy;
     private _memcached: IMemcached;
+    private _etcd: IEtcd;
+    private _kubernetes: IKubernetes;
 
     /**
      * Global Http Client
@@ -110,6 +117,7 @@ export class Global {
 
     public set memcached(memcached: IMemcached) {
         this._memcached = memcached;
+        this.trigger(NEST_MEMCACHED, memcached);
     }
 
     public get axios(): AxiosInstance {
@@ -118,6 +126,24 @@ export class Global {
 
     public set axiosConfig(axiosConfig: AxiosRequestConfig) {
         this._axios = Axios.create(axiosConfig);
+    }
+
+    public get etcd(): IEtcd {
+        return this._etcd;
+    }
+
+    public set etcd(etcd: IEtcd) {
+        this._etcd = etcd;
+        this.trigger(NEST_ETCD, etcd);
+    }
+
+    public get kubernetes(): IKubernetes {
+        return this._kubernetes;
+    }
+
+    public set kubernetes(kubernetes: IKubernetes) {
+        this._kubernetes = kubernetes;
+        this.trigger(NEST_KUBERNETES, kubernetes);
     }
 
     public watch<T extends IComponent>(component: string, callback: (component: T) => void) {

@@ -1,5 +1,5 @@
-import { GrpcClient } from "./grpc-client";
-import { IClientConfig } from "./interfaces/grpc-configuration.interface";
+import { GrpcClient } from './grpc-client';
+import { IClientConfig } from './interfaces/grpc-configuration.interface';
 
 export class ClientFactory {
     private static cache = new Map<string, GrpcClient>();
@@ -17,6 +17,6 @@ export class ClientFactory {
 
     private static generateKey(config: IClientConfig) {
         const service = config.service || config.url;
-        return `${ service }/${ config.package }/${ config.protoPath }`;
+        return `${service}/${config.package}/${config.protoPath}`;
     }
 }

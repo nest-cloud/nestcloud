@@ -5,13 +5,13 @@ import * as CoreModule from '@nestcloud/core';
 export const WatchKV = (key?: string, type?: 'json' | 'yaml' | 'text', defaults?: any) => createKVDecorator(key, type, defaults);
 
 const createKVDecorator = (key?: string, type?: 'json' | 'yaml' | 'text', defaults?: any): PropertyDecorator => {
-    return (target: any, propertyName: string | Symbol) => {
+    return async (target: any, propertyName: string | Symbol) => {
         const Core: typeof CoreModule = require('@nestcloud/core');
 
         // @ts-ignore
         target.constructor.prototype[propertyName] = defaults;
         if (Core.NestCloud.global.consul) {
-            handlePropertyValue(Core.NestCloud.global.consul, key, target, propertyName, type, defaults);
+            await handlePropertyValue(Core.NestCloud.global.consul, key, target, propertyName, type, defaults);
         } else {
             Core.NestCloud.global.watch<any>(NEST_CONSUL, async consul => {
                 await handlePropertyValue(consul, key, target, propertyName, type, defaults);
