@@ -13,10 +13,13 @@ import {
     NEST_CONFIG_PROVIDER,
     NEST_ETCD,
     NEST_ETCD_PROVIDER,
+    NEST_KUBERNETES,
+    NEST_KUBERNETES_PROVIDER,
     ILoadbalance,
     IBoot,
     IConfig,
     IEtcd,
+    IKubernetes,
 } from '@nestcloud/common';
 import { Rbac } from './rbac';
 import { IRbacConfig } from './interfaces/rbac-config.interface';
@@ -43,6 +46,7 @@ export class RbacModule {
                 const boot: IBoot = args[inject.indexOf(NEST_BOOT_PROVIDER)];
                 const consulConfig: IConfig = args[inject.indexOf(NEST_CONFIG_PROVIDER)];
                 const etcd: IEtcd = args[inject.indexOf(NEST_ETCD_PROVIDER)];
+                const kubernetes: IKubernetes = args[inject.indexOf(NEST_KUBERNETES_PROVIDER)];
                 if (boot) {
                     config.parameters = boot.get<{ [key: string]: string }>('rbac.parameters', config.parameters);
                 }
@@ -58,6 +62,8 @@ export class RbacModule {
                     await rbac.init(loadbalance);
                 } else if (etcd && config.backend === Backend.ETCD) {
                     await rbac.init(etcd);
+                } else if (kubernetes && config.backend === Backend.KUBERNETES) {
+                    await rbac.init(kubernetes);
                 } else {
                     await rbac.init();
                 }
@@ -96,6 +102,9 @@ export class RbacModule {
         }
         if (dependencies.includes(NEST_ETCD)) {
             injects.push(NEST_ETCD_PROVIDER);
+        }
+        if (dependencies.includes(NEST_KUBERNETES)) {
+            injects.push(NEST_KUBERNETES_PROVIDER);
         }
         return injects;
     }
