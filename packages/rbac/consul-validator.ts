@@ -20,14 +20,14 @@ export class ConsulValidator implements IRbacValidator {
             throw new BackendMismatchException(`The ConsulValidator need backend is Backend.CONSUL`);
         }
         this.consul = client;
-        const key = config.parameters.key;
-        if (key) {
-            await this.watch(key);
+        const name = config.parameters.name;
+        if (name) {
+            await this.watch(name);
         }
     }
 
-    private async watch(key: string) {
-        const data = await this.consul.kv.get(key);
+    private async watch(name: string) {
+        const data = await this.consul.kv.get(name);
         if (data && data.Value) {
             const { accounts, roles, roleBindings } = parse(data.Value);
             this.store.init(accounts, roles, roleBindings);
@@ -35,7 +35,7 @@ export class ConsulValidator implements IRbacValidator {
 
         const watcher = this.consul.watch({
             method: this.consul.kv.get,
-            options: { key, timeout: 5 * 60 * 1000 },
+            options: { name, timeout: 5 * 60 * 1000 },
         });
         watcher.on('change', data => {
             if (data && data.Value) {

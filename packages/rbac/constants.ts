@@ -9,6 +9,7 @@ export const Verbs = {
 export const Backend = {
     CONSUL: 'consul',
     ETCD: 'etcd',
+    KUBERNETES: 'kubernetes',
     LOADBALANCE: 'loadbalance',
     CUSTOM: 'custom',
 };

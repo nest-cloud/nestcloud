@@ -21,21 +21,21 @@ export class EtcdValidator implements IRbacValidator {
             throw new BackendMismatchException(`The EtcdValidator need backend is Backend.ETCD`);
         }
         this.client = client;
-        const key = config.parameters.key;
+        const name = config.parameters.name;
         const namespace = config.parameters.namespace;
-        if (key) {
-            await this.watch(key, namespace);
+        if (name) {
+            await this.watch(name, namespace);
         }
     }
 
-    private async watch(key: string, namespace: string) {
-        const data = await this.client.namespace(namespace).get(key).string();
+    private async watch(name: string, namespace: string) {
+        const data = await this.client.namespace(namespace).get(name).string();
         if (data) {
             const { accounts, roles, roleBindings } = parse(data);
             this.store.init(accounts, roles, roleBindings);
         }
 
-        const watcher = await this.client.namespace(namespace).watch().key(key).create();
+        const watcher = await this.client.namespace(namespace).watch().key(name).create();
         watcher.on('data', (res: RPC.IWatchResponse) => {
             const event = res.events.filter(evt => !evt.prev_kv)[0];
             if (event) {

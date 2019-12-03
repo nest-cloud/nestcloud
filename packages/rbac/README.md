@@ -59,7 +59,7 @@ consul:
   port: 8500
 rbac:
   parameters:
-    key: service-rbac
+    name: service-rbac
 ```
 
 ### Rbac Configuration

@@ -15,3 +15,4 @@ export * from './rbac';
 export * from './store';
 export * from './consul-validator';
 export * from './etcd-validator';
+export * from './kube-validator';
