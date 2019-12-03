@@ -3,11 +3,12 @@ export const Verbs = {
     LIST: 'list',
     UPDATE: 'update',
     DELETE: 'delete',
-    WATCH: 'watch'
+    WATCH: 'watch',
 };
 
 export const Backend = {
     CONSUL: 'consul',
+    ETCD: 'etcd',
     LOADBALANCE: 'loadbalance',
     CUSTOM: 'custom',
 };

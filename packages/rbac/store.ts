@@ -1,7 +1,7 @@
-import { IRbacData } from "./interfaces/rbac-data.interface";
-import { IRbacAccount } from "./interfaces/rbac-account.interface";
-import { IRbacRole } from "./interfaces/rbac-role.interface";
-import { IRbacRoleBinding } from "./interfaces/rbac-role-binding.interface";
+import { IRbacData } from './interfaces/rbac-data.interface';
+import { IRbacAccount } from './interfaces/rbac-account.interface';
+import { IRbacRole } from './interfaces/rbac-role.interface';
+import { IRbacRoleBinding } from './interfaces/rbac-role-binding.interface';
 
 export class Store {
     private readonly data: IRbacData = {
@@ -55,7 +55,6 @@ export class Store {
         roleBinding.accounts.forEach(accountName => {
             const roleBindings = this.data.roleBindings.get(accountName) || [];
 
-
             this.data.roleBindings.set(accountName, [...roleBindings, roleBinding]);
         });
     }
@@ -73,7 +72,7 @@ export class Store {
         this.data.roles.delete(role);
     }
 
-    private reset() {
+    public reset() {
         this.data.accounts = new Map<string, IRbacAccount>();
         this.data.roles = new Map<string, IRbacRole>();
         this.data.roleBindings = new Map<string, IRbacRoleBinding[]>();

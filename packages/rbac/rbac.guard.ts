@@ -1,10 +1,10 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { RESOURCE_METADATA, VERB_METADATA } from "./constants";
-import { IRbacAccount } from "./interfaces/rbac-account.interface";
-import { InjectRbac } from "./decorators/inject-rbac.decorator";
-import { Rbac } from "./rbac";
-import { IRbacValidator } from "./interfaces/rbac-validator.interface";
+import { RESOURCE_METADATA, VERB_METADATA } from './constants';
+import { IRbacAccount } from './interfaces/rbac-account.interface';
+import { InjectRbac } from './decorators/inject-rbac.decorator';
+import { Rbac } from './rbac';
+import { IRbacValidator } from './interfaces/rbac-validator.interface';
 
 @Injectable()
 export class RbacGuard implements CanActivate {

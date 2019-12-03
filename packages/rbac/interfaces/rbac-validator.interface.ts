@@ -1,5 +1,5 @@
-import { IRbacAccount } from "./rbac-account.interface";
-import { IRbacConfig } from "./rbac-config.interface";
+import { IRbacAccount } from './rbac-account.interface';
+import { IRbacConfig } from './rbac-config.interface';
 
 export interface IRbacValidator {
     init(config: IRbacConfig, client?: any): void;
