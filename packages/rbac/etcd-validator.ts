@@ -7,6 +7,7 @@ import { Backend } from './constants';
 import { BackendMismatchException } from './exceptions/backend-mismatch.exception';
 import { IEtcd } from '@nestcloud/common';
 import * as RPC from 'etcd3/lib/src/rpc';
+import { IRbacData } from './interfaces/rbac-data.interface';
 
 export class EtcdValidator implements IRbacValidator {
     private readonly store: Store = new Store();
@@ -14,6 +15,10 @@ export class EtcdValidator implements IRbacValidator {
 
     public validate(resource: string, verb: string, account: IRbacAccount): boolean {
         return this.store.validate(account.name, resource, verb);
+    }
+
+    public getData(): IRbacData {
+        return this.store.getData();
     }
 
     public async init(config: IRbacConfig, client?: IEtcd) {

@@ -2,7 +2,6 @@ import { IRbacConfig } from './interfaces/rbac-config.interface';
 import { IRbacValidator } from './interfaces/rbac-validator.interface';
 
 export class Rbac {
-
     constructor(
         private readonly config: IRbacConfig,
         private readonly validator: IRbacValidator,

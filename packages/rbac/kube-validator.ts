@@ -7,6 +7,7 @@ import { IRbacConfig } from './interfaces/rbac-config.interface';
 import { Backend } from './constants';
 import { BackendMismatchException } from './exceptions/backend-mismatch.exception';
 import { IKubernetes } from '@nestcloud/common';
+import { IRbacData } from './interfaces/rbac-data.interface';
 
 export class KubeValidator implements IRbacValidator {
     private readonly store: Store = new Store();
@@ -14,6 +15,10 @@ export class KubeValidator implements IRbacValidator {
 
     public validate(resource: string, verb: string, account: IRbacAccount): boolean {
         return this.store.validate(account.name, resource, verb);
+    }
+
+    public getData(): IRbacData {
+        return this.store.getData();
     }
 
     public async init(config: IRbacConfig, client?: IKubernetes) {

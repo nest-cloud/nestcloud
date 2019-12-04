@@ -17,6 +17,10 @@ export class Store {
         roleBindings.forEach(roleBinding => this.setRoleBinding(roleBinding));
     }
 
+    public getData(): IRbacData {
+        return this.data;
+    }
+
     public validate(account: string, resource: string, verb: string): boolean {
         if (!this.data.accounts.has(account)) {
             return false;
