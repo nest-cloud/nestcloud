@@ -46,7 +46,7 @@ gulp.task('copy-misc', function() {
         .pipe(gulp.dest(`${source}/common`))
         .pipe(gulp.dest(`${source}/boot`))
         .pipe(gulp.dest(`${source}/core`))
-        .pipe(gulp.dest(`${source}/etcds`))
+        .pipe(gulp.dest(`${source}/etcd`))
         .pipe(gulp.dest(`${source}/consul`))
         .pipe(gulp.dest(`${source}/config`))
         .pipe(gulp.dest(`${source}/service`))
