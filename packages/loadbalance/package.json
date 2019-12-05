@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/loadbalance",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "A Nest framework (node.js) module for getting service from consul and sending http request by loadbalance.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
@@ -8,13 +8,13 @@
     "access": "public"
   },
   "optionalDependencies": {
-    "@nestcloud/boot": "^0.6.5",
-    "@nestcloud/config": "^0.6.5"
+    "@nestcloud/boot": "^0.6.6",
+    "@nestcloud/config": "^0.6.6"
   },
   "peerDependencies": {
-    "@nestcloud/common": "^0.6.5",
-    "@nestcloud/consul": "^0.6.5",
-    "@nestcloud/service": "^0.6.5",
+    "@nestcloud/common": "^0.6.6",
+    "@nestcloud/consul": "^0.6.6",
+    "@nestcloud/service": "^0.6.6",
     "@nestjs/common": "^6.0.0",
     "consul": "^0.30.0"
   },
