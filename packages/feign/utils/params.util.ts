@@ -16,8 +16,7 @@ export const getMetadata = (value, target, oldValue) => (paramType) => {
 };
 
 export const getParams = (metadata, args) => {
-    const params = {}, uriParams = {}, headers = {};
-    let data = {};
+    const params = {}, data = {}, uriParams = {}, headers = {};
 
     for (const key in metadata) {
         if (!metadata.hasOwnProperty(key)) {
@@ -45,12 +44,7 @@ export const getParams = (metadata, args) => {
             if (meta.data) {
                 target[meta.data] = meta.index.toString().indexOf('const') !== -1 ? meta.value : args[meta.index];
             } else {
-                const value = meta.index.toString().indexOf('const') !== -1 ? meta.value : args[meta.index];
-                if (typeof value === 'string') {
-                    data = value;
-                } else {
-                    Object.assign(target);
-                }
+                Object.assign(target, meta.index.toString().indexOf('const') !== -1 ? meta.value : args[meta.index]);
             }
         }
     }
