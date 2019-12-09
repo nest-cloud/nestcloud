@@ -39,7 +39,7 @@ export class Store {
                 const role: IRbacRole = this.data.roles.get(roleName);
                 const hasRule = role.rules.filter(rule => {
                     const hasResource = rule.resources.includes(resource) || rule.resources.includes('*');
-                    const hasVerb = rule.verbs.includes(verb) || rule.resources.includes('*');
+                    const hasVerb = rule.verbs.includes(verb) || rule.verbs.includes('*');
                     return hasResource && hasVerb;
                 }).length !== 0;
                 if (hasRule) {
