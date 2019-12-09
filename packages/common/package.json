@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/common",
-  "version": "0.6.7",
+  "version": "0.6.8",
   "description": "common module for nestcloud",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
