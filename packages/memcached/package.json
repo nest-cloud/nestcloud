@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/memcached",
-  "version": "0.6.8",
+  "version": "0.6.9",
   "description": "A memcached module for nest.js",
   "author": "Miaowing <me@zf.ink>",
   "license": "MIT",
