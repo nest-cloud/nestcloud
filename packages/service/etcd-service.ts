@@ -5,6 +5,7 @@ import { Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import * as YAML from 'yamljs';
 import { ServiceNode } from './service-node';
 import { getIPAddress } from './utils/os.util';
+import { add } from 'random-js/dist/utils/add';
 
 export class EtcdService implements IService, OnModuleInit, OnModuleDestroy {
     // nestcloud-service/service__${serviceName}__${ip}__${port}
@@ -125,8 +126,10 @@ export class EtcdService implements IService, OnModuleInit, OnModuleDestroy {
                     const serviceName = chunks[1];
                     const address = chunks[2];
                     const port = chunks[3];
-                    const serviceNodes = this.services[serviceName] || [];
-                    this.services[serviceName] = serviceNodes.filter(node => node.address === address && node.port === port);
+                    this.services[serviceName] = this.services[serviceName] || [];
+                    this.services[serviceName] = this.services[serviceName].filter(item => {
+                        return item.address !== address || item.port !== port;
+                    });
 
                     try {
                         this.services[serviceName].push(YAML.parse(services[key].toString()));
@@ -154,14 +157,23 @@ export class EtcdService implements IService, OnModuleInit, OnModuleDestroy {
                     const serviceName = chunks[1];
                     const address = chunks[2];
                     const port = chunks[3];
-                    const serviceNodes = this.services[serviceName] || [];
-                    this.services[serviceName] = serviceNodes.filter(node => node.address === address && node.port === port);
-                    if (evt.type === 'Put') {
-                        try {
+                    this.services[serviceName] = this.services[serviceName] || [];
+                    this.services[serviceName] = this.services[serviceName].filter(item => {
+                        return item.address !== address || item.port !== port;
+                    });
+
+                    try {
+                        if (evt.type === 'Put') {
                             this.services[serviceName].push(YAML.parse(evt.kv.value.toString()));
-                        } catch (e) {
-                            this.logger.error(`parse service ${key} error.`, e);
+                        } else if (evt.type === 'Delete') {
+                            const etcdKey = evt.kv.key.toString();
+                            this.services[serviceName] = this.services[serviceName].filter(item => {
+                                const key = `service__${item.name}__${item.address}__${item.port}`;
+                                return etcdKey !== key;
+                            });
                         }
+                    } catch (e) {
+                        this.logger.error(`parse service ${key} error.`, e);
                     }
                     this.servicesCallbacks.forEach(cb => cb(this.getServiceNames()));
                     const callbacks = this.serviceCallbackMaps.get(serviceName);
