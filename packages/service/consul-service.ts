@@ -33,6 +33,7 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IService {
     private readonly notes: string;
     private readonly status: string;
     private readonly includes: string[];
+    private readonly connect: string[];
 
     constructor(
         private readonly consul: Consul,
@@ -44,6 +45,7 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IService {
         // tslint:disable-next-line:no-bitwise
         this.servicePort = get(options, 'port', 40000 + ~~(Math.random() * (40000 - 30000)));
         this.serviceTags = get(options, 'tags');
+        this.connect = get(options, 'connect', {});
         this.timeout = get(options, 'healthCheck.timeout', '1s');
         this.interval = get(options, 'healthCheck.interval', '10s');
         this.deregisterCriticalServiceAfter = get(options, 'healthCheck.deregisterCriticalServiceAfter');
@@ -131,6 +133,7 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IService {
             address: this.discoveryHost,
             port: parseInt(this.servicePort + ''),
             tags: this.serviceTags,
+            connect: this.connect,
             check,
         };
     }

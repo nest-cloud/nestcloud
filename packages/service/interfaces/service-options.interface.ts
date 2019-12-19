@@ -1,4 +1,5 @@
 import { IServiceCheck } from './service-check.interface';
+import { ConnectService } from './connect-service.interface';
 
 export interface IServiceOptions {
     dependencies?: string[];
@@ -11,4 +12,5 @@ export interface IServiceOptions {
     port?: number;
     includes?: string[];
     tags?: string[];
+    connect?: ConnectService;
 }
