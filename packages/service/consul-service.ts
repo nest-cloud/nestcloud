@@ -8,6 +8,7 @@ import { IServiceOptions } from './interfaces/service-options.interface';
 import { IServiceCheck } from './interfaces/service-check.interface';
 import { getIPAddress } from './utils/os.util';
 import { ConsulStore } from './consul-store';
+import { ConnectService } from './interfaces/connect-service.interface';
 
 export class ConsulService implements OnModuleInit, OnModuleDestroy, IService {
     private store: ConsulStore;
@@ -33,7 +34,7 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IService {
     private readonly notes: string;
     private readonly status: string;
     private readonly includes: string[];
-    private readonly connect: string[];
+    private readonly connect: ConnectService;
 
     constructor(
         private readonly consul: Consul,
