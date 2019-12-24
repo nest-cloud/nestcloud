@@ -4,6 +4,7 @@
 [linux-image]: https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux
 [linux-url]: https://travis-ci.org/nest-cloud/nestcloud
 
+
 # NestCloud
 
 <p align="center">
@@ -13,6 +14,7 @@
     <a href="https://travis-ci.org/nest-cloud/nestcloud" target="_blank"><img src="https://travis-ci.org/nest-cloud/nestcloud.svg?branch=master" alt="Travis"/></a>
     <a href="https://travis-ci.org/nest-cloud/nestcloud" target="_blank"><img src="https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux" alt="Linux"/></a>
     <a href="https://coveralls.io/github/nest-cloud/nestcloud?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nest-cloud/nestcloud/badge.svg?branch=master" alt="Coverage"/></a>
+    <a href="https://opencollective.com/nest-cloud" target="_blank"><img src="https://opencollective.com/nest-cloud/all/badge.svg?label=financial+contributors" alt="Financial Contributors on Open Collective"/></a>
 </p>
 
 NestCloud is a NodeJS micro-service solution, writing by Typescript language and NestJS framework.
@@ -229,6 +231,36 @@ export class AppModule {
 ## Stay in touch
 
 - Author - [NestCloud](https://github.com/nest-cloud)
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/nest-cloud/nestcloud/graphs/contributors"><img src="https://opencollective.com/nest-cloud/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/nest-cloud/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/nest-cloud"><img src="https://opencollective.com/nest-cloud/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/nest-cloud/contribute)]
+
+<a href="https://opencollective.com/nest-cloud/organization/0/website"><img src="https://opencollective.com/nest-cloud/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/nest-cloud/organization/1/website"><img src="https://opencollective.com/nest-cloud/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/nest-cloud/organization/2/website"><img src="https://opencollective.com/nest-cloud/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/nest-cloud/organization/3/website"><img src="https://opencollective.com/nest-cloud/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/nest-cloud/organization/4/website"><img src="https://opencollective.com/nest-cloud/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/nest-cloud/organization/5/website"><img src="https://opencollective.com/nest-cloud/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/nest-cloud/organization/6/website"><img src="https://opencollective.com/nest-cloud/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/nest-cloud/organization/7/website"><img src="https://opencollective.com/nest-cloud/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/nest-cloud/organization/8/website"><img src="https://opencollective.com/nest-cloud/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/nest-cloud/organization/9/website"><img src="https://opencollective.com/nest-cloud/organization/9/avatar.svg"></a>
 
 ## License
 
