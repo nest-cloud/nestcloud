@@ -342,21 +342,21 @@ onServiceChange -> watch
 
 onServiceListChange -> watchServiceList
 
-## Feign
+## Http
 
 ### 1. Configurations
 
-Now, the feign configurations support get from boot or consul config module.
+Now, the http configurations support get from boot or consul config module.
 
 old:
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { FeignModule } from '@nestcloud/feign';
+import { HttpModule } from '@nestcloud/http';
 
 @Module({
   imports: [
-      FeignModule.register({ dependencies: [NEST_BOOT] }),
+      HttpModule.register({ dependencies: [NEST_BOOT] }),
   ],
 })
 export class ApplicationModule {}
@@ -365,7 +365,7 @@ export class ApplicationModule {}
 configurations:
 
 ```yaml
-feign:
+http:
   axios:
     timeout: 1000
 ```
@@ -375,13 +375,13 @@ Use Boot module:
 ```typescript
 import { Module } from '@nestjs/common';
 import { BootModule } from '@nestcloud/boot';
-import { FeignModule } from '@nestcloud/feign';
+import { HttpModule } from '@nestcloud/http';
 import { NEST_BOOT } from '@nestcloud/common';
 
 @Module({
   imports: [
       BootModule.register(__dirname, 'bootstrap.yml'),
-      FeignModule.register({ dependencies: [NEST_BOOT] }),
+      HttpModule.register({ dependencies: [NEST_BOOT] }),
   ],
 })
 export class ApplicationModule {}
@@ -393,14 +393,14 @@ Use ConsulConfig module:
 import { Module } from '@nestjs/common';
 import { ConsulModule } from '@nestcloud/consul';
 import { ConsulConfigModule } from '@nestcloud/consul-config';
-import { FeignModule } from '@nestcloud/feign';
+import { HttpModule } from '@nestcloud/http';
 import { NEST_CONSUL_CONFIG } from '@nestcloud/common';
 
 @Module({
   imports: [
       ConsulModule.register({host: '127.0.0.1', port: 8500}),
       ConsulConfigModule.register({key: 'example-service-configs'}),
-      FeignModule.register({ dependencies: [NEST_CONSUL_CONFIG] }),
+      HttpModule.register({ dependencies: [NEST_CONSUL_CONFIG] }),
   ],
 })
 export class ApplicationModule {}

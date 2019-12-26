@@ -46,7 +46,8 @@ export class ApplicationModule {}
 ### Usage
 
 ```typescript
-import { Injectable, IEtcd } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { IEtcd } from '@nestcloud/common';
 import { InjectEtcd } from '@nestcloud/etcd';
 
 @Injectable()

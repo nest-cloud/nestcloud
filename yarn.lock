@@ -2913,7 +2913,7 @@ hasha@^3.0.0:
   dependencies:
     is-stream "^1.0.1"
 
-hashring@3.2.x:
+hashring@3.2.x, hashring@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/hashring/-/hashring-3.2.0.tgz#fda4efde8aa22cdb97fb1d2a65e88401e1c144ce"
   dependencies:

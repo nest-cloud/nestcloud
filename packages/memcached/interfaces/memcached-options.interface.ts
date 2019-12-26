@@ -2,6 +2,7 @@ import * as Memcached from 'memcached';
 
 export interface IMemcachedOptions extends Memcached.options {
     dependencies?: string[];
+    healthCheckInterval?: number;
 
     uri?: string[];
     /**

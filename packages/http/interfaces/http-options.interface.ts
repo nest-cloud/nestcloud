@@ -1,6 +1,6 @@
 import { IGlobalAxiosConfig } from './global-axios-config.interface';
 
-export interface IFeignOptions {
+export interface IHttpOptions {
     dependencies?: string[];
     axiosConfig?: IGlobalAxiosConfig;
 }

@@ -33,7 +33,7 @@ $ npm install --save @nestcloud/consul
 $ npm install --save @nestcloud/service 
 $ npm install --save @nestcloud/config 
 $ npm install --save @nestcloud/loadbalance 
-$ npm install --save @nestcloud/feign 
+$ npm install --save @nestcloud/http 
 $ npm install --save @nestcloud/logger 
 ```
 
@@ -47,7 +47,7 @@ $ npm install --save @nestcloud/etcd
 $ npm install --save @nestcloud/service 
 $ npm install --save @nestcloud/config 
 $ npm install --save @nestcloud/loadbalance 
-$ npm install --save @nestcloud/feign 
+$ npm install --save @nestcloud/http 
 $ npm install --save @nestcloud/logger 
 ```
 
@@ -59,7 +59,7 @@ $ npm install --save @nestcloud/common
 $ npm install --save @nestcloud/boot 
 $ npm install --save @nestcloud/config 
 $ npm install --save @nestcloud/loadbalance 
-$ npm install --save @nestcloud/feign 
+$ npm install --save @nestcloud/http 
 $ npm install --save @nestcloud/logger 
 $ npm install --save @nestcloud/kubernetes 
 ```
@@ -113,7 +113,7 @@ Get local configurations.
 
 #### [Config](packages/config)
 
-Get & watch remote configurations from Consul KV or Kubernetes ConfigMap.
+Get & watch remote configurations from Consul KV, Etcd or Kubernetes ConfigMap.
 
 
 #### [Service](packages/service)
@@ -126,7 +126,7 @@ Service registration and service discovery
 Software load balancers primary for rest calls.
 
 
-#### [Feign](packages/feign)
+#### [Http](packages/http)
 
 A decorator and loadbalance http client.
 
@@ -195,7 +195,7 @@ import { ConsulModule } from '@nestcloud/consul';
 import { ConfigModule } from '@nestcloud/config';
 import { ServiceModule } from '@nestcloud/service';
 import { LoadbalanceModule } from '@nestcloud/loadbalance';
-import { FeignModule } from '@nestcloud/feign';
+import { HttpModule } from '@nestcloud/http';
 import { LoggerModule } from '@nestcloud/logger';
 import { TerminusModule } from '@nestjs/terminus';
 
@@ -207,7 +207,7 @@ import { TerminusModule } from '@nestjs/terminus';
         ConfigModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL] }),
         ServiceModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL] }),
         LoadbalanceModule.register({ dependencies: [NEST_BOOT] }),
-        FeignModule.register({ dependencies: [NEST_BOOT, NEST_LOADBALANCE] }),
+        HttpModule.register({ dependencies: [NEST_BOOT, NEST_LOADBALANCE] }),
         TerminusModule.forRootAsync({
             useFactory: () => ({ endpoints: [{ url: '/health', healthIndicators: [] }] }),
         }),

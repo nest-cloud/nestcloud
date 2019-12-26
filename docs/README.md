@@ -33,7 +33,7 @@
   - [服务注册发现 (Service)](consul-service.md)
   - [配置中心 (Config)](config.md)
   - [负载均衡 (Loadbalance)](loadbalance.md)
-  - [Http Client (Feign)](feign.md)
+  - [Http Client (Http)](http.md)
   - [远程调用 (Grpc)](grpc.md)
   - [定时任务 (Schedule)](schedule.md)
   - [Api 代理 (Proxy)](proxy.md)

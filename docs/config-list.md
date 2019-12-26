@@ -37,7 +37,7 @@ proxy:
       uri: http://pay.example.com
       
 # 支持通过 config 加载
-feign:
+http:
   axios:
     timeout: 1000
     

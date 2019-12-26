@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/memcached",
-  "version": "0.6.9",
+  "version": "0.6.10-0",
   "description": "A memcached module for nest.js",
   "author": "Miaowing <me@zf.ink>",
   "license": "MIT",
@@ -15,6 +15,9 @@
     "@nestcloud/common": "^0.6.9",
     "@nestjs/common": "^6.0.0",
     "memcached": "^2.2.2"
+  },
+  "dependencies": {
+    "hashring": "^3.2.0"
   },
   "repository": {
     "type": "git",

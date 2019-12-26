@@ -4,7 +4,7 @@
 [linux-image]: https://img.shields.io/travis/nest-cloud/nestcloud/master.svg?label=linux
 [linux-url]: https://travis-ci.org/nest-cloud/nestcloud
 
-# NestCloud - Feign
+# NestCloud - Http
 
 <p align="center">
     <a href="https://www.npmjs.com/~nestcloud" target="_blank"><img src="https://img.shields.io/npm/v/@nestcloud/core.svg" alt="NPM Version"/></a>
@@ -26,7 +26,7 @@ This is a [Nest](https://github.com/nestjs/nest) module for writing nestjs http 
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/feign @nestcloud/loadbalance @nestcloud/consul consul
+$ npm i --save @nestcloud/http @nestcloud/loadbalance @nestcloud/consul consul
 ```
 
 ## Quick Start
@@ -39,7 +39,7 @@ import { ConsulModule } from '@nestcloud/consul';
 import { ServiceModule } from '@nestcloud/service';
 import { LoadbalanceModule } from '@nestcloud/loadbalance';
 import { BootModule } from '@nestcloud/boot';
-import { FeignModule } from '@nestcloud/feign';
+import { HttpModule } from '@nestcloud/http';
 import { NEST_BOOT, NEST_LOADBALANCE, NEST_CONSUL } from '@nestcloud/common';
 
 @Module({
@@ -48,7 +48,7 @@ import { NEST_BOOT, NEST_LOADBALANCE, NEST_CONSUL } from '@nestcloud/common';
       ConsulModule.register({dependencies: [NEST_BOOT, NEST_CONSUL]}),
       ServiceModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL] }),
       LoadbalanceModule.register({ dependencies: [NEST_BOOT] }),
-      FeignModule.register({ dependencies: [NEST_BOOT, NEST_LOADBALANCE] }), // or NEST_CONSUL_CONFIG
+      HttpModule.register({ dependencies: [NEST_BOOT, NEST_LOADBALANCE] }), // or NEST_CONSUL_CONFIG
   ],
 })
 export class ApplicationModule {}
@@ -57,7 +57,7 @@ export class ApplicationModule {}
 ### Configurations
 
 ```yaml
-feign:
+http:
   axios:
     timeout: 1000
 ```
@@ -66,7 +66,7 @@ feign:
 
 ```typescript
 import { Injectable } from "@nestjs/common";
-import { Get, Query, Post, Body, Param, Put, Delete } from "@nestcloud/feign";
+import { Get, Query, Post, Body, Param, Put, Delete } from "@nestcloud/http";
 
 @Injectable()
 export class UserClient {
@@ -97,7 +97,7 @@ export class UserClient {
 
 ```yaml
 import { Injectable } from "@nestjs/common";
-import { Loadbalanced, Get, Query } from "@nestcloud/feign";
+import { Loadbalanced, Get, Query } from "@nestcloud/http";
 
 @Injectable()
 @Loadbalanced('user-service') // open loadbalance supports, need @nestcloud/loadbalance module.
@@ -116,7 +116,7 @@ export class UserClient {
 ### Brakes
 
 ```typescript
-import { IFallback } from "@nestcloud/feign";
+import { IFallback } from "@nestcloud/http";
 import { Injectable, ServiceUnavailableException } from "@nestjs/common";
 import { AxiosResponse } from "axios";
 
@@ -129,7 +129,7 @@ export class CustomFallback implements IFallback {
 ```
 
 ```typescript
-import { IHealthCheck } from "@nestcloud/feign";
+import { IHealthCheck } from "@nestcloud/http";
 import { Injectable } from "@nestjs/common";
 import { HealthClient } from "./health.client";
 
@@ -148,7 +148,7 @@ export class CustomCheck implements IHealthCheck {
 
 ```typescript
 import { Injectable } from "@nestjs/common";
-import { UseBrakes, UseFallback, UseHealthCheck, Get, Query } from "@nestcloud/feign";
+import { UseBrakes, UseFallback, UseHealthCheck, Get, Query } from "@nestcloud/http";
 import { CustomFallback } from "./custom.fallback";
 import { CustomCheck } from "./custom.check";
 
@@ -170,7 +170,7 @@ export class UserClient {
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { IInterceptor } from "@nestcloud/feign";
+import { IInterceptor } from "@nestcloud/http";
 import { AxiosResponse, AxiosRequestConfig } from 'axios';
 
 @Injectable()
@@ -196,7 +196,7 @@ export class AddHeaderInterceptor implements IInterceptor {
 
 ```typescript
 import { Injectable } from "@nestjs/common";
-import { Get, UseInterceptor } from "@nestcloud/feign";
+import { Get, UseInterceptor } from "@nestcloud/http";
 import { AddHeaderInterceptor } from "./middlewares/AddHeaderInterceptor";
 
 @Injectable()

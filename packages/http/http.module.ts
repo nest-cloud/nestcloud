@@ -1,7 +1,7 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
 import {
     NEST_LOADBALANCE,
-    NEST_FEIGN_PROVIDER,
+    NEST_HTTP_PROVIDER,
     NEST_LOADBALANCE_PROVIDER,
     NEST_BOOT,
     NEST_BOOT_PROVIDER,
@@ -10,15 +10,15 @@ import {
     IBoot,
     IConfig,
 } from '@nestcloud/common';
-import { IFeignOptions } from './interfaces/feign-options.interface';
+import { IHttpOptions } from './interfaces/http-options.interface';
 import { NestCloud } from '@nestcloud/core';
 
 @Global()
 @Module({})
-export class FeignModule {
-    private static readonly configPath = 'feign.axios';
+export class HttpModule {
+    private static readonly configPath = 'http.axios';
 
-    static register(options: IFeignOptions = {}): DynamicModule {
+    static register(options: IHttpOptions = {}): DynamicModule {
         const inject = [];
         if (options.dependencies) {
             if (options.dependencies.includes(NEST_BOOT)) {
@@ -32,8 +32,8 @@ export class FeignModule {
             }
         }
 
-        const feignProvider = {
-            provide: NEST_FEIGN_PROVIDER,
+        const httpProvider = {
+            provide: NEST_HTTP_PROVIDER,
             useFactory: async (...args: any[]): Promise<any> => {
                 const boot: IBoot = args[inject.indexOf(NEST_BOOT_PROVIDER)];
                 const config: IConfig = args[inject.indexOf(NEST_CONFIG_PROVIDER)];
@@ -51,9 +51,9 @@ export class FeignModule {
         };
 
         return {
-            module: FeignModule,
-            providers: [feignProvider],
-            exports: [feignProvider],
+            module: HttpModule,
+            providers: [httpProvider],
+            exports: [httpProvider],
         };
     }
 }

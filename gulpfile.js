@@ -18,7 +18,7 @@ const packages = {
     schedule: ts.createProject('packages/schedule/tsconfig.json'),
     validations: ts.createProject('packages/validations/tsconfig.json'),
     brakes: ts.createProject('packages/brakes/tsconfig.json'),
-    feign: ts.createProject('packages/feign/tsconfig.json'),
+    http: ts.createProject('packages/http/tsconfig.json'),
     grpc: ts.createProject('packages/grpc/tsconfig.json'),
     rbac: ts.createProject('packages/rbac/tsconfig.json'),
     redis: ts.createProject('packages/redis/tsconfig.json'),
@@ -56,7 +56,7 @@ gulp.task('copy-misc', function() {
         .pipe(gulp.dest(`${source}/schedule`))
         .pipe(gulp.dest(`${source}/validations`))
         .pipe(gulp.dest(`${source}/brakes`))
-        .pipe(gulp.dest(`${source}/feign`))
+        .pipe(gulp.dest(`${source}/http`))
         .pipe(gulp.dest(`${source}/grpc`))
         .pipe(gulp.dest(`${source}/rbac`))
         .pipe(gulp.dest(`${source}/redis`))

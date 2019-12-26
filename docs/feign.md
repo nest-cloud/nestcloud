@@ -1,11 +1,11 @@
 # Http 客户端
 
-Feign 是支持负载均衡和装饰器的 http 客户端，使用更加简单，快捷。
+Http 是支持负载均衡和装饰器的 http 客户端，使用更加简单，快捷。
 
 ## 安装
 
 ```bash
-npm install @nestcloud/feign --save
+npm install @nestcloud/http --save
 ```
 
 ## 注册模块
@@ -16,7 +16,7 @@ import { ConsulModule } from '@nestcloud/consul';
 import { ServiceModule } from '@nestcloud/service';
 import { LoadbalanceModule } from '@nestcloud/loadbalance';
 import { BootModule } from '@nestcloud/boot';
-import { FeignModule } from '@nestcloud/feign';
+import { HttpModule } from '@nestcloud/http';
 import { NEST_BOOT, NEST_LOADBALANCE, NEST_CONSUL } from '@nestcloud/common';
 
 @Module({
@@ -25,7 +25,7 @@ import { NEST_BOOT, NEST_LOADBALANCE, NEST_CONSUL } from '@nestcloud/common';
       BootModule.register(__dirname, 'bootstrap.yml'),
       ServiceModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL] }),
       LoadbalanceModule.register({ dependencies: [NEST_BOOT] }),
-      FeignModule.register({ dependencies: [NEST_BOOT, NEST_LOADBALANCE] }), // or NEST_CONSUL_CONFIG
+      HttpModule.register({ dependencies: [NEST_BOOT, NEST_LOADBALANCE] }), // or NEST_CONSUL_CONFIG
   ],
 })
 export class ApplicationModule {}
@@ -34,7 +34,7 @@ export class ApplicationModule {}
 ## 配置
 
 ```yaml
-feign:
+http:
   axios:
     timeout: 1000
 ```
@@ -43,7 +43,7 @@ feign:
 
 ```typescript
 import { Injectable } from "@nestjs/common";
-import { Get, Query, Post, Body, Param, Put, Delete } from "@nestcloud/feign";
+import { Get, Query, Post, Body, Param, Put, Delete } from "@nestcloud/http";
 
 @Injectable()
 export class UserClient {
@@ -74,7 +74,7 @@ export class UserClient {
 
 ```typescript
 import { Injectable } from "@nestjs/common";
-import { Loadbalanced, Get, Query } from "@nestcloud/feign";
+import { Loadbalanced, Get, Query } from "@nestcloud/http";
 
 @Injectable()
 @Loadbalanced('user-service') // 开启负载均衡支持，需要依赖 @nestcloud/loadbalance 模块
@@ -93,7 +93,7 @@ export class UserClient {
 ### 熔断器
 
 ```typescript
-import { IFallback } from "@nestcloud/feign";
+import { IFallback } from "@nestcloud/http";
 import { Injectable, ServiceUnavailableException } from "@nestjs/common";
 import { AxiosResponse } from "axios";
 
@@ -106,7 +106,7 @@ export class CustomFallback implements IFallback {
 ```
 
 ```typescript
-import { IHealthCheck } from "@nestcloud/feign";
+import { IHealthCheck } from "@nestcloud/http";
 import { Injectable } from "@nestjs/common";
 import { HealthClient } from "./health.client";
 
@@ -126,7 +126,7 @@ export class CustomCheck implements IHealthCheck {
 
 ```typescript
 import { Injectable } from "@nestjs/common";
-import { UseBrakes, UseFallback, UseHealthCheck, Get, Query } from "@nestcloud/feign";
+import { UseBrakes, UseFallback, UseHealthCheck, Get, Query } from "@nestcloud/http";
 import { CustomFallback } from "./custom.fallback";
 import { CustomCheck } from "./custom.check";
 
@@ -150,7 +150,7 @@ AddHeaderInterceptor.ts
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { IInterceptor } from "@nestcloud/feign";
+import { IInterceptor } from "@nestcloud/http";
 import { AxiosResponse, AxiosRequestConfig } from 'axios';
 
 @Injectable()
@@ -178,7 +178,7 @@ ArticleClient.ts
 
 ```typescript
 import { Injectable } from "@nestjs/common";
-import { Get, UseInterceptor } from "@nestcloud/feign";
+import { Get, UseInterceptor } from "@nestcloud/http";
 import { AddHeaderInterceptor } from "./middlewares/AddHeaderInterceptor";
 
 @Injectable()
@@ -219,11 +219,11 @@ interceptor1 response
 
 ## API 文档
 
-### class FeignModule
+### class HttpModule
 
-#### static register\(options: IFeignOptions\): DynamicModule
+#### static register\(options: IHttpOptions\): DynamicModule
 
-注册 feign 模块
+注册 http 模块
 
 | field | type | description |
 | :--- | :--- | :--- |

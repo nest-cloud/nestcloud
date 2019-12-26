@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/core",
-  "version": "0.6.9",
+  "version": "0.6.10-0",
   "description": "A Nest framework (node.js) module for registering and getting consul service easily.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
