@@ -1,10 +1,11 @@
 import * as MemcachedClient from 'memcached';
 import * as HashRing from 'hashring';
-
+import { Logger } from '@nestjs/common';
 import { IMemcachedOptions } from './interfaces/memcached-options.interface';
 
 export class Memcached {
     private hashRing;
+    private readonly logger = new Logger('ConfigModule');
     private readonly clients = new Map<string, MemcachedClient>();
 
     constructor(uri: MemcachedClient.Location, options: IMemcachedOptions) {
@@ -33,9 +34,11 @@ export class Memcached {
                 const client = this.clients.get(key);
                 client.get('test', (err, data) => {
                     if (err) {
+                        this.logger.log(`The memcached server ${key} removed from HashRing`);
                         return this.hashRing.remove(key);
                     }
                     if (!this.hashRing.has(key)) {
+                        this.logger.log(`The memcached server ${key} added to HashRing`);
                         this.hashRing.add(key);
                     }
                 });
@@ -115,6 +118,16 @@ export class Memcached {
         return new Promise((resolve, reject) => {
             this.choose(key).del(key, err => (err ? reject(err) : resolve()));
         });
+    }
+
+    state(): string[] {
+        const servers = [];
+        for (const key of this.clients.keys()) {
+            if (this.hashRing.has(key)) {
+                servers.push(key);
+            }
+        }
+        return servers;
     }
 
     on(event: MemcachedClient.EventNames, callback) {
