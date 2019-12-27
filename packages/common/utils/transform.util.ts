@@ -7,7 +7,7 @@ export const objectToMap = object => {
     return result;
 };
 
-export const transformMapToObject = map => {
+export const mapToObject = map => {
     const result = {};
     for (const key in map) {
         if (!map.hasOwnProperty(key)) {

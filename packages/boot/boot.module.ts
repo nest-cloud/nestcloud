@@ -1,19 +1,21 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
+import { BootConfig } from './boot.config';
+import { BootOptions } from './interfaces/boot-options.interface';
+import { BootLoader } from './boot.loader';
 import { Boot } from './boot.class';
-import { NEST_BOOT_PROVIDER } from '@nestcloud/common';
 
 @Global()
 @Module({})
 export class BootModule {
-    static register(configPath: string, name?: string | ((env: string) => string)): DynamicModule {
-        const bootProvider = {
-            provide: NEST_BOOT_PROVIDER,
-            useFactory: (): Boot => new Boot(configPath, name),
+    static forRoot(options: BootOptions): DynamicModule {
+        const bootConfigProvider = {
+            provide: BootConfig,
+            useFactory: (): BootConfig => new BootConfig(options),
         };
         return {
             module: BootModule,
-            providers: [bootProvider],
-            exports: [bootProvider],
+            providers: [bootConfigProvider, BootLoader, Boot],
+            exports: [Boot],
         };
     }
 }

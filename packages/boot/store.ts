@@ -5,10 +5,10 @@ import { compile } from 'handlebars';
 export class Store {
     private static _data: any;
     private static readonly _map: { [key: string]: any } = {};
-    private static readonly watchCallbacks: {
+    private static readonly watchRefs: {
         [key: string]: Array<(value: any) => void>;
     } = {};
-    private static readonly hasDefined: { [key: string]: boolean } = {};
+    private static readonly defined: { [key: string]: boolean } = {};
 
     static get data() {
         return this._data;
@@ -30,23 +30,26 @@ export class Store {
     public static merge(data: any) {
     }
 
-    public static get<T extends any>(path: string, defaults?: T): T {
+    public static get<T extends any>(path?: string, defaults?: T): T {
+        if (!path) {
+            return this._data;
+        }
         return get(this._data, path, defaults);
     }
 
-    public static watch(path: string, callback: (value: any) => void) {
-        if (!this.watchCallbacks[path]) {
-            this.watchCallbacks[path] = [];
+    public static watch(path: string, ref: (value: any) => void) {
+        if (!this.watchRefs[path]) {
+            this.watchRefs[path] = [];
         }
-        this.watchCallbacks[path].push(callback);
+        this.watchRefs[path].push(ref);
 
-        if (!this.hasDefined[path]) {
+        if (!this.defined[path]) {
             Object.defineProperty(this._map, path, {
                 set: newVal => {
-                    this.watchCallbacks[path].forEach(cb => cb(newVal));
+                    this.watchRefs[path].forEach(ref => ref(newVal));
                 },
             });
-            this.hasDefined[path] = true;
+            this.defined[path] = true;
         }
     }
 
