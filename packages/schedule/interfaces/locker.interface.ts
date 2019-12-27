@@ -1,7 +1,7 @@
-import { IScheduleConfig } from './schedule-config.interface';
+import { Job } from 'node-schedule';
 
 export interface ILocker {
-    init(key: string, config: IScheduleConfig): void;
+    init(job: Job): void;
 
     tryLock(): Promise<boolean> | boolean;
 

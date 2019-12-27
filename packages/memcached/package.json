@@ -16,9 +16,6 @@
     "@nestjs/common": "^6.0.0",
     "memcached": "^2.2.2"
   },
-  "dependencies": {
-    "hashring": "^3.2.0"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nest-cloud/nestcloud.git"
