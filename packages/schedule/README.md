@@ -17,7 +17,16 @@
 
 ## Description
 
-This is a [Nest](https://github.com/nestjs/nest) module for using decorator schedule a job.
+This schedule module is forked from [@nestjs/schedule](https://github.com/nestjs/schedule).
+
+And add some new features:
+
+* Distributed supports that by using `UseLocker()` decorator.
+
+* Retryable Job.
+
+* Executing job immediately for `Interval` and `Timeout` job.
+
 
 ## Installation
 
@@ -39,32 +48,71 @@ import { ScheduleModule } from '@nestcloud/schedule';
 export class AppModule {
 }
 ```
+ 
+```typescript
+import { Injectable, Logger } from '@nestjs/common';
+import { Cron, Timeout, Interval } from '@nestcloud/schedule';
+
+@Injectable()
+export class TasksService {
+  private readonly logger = new Logger(TasksService.name);
+
+  @Cron('45 * * * * *')
+  handleCron() {
+    this.logger.debug('Called when the current second is 45');
+  }
+  
+  @Interval(5000)
+  handleInterval() {
+    this.logger.debug('Called every 5 seconds');
+  }
+
+  @Timeout(5000)
+  handleTimeout() {
+    this.logger.debug('Called after 5 seconds');
+  }
+}
+```
+
+## Schedule Cron Job By Object Literal Syntax
+
+@See [node-schedule#object-literal-syntax](https://github.com/node-schedule/node-schedule#object-literal-syntax)
 
 ```typescript
-import { Injectable } from '@nestjs/common';
-import { Cron, Interval, Timeout, NestSchedule } from '@nestcloud/schedule';
+import { Injectable, Logger } from '@nestjs/common';
+import { Cron } from '@nestcloud/schedule';
 
-@Injectable() // Only support SINGLETON scope
-export class ScheduleService extends NestSchedule {    
-  @Cron('0 0 2 * *', {
-    startTime: new Date(), 
-    endTime: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+@Injectable()
+export class TasksService {
+  private readonly logger = new Logger(TasksService.name);
+
+  @Cron({ 
+    rule: '45 * * * * *',
+    start: new Date(Date.now() + 5000),
+    end: new Date(Date.now() + 10000),
+    tz: 'Asia/Shanghai'
   })
-  async cronJob() {
-    console.log('executing cron job');
+  handleCron() {
+    this.logger.debug('Called when the time is Sunday 14:30');
   }
-  
-  @Timeout(5000)
-  onceJob() {
-    console.log('executing once job');
-  }
-  
-  @Interval(2000)
-  intervalJob() {
-    console.log('executing interval job');
-    
-    // if you want to cancel the job, you should return true;
-    return true;
+}
+```
+
+## Schedule Cron Job With StartTime And EndTime
+
+@See [node-schedule#set-startTime-and-endTime](https://github.com/node-schedule/node-schedule#set-starttime-and-endtime)
+
+```typescript
+import { Injectable, Logger } from '@nestjs/common';
+import { Cron } from '@nestcloud/schedule';
+
+@Injectable()
+export class TasksService {
+  private readonly logger = new Logger(TasksService.name);
+
+  @Cron({ hour: 14, minute: 30, dayOfWeek: 0, tz: 'Asia/Shanghai' })
+  handleCron() {
+    this.logger.debug('Called when the current second is 45');
   }
 }
 ```
@@ -72,105 +120,49 @@ export class ScheduleService extends NestSchedule {
 ### Dynamic Schedule Job
 
 ```typescript
-import { Injectable } from '@nestjs/common';
-import { InjectSchedule, Schedule } from '@nestcloud/schedule';
 
-@Injectable()
-export class ScheduleService {    
-  constructor(
-    @InjectSchedule() private readonly schedule: Schedule,
-  ) {
-  }
-  
-  createJob() {
-    // schedule a 2s interval job
-    this.schedule.scheduleIntervalJob('my-job', 2000, () => {
-      console.log('executing interval job');
-    });
-  }
-  
-  cancelJob() {
-    this.schedule.cancelJob('my-job');
-  }
-}
 ```
 
 ### Distributed Support
 
-#### 1. Extend NestDistributedSchedule class
+1. Implements `Locker` interface
 
 ```typescript
-import { Injectable } from '@nestjs/common';
-import { Cron, NestDistributedSchedule } from '@nestcloud/schedule';
-
-@Injectable()
-export class ScheduleService extends NestDistributedSchedule {  
-  constructor() {
-    super();
-  }
-  
-  async tryLock(method: string) {
-    if (lockFail) {
-      return false;
-    }
-    
-    return () => {
-      // Release here.
-    }
-  }
-  
-  @Cron('0 0 4 * *')
-  async cronJob() {
-    console.log('executing cron job');
-  }
-}
-```
-
-#### 2. Use UseLocker decorator
-
-```typescript
-import { ILocker, IScheduleConfig, InjectSchedule, Schedule } from '@nestcloud/schedule';
+import { Locker } from '@nestcloud/schedule';
 import { Injectable } from '@nestjs/common';
 
-// If use NestCloud, it supports dependency injection.
 @Injectable()
-export class MyLocker implements ILocker {
-  private key: string;
-  private config: IScheduleConfig;
+export class TaskLocker implements Locker {
+  private name: string;
 
-  constructor(
-    @InjectSchedule() private readonly schedule: Schedule,
-  ) {
-  }
-
-  init(key: string, config: IScheduleConfig): void {
-    this.key = key;
-    this.config = config;
-    console.log('init my locker: ', key, config);
+  init(name: string): void {
+    this.name = name;
   }
 
   release(): any {
-    console.log('release my locker');
   }
 
-  tryLock(): Promise<boolean> | boolean {
-    console.log('apply my locker');
+  async tryLock(): Promise<boolean> {
     return true;
   }
 }
 ```
 
+2. Use your locker
+
 ```typescript
-import { Injectable } from '@nestjs/common';
-import { Cron, NestSchedule, UseLocker } from '@nestcloud/schedule';
-import { MyLocker } from './my.locker';
+import { Injectable, Logger } from '@nestjs/common';
+import { Cron, UseLocker } from '@nestcloud/schedule';
+import { TaskLocker } from './TaskLocker';
 
 @Injectable()
-export class ScheduleService extends NestSchedule {  
-  @Cron('0 0 4 * *')
-  @UseLocker(MyLocker)
-  async cronJob() {
-    console.log('executing cron job');
+export class TasksService {
+  private readonly logger = new Logger(TasksService.name);
+
+  @Cron('45 * * * * *')
+  @UseLocker(TaskLocker)
+  handleCron() {
+    this.logger.debug('Called when the current second is 45');
   }
 }
 ```
@@ -180,122 +172,58 @@ export class ScheduleService extends NestSchedule {
 
 ### class ScheduleModule
 
-#### static register\(config: IGlobalConfig\): DynamicModule
+#### static register\(\): DynamicModule
 
 Register schedule module.
 
-| field | type | required | description |
-| --- | --- | --- | --- |
-| config.enable | boolean | false | default is true, when false, the job will not execute |
-| config.maxRetry | number | false |  the max retry count, default is -1 not retry |
-| config.retryInterval | number | false | the retry interval, default is 5000 |
-| config.waiting | boolean | false | the scheduler will not schedule job when this job is running, if waiting is true |
 
-### class Schedule
+## Decorators
 
-#### scheduleCronJob(key: string, cron: string, callback: JobCallback, config?: ICronJobConfig)
+### Cron(rule: string | number | Date | CronObject | CronObjLiteral, options?: CronOptions): MethodDecorator
 
 Schedule a cron job.
 
 | field | type | required | description |
 | --- | --- | --- | --- |
-| key | string | true | The unique job key |
-| cron | string | true | The cron expression |
-| callback | () => Promise&lt;boolean&gt; | boolean | If return true in callback function, the schedule will cancel this job immediately |
-| config.startTime | Date | false | The start time of this job |
-| config.endTime | Date | false | The end time of this job |
-| config.enable | boolean | false | default is true, when false, the job will not execute |
-| config.maxRetry | number | false |  the max retry count, default is -1 not retry |
-| config.retryInterval | number | false | the retry interval, default is 5000 |
-| config.waiting | boolean | false | the scheduler will not schedule job when this job is running, if waiting is true |
-| config.immediate | boolean | false | running job immediately |
+| rule | Date string number [CronObject CronObjLiteral](https://github.com/nest-cloud/nestcloud/tree/master/packages/schedule/interfaces/cron-options.interface)] | true | The cron rule |
+| rule.dayOfWeek | number | true | Timezone |
+| options.name | string | false | The unique job key |
+| options.retries | number | false |  the max retry count, default is -1 not retry |
+| options.retry | number | false | the retry interval, default is 5000 |
 
-#### scheduleIntervalJob(key: string, interval: number, callback: JobCallback, config?: IJobConfig)
+### Interval(timeout: number): MethodDecorator
+### Interval(name: string, timeout: number): MethodDecorator
+### Interval(name: string, timeout: number, options?: IntervalOptions): MethodDecorator
 
 Schedule a interval job.
 
 | field | type | required | description |
 | --- | --- | --- | --- |
-| key | string | true | The unique job key |
-| interval | number | true | milliseconds |
-| callback | () => Promise&lt;boolean&gt; | boolean | If return true in callback function, the schedule will cancel this job immediately |
-| config.enable | boolean | false | default is true, when false, the job will not execute |
-| config.maxRetry | number | false |  the max retry count, default is -1 not retry |
-| config.retryInterval | number | false | the retry interval, default is 5000 |
-| config.waiting | boolean | false | the scheduler will not schedule job when this job is running, if waiting is true |
-| config.immediate | boolean | false | running job immediately |
-
-#### scheduleTimeoutJob(key: string, timeout: number, callback: JobCallback, config?: IJobConfig)
-
-Schedule a timeout job.
-
-| field | type | required | description |
-| --- | --- | --- | --- |
-| key | string | true | The unique job key |
 | timeout | number | true | milliseconds |
-| callback | () => Promise&lt;boolean&gt; | boolean | If return true in callback function, the schedule will cancel this job immediately |
-| config.enable | boolean | false | default is true, when false, the job will not execute |
-| config.maxRetry | number | false |  the max retry count, default is -1 not retry |
-| config.retryInterval | number | false | the retry interval, default is 5000 |
-| config.immediate | boolean | false | running job immediately |
+| options.retries | number | false |  the max retry count, default is -1 not retry |
+| options.retry | number | false | the retry interval, default is 5000 |
+| options.immediate | boolean | false | executing job immediately |
 
-#### cancelJob(key: string)
-
-Cancel job.
-
-
-## Decorator
-
-### Cron(expression: string, config?: ICronJobConfig): MethodDecorator
-
-Schedule a cron job.
-
-| field | type | required | description |
-| --- | --- | --- | --- |
-| expression | string | true | the cron expression |
-| config.key | string | false | The unique job key |
-| config.startTime | Date | false | the job's start time |
-| config.endTime | Date | false | the job's end time |
-| config.enable | boolean | false | default is true, when false, the job will not execute |
-| config.maxRetry | number | false |  the max retry count, default is -1 not retry |
-| config.retryInterval | number | false | the retry interval, default is 5000 |
-| config.waiting | boolean | false | the scheduler will not schedule job when this job is running, if waiting is true |
-| config.immediate | boolean | false | running job immediately |
-
-### Interval(milliseconds: number, config?: IJobConfig): MethodDecorator
-
-Schedule a interval job.
-
-| field | type | required | description |
-| --- | --- | --- | --- |
-| milliseconds | number | true | milliseconds |
-| config.key | string | false | The unique job key |
-| config.enable | boolean | false | default is true, when false, the job will not execute |
-| config.maxRetry | number | false |  the max retry count, default is -1 not retry |
-| config.retryInterval | number | false | the retry interval, default is 5000 |
-| config.waiting | boolean | false | the scheduler will not schedule job when this job is running, if waiting is true |
-| config.immediate | boolean | false | running job immediately |
-
-### Timeout(milliseconds: number, config?: IJobConfig): MethodDecorator
+### Timeout(timeout: number): MethodDecorator
+### Timeout(name: string, timeout: number): MethodDecorator
+### Timeout(name: string, timeout: number, options?: TimeoutOptions): MethodDecorator
 
 Schedule a timeout job.
 
 | field | type | required | description |
 | --- | --- | --- | --- |
-| milliseconds | number | true | milliseconds |
-| config.key | string | false | The unique job key |
-| config.enable | boolean | false | default is true, when false, the job will not execute |
-| config.maxRetry | number | false |  the max retry count, default is -1 not retry |
-| config.retryInterval | number | false | the retry interval, default is 5000 |
-| config.immediate | boolean | false | running job immediately |
+| timeout | number | true | milliseconds |
+| options.retries | number | false |  the max retry count, default is -1 not retry |
+| options.retry | number | false | the retry interval, default is 5000 |
+| options.immediate | boolean | false | executing job immediately |
 
 ### InjectSchedule(): PropertyDecorator
 
 Inject Schedule instance
 
-### UseLocker(locker: ILocker | Function): MethodDecorator
+### UseLocker(locker: Locker | Function): MethodDecorator
 
-Make your job support distribution, If you use [NestCloud](https://github.com/nest-cloud/nestcloud), the Locker will support dependency injection.
+Set a locker for this job.
 
 
 ## Stay in touch

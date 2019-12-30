@@ -3,15 +3,17 @@ import { Reflector } from '@nestjs/core';
 import { SchedulerType } from './enums/scheduler-type.enum';
 import { IntervalMetadata } from './interfaces/interval-metadata.interface';
 import { TimeoutMetadata } from './interfaces/timeout-metadata.interface';
-import { CronOptions } from './interfaces/cron-options.interface';
+import { CronObject, CronObjLiteral, CronOptions } from './interfaces/cron-options.interface';
 import {
     SCHEDULER_NAME,
     SCHEDULER_TYPE,
     SCHEDULE_CRON_OPTIONS,
     SCHEDULE_INTERVAL_OPTIONS,
     SCHEDULE_TIMEOUT_OPTIONS,
-    SCHEDULE_LOCKER,
+    SCHEDULE_LOCKER, SCHEDULER_OPTIONS,
 } from './schedule.constants';
+import { TimeoutOptions } from './interfaces/timeout-options.interface';
+import { IntervalOptions } from './interfaces/interval-options.interface';
 
 @Injectable()
 export class SchedulerMetadataAccessor {
@@ -28,8 +30,12 @@ export class SchedulerMetadataAccessor {
         return this.reflector.get(SCHEDULER_NAME, target);
     }
 
-    getLocker(target: Function): string | undefined {
+    getLocker(target: Function): Function | undefined {
         return this.reflector.get(SCHEDULE_LOCKER, target);
+    }
+
+    getJobOptions(target: Function): CronOptions | TimeoutOptions | IntervalOptions | undefined {
+        return this.reflector.get(SCHEDULER_OPTIONS, target);
     }
 
     getTimeoutMetadata(target: Function): TimeoutMetadata | undefined {
@@ -40,7 +46,7 @@ export class SchedulerMetadataAccessor {
         return this.reflector.get(SCHEDULE_INTERVAL_OPTIONS, target);
     }
 
-    getCronMetadata(target: Function): (CronOptions & Record<'cronTime', string | Date | any>) | undefined {
+    getCronMetadata(target: Function): string | number | Date | CronObject | CronObjLiteral | undefined {
         return this.reflector.get(SCHEDULE_CRON_OPTIONS, target);
     }
 }

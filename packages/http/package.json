@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/http",
-  "version": "0.6.10-1",
+  "version": "0.6.10-5",
   "description": "Http is a nest http decorators library that makes writing nodejs http clients easier.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",

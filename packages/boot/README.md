@@ -37,7 +37,7 @@ import { BootModule } from '@nestcloud/boot';
 import * as path from 'path';
 
 @Module({
-  imports: [BootModule.forRoot({ filePath: path.resolve(__dirname, 'config.yaml') })],
+  imports: [BootModule.register({ filePath: path.resolve(__dirname, 'config.yaml') })],
 })
 export class ApplicationModule {}
 ```
@@ -124,7 +124,7 @@ service:
 
 ### class BootModule
 
-#### static forRoot\(options: BootOptions\): DynamicModule
+#### static register\(options: BootOptions\): DynamicModule
 
 Register boot module.
 

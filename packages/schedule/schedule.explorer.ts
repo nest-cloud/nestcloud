@@ -5,6 +5,8 @@ import { MetadataScanner } from '@nestjs/core/metadata-scanner';
 import { SchedulerType } from './enums/scheduler-type.enum';
 import { SchedulerMetadataAccessor } from './schedule-metadata.accessor';
 import { SchedulerOrchestrator } from './scheduler.orchestrator';
+import { ScheduleScanner } from './schedule.scanner';
+import { Locker } from './interfaces/locker.interface';
 
 @Injectable()
 export class ScheduleExplorer implements OnModuleInit {
@@ -13,6 +15,7 @@ export class ScheduleExplorer implements OnModuleInit {
         private readonly discoveryService: DiscoveryService,
         private readonly metadataAccessor: SchedulerMetadataAccessor,
         private readonly metadataScanner: MetadataScanner,
+        private readonly scheduleScanner: ScheduleScanner,
     ) {
     }
 
@@ -38,6 +41,9 @@ export class ScheduleExplorer implements OnModuleInit {
     lookupSchedulers(instance: Record<string, Function>, key: string) {
         const methodRef = instance[key];
         const metadata = this.metadataAccessor.getSchedulerType(methodRef);
+        const options = this.metadataAccessor.getJobOptions(methodRef);
+        const LockerClass = this.metadataAccessor.getLocker(methodRef);
+        const lockerInstance: Locker = this.scheduleScanner.scan<Locker>(LockerClass);
 
         switch (metadata) {
             case SchedulerType.CRON: {
@@ -45,6 +51,8 @@ export class ScheduleExplorer implements OnModuleInit {
                 return this.schedulerOrchestrator.addCron(
                     methodRef.bind(instance),
                     cronMetadata!,
+                    lockerInstance,
+                    { ...options! },
                 );
             }
             case SchedulerType.TIMEOUT: {
@@ -56,6 +64,8 @@ export class ScheduleExplorer implements OnModuleInit {
                     methodRef.bind(instance),
                     timeoutMetadata!.timeout,
                     name,
+                    lockerInstance,
+                    options!,
                 );
             }
             case SchedulerType.INTERVAL: {
@@ -67,6 +77,8 @@ export class ScheduleExplorer implements OnModuleInit {
                     methodRef.bind(instance),
                     intervalMetadata!.timeout,
                     name,
+                    lockerInstance,
+                    options!,
                 );
             }
         }

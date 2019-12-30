@@ -7,7 +7,7 @@ import { Boot } from './boot.class';
 @Global()
 @Module({})
 export class BootModule {
-    static forRoot(options: BootOptions): DynamicModule {
+    static register(options: BootOptions): DynamicModule {
         const bootConfigProvider = {
             provide: BootConfig,
             useFactory: (): BootConfig => new BootConfig(options),

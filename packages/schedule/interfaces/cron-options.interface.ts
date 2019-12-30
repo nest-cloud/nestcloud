@@ -1,5 +1,22 @@
 import { RecurrenceSegment, Timezone } from 'node-schedule';
 
+export interface CronObject {
+    /**
+     * Timezone
+     */
+    tz?: Timezone;
+    /**
+     * Starting date in date range.
+     */
+    start: Date | string | number;
+    /**
+     * Ending date in date range.
+     */
+    end: Date | string | number;
+
+    rule: string;
+}
+
 export interface CronObjLiteral {
     /**
      * Day of the month.
@@ -11,30 +28,14 @@ export interface CronObjLiteral {
     month?: RecurrenceSegment;
     second?: RecurrenceSegment;
     year?: RecurrenceSegment;
-}
-
-export interface CronDateOptions {
-    name?: string;
-}
-
-export interface CronObjLiteralOptions extends CronDateOptions {
     /**
      * Timezone
      */
     tz?: Timezone;
 }
 
-export interface CronOptions extends CronObjLiteralOptions {
-    /**
-     * Starting date in date range.
-     */
-    start?: Date | string | number;
-    /**
-     * Ending date in date range.
-     */
-    end?: Date | string | number;
-}
-
-export interface CronJob extends CronOptions, CronObjLiteral {
-    rule: string | number | Date;
+export interface CronOptions {
+    retries?: number;
+    retry?: number;
+    name?: string;
 }

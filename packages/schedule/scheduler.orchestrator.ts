@@ -1,8 +1,12 @@
-import { Injectable, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
 import { scheduleJob, Job } from 'node-schedule';
 import { v4 } from 'uuid';
 import { SchedulerRegistry } from './scheduler.registry';
-import { CronJob, CronObjLiteral } from './interfaces/cron-options.interface';
+import { CronObject, CronObjLiteral, CronOptions } from './interfaces/cron-options.interface';
+import { Locker } from './interfaces/locker.interface';
+import { ScheduleWrapper } from './schedule.wrapper';
+import { JOB_EXECUTE_ERROR } from './schedule.messages';
+import { TimeoutOptions } from './interfaces/timeout-options.interface';
 
 interface TargetHost {
     target: Function;
@@ -10,6 +14,8 @@ interface TargetHost {
 
 interface TimeoutHost {
     timeout: number;
+    locker: Locker;
+    options: TimeoutOptions;
 }
 
 interface RefHost<T> {
@@ -17,21 +23,26 @@ interface RefHost<T> {
 }
 
 interface CronOptionsHost {
-    options: CronJob & Record<'cronTime', string | Date | any>;
+    rule: string | number | Date | CronObject | CronObjLiteral;
+    locker: Locker;
+    options: CronOptions;
 }
 
-type IntervalOptions = TargetHost & TimeoutHost & RefHost<number>;
-type TimeoutOptions = TargetHost & TimeoutHost & RefHost<number>;
+type IntervalJobOptions = TargetHost & TimeoutHost & RefHost<NodeJS.Timeout>;
+type TimeoutJobOptions = TargetHost & TimeoutHost & RefHost<NodeJS.Timeout>;
 type CronJobOptions = TargetHost & CronOptionsHost & RefHost<Job>;
 
 @Injectable()
-export class SchedulerOrchestrator
-    implements OnApplicationBootstrap, OnApplicationShutdown {
+export class SchedulerOrchestrator implements OnApplicationBootstrap, OnApplicationShutdown {
+    private readonly logger = new Logger('Schedule');
     private readonly cronJobs: Record<string, CronJobOptions> = {};
-    private readonly timeouts: Record<string, TimeoutOptions> = {};
-    private readonly intervals: Record<string, IntervalOptions> = {};
+    private readonly timeouts: Record<string, TimeoutJobOptions> = {};
+    private readonly intervals: Record<string, IntervalJobOptions> = {};
 
-    constructor(private readonly schedulerRegistry: SchedulerRegistry) {
+    constructor(
+        private readonly schedulerRegistry: SchedulerRegistry,
+        private readonly wrapper: ScheduleWrapper,
+    ) {
     }
 
     onApplicationBootstrap() {
@@ -46,43 +57,73 @@ export class SchedulerOrchestrator
         this.closeCronJobs();
     }
 
-    mountIntervals() {
+    private mountIntervals() {
         const intervalKeys = Object.keys(this.intervals);
         intervalKeys.forEach(key => {
-            const options = this.intervals[key];
-            const intervalRef = setInterval(options.target, options.timeout);
+            const { options = {}, timeout, target, locker } = this.intervals[key];
+            let chain = this.wrapper.retryable(options.retries, options.retry, target as any);
+            if (options.immediate) {
+                chain = this.wrapper.immediately(key, chain);
+            }
 
-            options.ref = intervalRef;
+            const ref = this.wrapper.lockable(key, locker, chain);
+            const intervalRef = setInterval(async () => {
+                    try {
+                        await (await ref).call(null);
+                    } catch (e) {
+                        this.logger.error(JOB_EXECUTE_ERROR(key), e);
+                    }
+                },
+                timeout,
+            );
+
+            this.intervals[key].ref = intervalRef;
             this.schedulerRegistry.addInterval(key, intervalRef);
         });
     }
 
-    mountTimeouts() {
+    private mountTimeouts() {
         const timeoutKeys = Object.keys(this.timeouts);
         timeoutKeys.forEach(key => {
-            const options = this.timeouts[key];
-            const timeoutRef = setTimeout(options.target, options.timeout);
+            const { options = {}, timeout, target, locker } = this.timeouts[key];
+            const ref = this.wrapper.lockable(key, locker,
+                this.wrapper.retryable(options.retries, options.retry, target as any),
+            );
 
-            options.ref = timeoutRef;
+            const timeoutRef = setTimeout(async () => {
+                    try {
+                        await (await ref).call(null);
+                    } catch (e) {
+                        this.logger.error(JOB_EXECUTE_ERROR(key), e);
+                    }
+                },
+                timeout,
+            );
+
+            this.timeouts[key].ref = timeoutRef;
             this.schedulerRegistry.addTimeout(key, timeoutRef);
         });
     }
 
-    mountCron() {
+    private mountCron() {
         const cronKeys = Object.keys(this.cronJobs);
         cronKeys.forEach(key => {
-            const { options, target } = this.cronJobs[key];
-            let cronJob: Job;
-            if (options.rule instanceof Date ||
-                typeof options.rule === 'number' ||
-                typeof options.rule === 'string') {
-                cronJob = scheduleJob(key, options.rule as any, target as any);
-            } else {
-                cronJob = scheduleJob(key, {
-                    ...options,
-                    ...options.rule as CronObjLiteral,
-                }, target as any);
-            }
+            const { options = {}, target, rule, locker } = this.cronJobs[key];
+            const ref = this.wrapper.lockable(key, locker,
+                this.wrapper.retryable(options.retries, options.retry, target as any),
+            );
+
+            const cronJob: Job = scheduleJob(
+                key,
+                rule as any,
+                async () => {
+                    try {
+                        await (await ref).call(null);
+                    } catch (e) {
+                        this.logger.error(JOB_EXECUTE_ERROR(key), e);
+                    }
+                },
+            );
 
             this.cronJobs[key].ref = cronJob;
             this.schedulerRegistry.addCronJob(key, cronJob);
@@ -104,28 +145,16 @@ export class SchedulerOrchestrator
         keys.forEach(key => this.cronJobs[key].ref!.cancel());
     }
 
-    addTimeout(methodRef: Function, timeout: number, name: string = v4()) {
-        this.timeouts[name] = {
-            target: methodRef,
-            timeout,
-        };
+    addTimeout(methodRef: Function, timeout: number, name: string = v4(), locker: Locker, options?: CronOptions) {
+        this.timeouts[name] = { target: methodRef, timeout, locker, options };
     }
 
-    addInterval(methodRef: Function, timeout: number, name: string = v4()) {
-        this.intervals[name] = {
-            target: methodRef,
-            timeout,
-        };
+    addInterval(methodRef: Function, timeout: number, name: string = v4(), locker: Locker, options?: CronOptions) {
+        this.intervals[name] = { target: methodRef, timeout, locker, options };
     }
 
-    addCron(
-        methodRef: Function,
-        options: CronJob & Record<'cronTime', string | Date | any>,
-    ) {
-        const name = options.name || v4();
-        this.cronJobs[name] = {
-            target: methodRef,
-            options,
-        };
+    addCron(methodRef: Function, rule: string | number | Date | CronObject | CronObjLiteral, locker: Locker, options?: CronOptions) {
+        const name = options ? options.name || v4() : v4();
+        this.cronJobs[name] = { target: methodRef, rule, locker, options };
     }
 }

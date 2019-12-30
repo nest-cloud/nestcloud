@@ -4,7 +4,7 @@ import { SchedulerType } from '../enums/scheduler-type.enum';
 import {
     SCHEDULER_NAME,
     SCHEDULER_TYPE,
-    SCHEDULE_INTERVAL_OPTIONS,
+    SCHEDULE_INTERVAL_OPTIONS, SCHEDULER_OPTIONS,
 } from '../schedule.constants';
 import { IntervalOptions } from '../interfaces/interval-options.interface';
 
@@ -31,6 +31,7 @@ export function Interval(nameOrTimeout: string | number, timeout?: number, optio
     return applyDecorators(
         SetMetadata(SCHEDULE_INTERVAL_OPTIONS, { timeout: intervalTimeout }),
         SetMetadata(SCHEDULER_NAME, name),
+        SetMetadata(SCHEDULER_OPTIONS, options),
         SetMetadata(SCHEDULER_TYPE, SchedulerType.INTERVAL),
     );
 }

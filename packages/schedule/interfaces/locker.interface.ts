@@ -1,7 +1,5 @@
-import { Job } from 'node-schedule';
-
-export interface ILocker {
-    init(job: Job): void;
+export interface Locker {
+    init(name: string): void;
 
     tryLock(): Promise<boolean> | boolean;
 

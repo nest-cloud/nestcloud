@@ -37,6 +37,6 @@ export class BrakesFactory {
         if (httpException) {
             throw httpException;
         }
-        return await executor.exec(params);
+        return executor.exec(params);
     }
 }
