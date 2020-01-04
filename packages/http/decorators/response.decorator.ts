@@ -1,14 +1,21 @@
 import 'reflect-metadata';
-import { RESPONSE, RESPONSE_HEADER, RESPONSE_BODY } from '../constants';
+import { RESPONSE, RESPONSE_HEADER, RESPONSE_BODY } from '../http.constants';
+import { applyDecorators, SetMetadata } from '@nestcloud/common/decorators';
 
-export const Response = (): MethodDecorator => (target, key, descriptor) => {
-    Reflect.defineMetadata(RESPONSE, RESPONSE, descriptor.value);
-};
+export function Response() {
+    return applyDecorators(
+        SetMetadata(RESPONSE, RESPONSE),
+    );
+}
 
-export const ResponseHeader = (): MethodDecorator => (target, key, descriptor) => {
-    Reflect.defineMetadata(RESPONSE_HEADER, RESPONSE_HEADER, descriptor.value);
-};
+export function ResponseHeader() {
+    return applyDecorators(
+        SetMetadata(RESPONSE_HEADER, RESPONSE_HEADER),
+    );
+}
 
-export const ResponseBody = (): MethodDecorator => (target, key, descriptor) => {
-    Reflect.defineMetadata(RESPONSE_BODY, RESPONSE_BODY, descriptor.value);
-};
+export function ResponseBody() {
+    return applyDecorators(
+        SetMetadata(RESPONSE_BODY, RESPONSE_BODY),
+    );
+}

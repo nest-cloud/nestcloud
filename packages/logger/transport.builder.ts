@@ -1,4 +1,5 @@
-import { TransportInstance, default as winston } from 'winston';
+import { TransportInstance } from 'winston';
+import * as winston from 'winston';
 import { ConsoleTransport, DailyRotateFile, FileTransport } from './interfaces/transport.interface';
 import { resolve } from 'path';
 import * as fs from 'fs';

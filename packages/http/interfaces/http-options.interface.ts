@@ -1,6 +1,6 @@
-import { IGlobalAxiosConfig } from './global-axios-config.interface';
+import { AxiosOptions } from './axios-options.interface';
 
-export interface IHttpOptions {
-    dependencies?: string[];
-    axiosConfig?: IGlobalAxiosConfig;
+export interface HttpOptions {
+    inject?: string[];
+    axios?: AxiosOptions;
 }

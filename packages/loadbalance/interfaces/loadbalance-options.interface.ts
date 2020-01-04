@@ -1,8 +1,9 @@
-import { IRuleOptions } from './rule-options.interface';
+import { ServiceOptions } from './service-options.interface';
+import { Rule } from './rule.interface';
 
-export interface ILoadbalanceOptions {
-    customRulePath?: string;
-    dependencies?: string[];
-    ruleCls?: any;
-    rules?: IRuleOptions[];
+export interface LoadbalanceOptions {
+    inject?: string[];
+    rule?: string;
+    services?: ServiceOptions[];
+    rules?: (Rule | Function)[];
 }

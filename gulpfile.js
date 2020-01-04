@@ -14,14 +14,10 @@ const packages = {
     service: ts.createProject('packages/service/tsconfig.json'),
     loadbalance: ts.createProject('packages/loadbalance/tsconfig.json'),
     logger: ts.createProject('packages/logger/tsconfig.json'),
-    memcached: ts.createProject('packages/memcached/tsconfig.json'),
     schedule: ts.createProject('packages/schedule/tsconfig.json'),
-    validations: ts.createProject('packages/validations/tsconfig.json'),
     brakes: ts.createProject('packages/brakes/tsconfig.json'),
     http: ts.createProject('packages/http/tsconfig.json'),
     grpc: ts.createProject('packages/grpc/tsconfig.json'),
-    rbac: ts.createProject('packages/rbac/tsconfig.json'),
-    redis: ts.createProject('packages/redis/tsconfig.json'),
     proxy: ts.createProject('packages/proxy/tsconfig.json'),
     kubernetes: ts.createProject('packages/kubernetes/tsconfig.json'),
 };
@@ -52,14 +48,10 @@ gulp.task('copy-misc', function() {
         .pipe(gulp.dest(`${source}/service`))
         .pipe(gulp.dest(`${source}/loadbalance`))
         .pipe(gulp.dest(`${source}/logger`))
-        .pipe(gulp.dest(`${source}/memcached`))
         .pipe(gulp.dest(`${source}/schedule`))
-        .pipe(gulp.dest(`${source}/validations`))
         .pipe(gulp.dest(`${source}/brakes`))
         .pipe(gulp.dest(`${source}/http`))
         .pipe(gulp.dest(`${source}/grpc`))
-        .pipe(gulp.dest(`${source}/rbac`))
-        .pipe(gulp.dest(`${source}/redis`))
         .pipe(gulp.dest(`${source}/proxy`))
         .pipe(gulp.dest(`${source}/kubernetes`));
 });

@@ -1,4 +1,4 @@
-import { ServiceNode } from '../service-node';
+import { ServiceNode } from '../service.node';
 import { IServiceNode, CRITICAL, PASSING, WARNING } from '@nestcloud/common';
 import { get } from 'lodash';
 

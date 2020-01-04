@@ -1,59 +1,61 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
-import {
-    NEST_BOOT,
-    NEST_BOOT_PROVIDER,
-    NEST_CONFIG,
-    NEST_CONFIG_PROVIDER,
-    NEST_KUBERNETES_PROVIDER,
-    IBoot,
-    IConfig,
-    IKubernetes,
-} from '@nestcloud/common';
-import { IKubernetesConfig } from './interfaces/kubernetes-config.interface';
+import { KubernetesOptions } from './interfaces/kubernetes-options.interface';
+import { KUBERNETES_OPTIONS_PROVIDER } from './kubernetes.constants';
+import { Kubernetes } from './kubernetes';
+import { BOOT, CONFIG, IBoot, IConfig, KUBERNETES } from '@nestcloud/common';
+import { KubeConfig } from '@kubernetes/client-node';
+import { isObject, isString } from 'util';
+import Api = require('kubernetes-client');
 
 @Global()
 @Module({})
 export class KubernetesModule {
-    static register(options: IKubernetesConfig = {}): DynamicModule {
-        const inject = [];
-        if (options.dependencies) {
-            if (options.dependencies.includes(NEST_BOOT)) {
-                inject.push(NEST_BOOT_PROVIDER);
-            } else if (options.dependencies.includes(NEST_CONFIG)) {
-                inject.push(NEST_CONFIG_PROVIDER);
-            }
-        }
+    private static CONFIG_PREFIX = 'kubernetes';
 
-        const kubernetesProvider = {
-            provide: NEST_KUBERNETES_PROVIDER,
-            useFactory: async (config: IBoot | IConfig): Promise<IKubernetes> => {
-                if (inject.includes(NEST_BOOT_PROVIDER)) {
-                    options = (config as IBoot).get('kubernetes', {});
-                } else if (inject.includes(NEST_CONFIG_PROVIDER)) {
-                    options = await (config as IConfig).get('kubernetes', {});
+    public static register(options: KubernetesOptions = {}): DynamicModule {
+        const inject = options.inject || [];
+        const kubernetesOptionsProvider = {
+            provide: KUBERNETES_OPTIONS_PROVIDER,
+            useFactory: (...params: any[]) => {
+                let registerOptions = options;
+                const boot: IBoot = params[inject.indexOf(BOOT)];
+                if (boot) {
+                    options = boot.get(this.CONFIG_PREFIX);
                 }
+                registerOptions = Object.assign(registerOptions, options);
 
-                const { KubeConfig, Client } = require('kubernetes-client');
-                const kubeconfig = new KubeConfig();
-
-                if (options.kubeConfig) {
-                    kubeconfig.loadFromFile(options.kubeConfig);
-                    const Request = require('kubernetes-client/backends/request');
-                    const backend = new Request({ kubeconfig });
-                    return new Client({ backend, version: '1.13' });
+                const config: IConfig = params[inject.indexOf(CONFIG)];
+                if (config) {
+                    options = config.get(this.CONFIG_PREFIX);
                 }
-
-                kubeconfig.getInCluster();
-                const Request = require('kubernetes-client/backends/request');
-                const backend = new Request({ kubeconfig });
-                return new Client({ backend, version: '1.13' });
+                return Object.assign(registerOptions, options);
             },
             inject,
         };
 
+        const kubernetesProvider = {
+            provide: KUBERNETES,
+            useFactory: (options: KubernetesOptions): Kubernetes => {
+                const kubeconfig = new KubeConfig();
+                if (isString(options.config)) {
+                    kubeconfig.loadFromFile(options.config);
+                } else if (isObject(options.config)) {
+                    kubeconfig.loadFromOptions(options.config);
+                } else if (options.cluster && options.user) {
+                    kubeconfig.loadFromClusterAndUser(options.cluster, options.user);
+                } else {
+                    kubeconfig.loadFromDefault();
+                }
+                const Request = require('kubernetes-client/backends/request');
+                const backend = new Request({ kubeconfig });
+                return new Api.Client1_13({ backend });
+            },
+            inject: [KUBERNETES_OPTIONS_PROVIDER],
+        };
+
         return {
             module: KubernetesModule,
-            providers: [kubernetesProvider],
+            providers: [kubernetesProvider, kubernetesOptionsProvider],
             exports: [kubernetesProvider],
         };
     }

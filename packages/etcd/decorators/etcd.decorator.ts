@@ -1,10 +1,10 @@
-import { NEST_ETCD } from '@nestcloud/common';
+import { ETCD } from '@nestcloud/common';
 import * as YAML from 'yamljs';
 import * as CoreModule from '@nestcloud/core';
-import { IEtcd } from '../../common';
+import { IEtcd } from '@nestcloud/common';
 import * as RPC from 'etcd3/lib/src/rpc';
 
-export const Etcd = (key?: string, type?: 'json' | 'yaml' | 'text', defaults?: any) => createEtcdDecorator(key, type, defaults);
+export const EtcdValue = (key?: string, type?: 'json' | 'yaml' | 'text', defaults?: any) => createEtcdDecorator(key, type, defaults);
 
 const createEtcdDecorator = (key?: string, type?: 'json' | 'yaml' | 'text', defaults?: any): PropertyDecorator => {
     return async (target: any, propertyName: string | Symbol) => {
@@ -15,7 +15,7 @@ const createEtcdDecorator = (key?: string, type?: 'json' | 'yaml' | 'text', defa
         if (Core.NestCloud.global.etcd) {
             await handlePropertyValue(Core.NestCloud.global.etcd, key, target, propertyName, type, defaults);
         } else {
-            Core.NestCloud.global.watch<any>(NEST_ETCD, async etcd => {
+            Core.NestCloud.global.watch<any>(ETCD, async etcd => {
                 await handlePropertyValue(etcd, key, target, propertyName, type, defaults);
             });
         }

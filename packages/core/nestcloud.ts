@@ -1,34 +1,35 @@
 import { INestApplicationContext } from '@nestjs/common';
 import { Global } from './global';
-import {
-    NEST_BOOT_PROVIDER,
-    NEST_CONFIG_PROVIDER,
-    NEST_LOADBALANCE_PROVIDER,
-    NEST_CONSUL_PROVIDER,
-    NEST_SERVICE_PROVIDER,
-    NEST_HTTP_PROVIDER,
-    NEST_PROXY_PROVIDER,
-    NEST_LOGGER_PROVIDER,
-    NEST_MEMCACHED_PROVIDER,
-    NEST_ETCD_PROVIDER,
-    NEST_KUBERNETES_PROVIDER,
-} from '@nestcloud/common';
 import { STATIC_CONTEXT } from '@nestjs/core/injector/constants';
+import {
+    BOOT,
+    CONFIG,
+    CONSUL,
+    ETCD,
+    HTTP,
+    KUBERNETES,
+    LOADBALANCE,
+    LOGGER,
+    MEMCACHED,
+    PROXY, REDIS,
+    SERVICE,
+} from '@nestcloud/common';
 
 export class NestCloud {
     public static global: Global = new Global();
     private static readonly providerKeys = {
-        [NEST_BOOT_PROVIDER]: 'boot',
-        [NEST_CONSUL_PROVIDER]: 'consul',
-        [NEST_CONFIG_PROVIDER]: 'consulConfig',
-        [NEST_SERVICE_PROVIDER]: 'consulService',
-        [NEST_LOADBALANCE_PROVIDER]: 'loadbalance',
-        [NEST_HTTP_PROVIDER]: 'http',
-        [NEST_PROXY_PROVIDER]: 'proxy',
-        [NEST_LOGGER_PROVIDER]: 'logger',
-        [NEST_MEMCACHED_PROVIDER]: 'memcached',
-        [NEST_ETCD_PROVIDER]: 'etcd',
-        [NEST_KUBERNETES_PROVIDER]: 'kubernetes',
+        [BOOT]: 'boot',
+        [CONSUL]: 'consul',
+        [CONFIG]: 'config',
+        [SERVICE]: 'service',
+        [LOADBALANCE]: 'loadbalance',
+        [HTTP]: 'http',
+        [PROXY]: 'proxy',
+        [LOGGER]: 'logger',
+        [MEMCACHED]: 'memcached',
+        [ETCD]: 'etcd',
+        [KUBERNETES]: 'kubernetes',
+        [REDIS]: 'redis',
     };
 
     static create<T extends INestApplicationContext = INestApplicationContext>(application: T): T {

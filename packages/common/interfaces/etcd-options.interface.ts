@@ -1,5 +1,4 @@
 export interface IEtcdOptions {
-    dependencies?: string[];
     credentials?: {
         rootCertificate: Buffer;
         privateKey?: Buffer;
@@ -10,7 +9,7 @@ export interface IEtcdOptions {
         username: string;
         password: string;
     };
-    hosts?: string[] | string;
+    hosts: string[] | string;
     dialTimeout?: number;
     backoffStrategy?: any;
     retry?: boolean;

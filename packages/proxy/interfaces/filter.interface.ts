@@ -1,16 +1,16 @@
 import { ClientRequest, IncomingMessage } from 'http';
-import { ProxyErrorException } from "../exceptions/proxy-error.exception";
-import { IRequest } from "./request.interface";
-import { IResponse } from "./response.interface";
+import { ProxyErrorException } from '../exceptions/proxy-error.exception';
+import { Request } from './request.interface';
+import { Response } from './response.interface';
 
-export interface IFilter {
+export interface Filter {
     getName(): string;
 
-    before?(request: IRequest, response: IResponse): boolean | Promise<boolean>;
+    before?(request: Request, response: Response): boolean | Promise<boolean>;
 
-    request?(proxyReq: ClientRequest, request: IRequest, response: IResponse);
+    request?(proxyReq: ClientRequest, request: Request, response: Response);
 
-    response?(proxyRes: IncomingMessage, request: IRequest, response: IResponse);
+    response?(proxyRes: IncomingMessage, request: Request, response: Response);
 
-    error?(error: ProxyErrorException, request: IRequest, response: IResponse);
+    error?(error: ProxyErrorException, request: Request, response: Response);
 }

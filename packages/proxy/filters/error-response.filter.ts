@@ -1,14 +1,17 @@
-import { IFilter } from '../interfaces/filter.interface';
+import { Filter } from '../interfaces/filter.interface';
 import { ProxyErrorException } from '../exceptions/proxy-error.exception';
-import { IResponse } from '../interfaces/response.interface';
-import { IRequest } from '../interfaces/request.interface';
+import { Response } from '../interfaces/response.interface';
+import { Request } from '../interfaces/request.interface';
+import { Injectable } from '@nestjs/common';
+import { ERROR_RESPONSE_FILTER } from '../proxy.constants';
 
-export class ErrorResponseFilter implements IFilter {
+@Injectable()
+export class ErrorResponseFilter implements Filter {
     getName(): string {
-        return 'ErrorResponseFilter';
+        return ERROR_RESPONSE_FILTER;
     }
 
-    error(error: ProxyErrorException, request: IRequest, response: IResponse) {
+    error(error: ProxyErrorException, request: Request, response: Response) {
         try {
             response.setHeader('Content-Type', 'application/json');
             response.statusCode = 500;

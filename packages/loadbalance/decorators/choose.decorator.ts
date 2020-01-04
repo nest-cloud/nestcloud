@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { NEST_LOADBALANCE, ILoadbalance, IServer } from '@nestcloud/common';
+import { LOADBALANCE, ILoadbalance, IServer } from '@nestcloud/common';
 import * as CoreModule from '@nestcloud/core';
 
 export const Choose = (service: string): PropertyDecorator => {
@@ -10,7 +10,7 @@ export const Choose = (service: string): PropertyDecorator => {
         if (coreModule.NestCloud.global.loadbalance) {
             target[attributeName] = coreModule.NestCloud.global.loadbalance.choose(service);
         } else {
-            coreModule.NestCloud.global.watch<ILoadbalance>(NEST_LOADBALANCE, loadbalance => {
+            coreModule.NestCloud.global.watch<ILoadbalance>(LOADBALANCE, loadbalance => {
                 target[attributeName] = loadbalance.choose(service);
             });
         }

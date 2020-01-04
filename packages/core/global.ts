@@ -8,21 +8,13 @@ import {
     IProxy,
     IMemcached,
     IComponent,
-    NEST_BOOT,
-    NEST_CONSUL,
-    NEST_CONFIG,
-    NEST_LOADBALANCE,
-    NEST_SERVICE,
-    NEST_PROXY,
     IEtcd,
     IKubernetes,
-    NEST_ETCD,
-    NEST_KUBERNETES,
-    NEST_MEMCACHED,
 } from '@nestcloud/common';
-import * as Consul from 'consul';
+import { Consul } from 'consul';
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
 import Axios from 'axios';
+import { BOOT, CONFIG, CONSUL, ETCD, KUBERNETES, LOADBALANCE, MEMCACHED, PROXY, SERVICE } from '@nestcloud/common';
 
 export class Global {
     private readonly callbackMap = new Map<string, ((IComponent) => void)[]>();
@@ -63,7 +55,7 @@ export class Global {
 
     public set boot(boot: IBoot) {
         this._boot = boot;
-        this.trigger(NEST_BOOT, boot);
+        this.trigger(BOOT, boot);
     }
 
     public get consul(): Consul {
@@ -72,7 +64,7 @@ export class Global {
 
     public set consul(consul: Consul) {
         this._consul = consul;
-        this.trigger(NEST_CONSUL, consul);
+        this.trigger(CONSUL, consul);
     }
 
     public get consulConfig(): IConfig {
@@ -81,7 +73,7 @@ export class Global {
 
     public set consulConfig(config: IConfig) {
         this._config = config;
-        this.trigger(NEST_CONFIG, config);
+        this.trigger(CONFIG, config);
     }
 
     public get consulService(): IService {
@@ -90,7 +82,7 @@ export class Global {
 
     public set consulService(consulService: IService) {
         this._service = consulService;
-        this.trigger(NEST_SERVICE, consulService);
+        this.trigger(SERVICE, consulService);
     }
 
     public get loadbalance(): ILoadbalance {
@@ -99,7 +91,7 @@ export class Global {
 
     public set loadbalance(loadbalance: ILoadbalance) {
         this._loadbalance = loadbalance;
-        this.trigger(NEST_LOADBALANCE, loadbalance);
+        this.trigger(LOADBALANCE, loadbalance);
     }
 
     public get proxy(): IProxy {
@@ -108,7 +100,7 @@ export class Global {
 
     public set proxy(proxy: IProxy) {
         this._proxy = proxy;
-        this.trigger(NEST_PROXY, proxy);
+        this.trigger(PROXY, proxy);
     }
 
     public get memcached(): IMemcached {
@@ -117,7 +109,7 @@ export class Global {
 
     public set memcached(memcached: IMemcached) {
         this._memcached = memcached;
-        this.trigger(NEST_MEMCACHED, memcached);
+        this.trigger(MEMCACHED, memcached);
     }
 
     public get axios(): AxiosInstance {
@@ -134,7 +126,7 @@ export class Global {
 
     public set etcd(etcd: IEtcd) {
         this._etcd = etcd;
-        this.trigger(NEST_ETCD, etcd);
+        this.trigger(ETCD, etcd);
     }
 
     public get kubernetes(): IKubernetes {
@@ -143,7 +135,7 @@ export class Global {
 
     public set kubernetes(kubernetes: IKubernetes) {
         this._kubernetes = kubernetes;
-        this.trigger(NEST_KUBERNETES, kubernetes);
+        this.trigger(KUBERNETES, kubernetes);
     }
 
     public watch<T extends IComponent>(component: string, callback: (component: T) => void) {

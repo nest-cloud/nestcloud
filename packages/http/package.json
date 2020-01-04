@@ -1,22 +1,11 @@
 {
   "name": "@nestcloud/http",
-  "version": "0.6.10-5",
+  "version": "0.6.10-19",
   "description": "Http is a nest http decorators library that makes writing nodejs http clients easier.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
-  },
-  "optionalDependencies": {
-    "@nestcloud/boot": "^0.6.9",
-    "@nestcloud/brakes": "^0.6.9",
-    "@nestcloud/config": "^0.6.9",
-    "@nestcloud/loadbalance": "^0.6.9"
-  },
-  "peerDependencies": {
-    "@nestcloud/common": "^0.6.9",
-    "@nestcloud/core": "^0.6.9",
-    "@nestjs/common": "^6.0.0"
   },
   "repository": {
     "type": "git",

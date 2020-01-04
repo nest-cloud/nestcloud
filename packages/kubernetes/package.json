@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/kubernetes",
-  "version": "0.6.10-5",
+  "version": "0.6.10-19",
   "description": "kubernetes client module for nestcloud",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
@@ -16,8 +16,6 @@
   },
   "homepage": "https://github.com/nest-cloud/nestcloud#readme",
   "peerDependencies": {
-    "@nestcloud/common": "^0.6.9",
-    "@nestcloud/core": "^0.6.9",
     "kubernetes-client": "^8.3.3"
   }
 }

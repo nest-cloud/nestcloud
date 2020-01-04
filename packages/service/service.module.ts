@@ -1,64 +1,61 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
-import * as Consul from 'consul';
-import { ConsulService } from './consul-service';
-import {
-    NEST_BOOT_PROVIDER,
-    NEST_CONSUL_PROVIDER,
-    NEST_SERVICE_PROVIDER,
-    NEST_BOOT,
-    IBoot,
-    NEST_ETCD,
-    NEST_ETCD_PROVIDER,
-    NEST_CONSUL,
-} from '@nestcloud/common';
-import { IServiceOptions } from './interfaces/service-options.interface';
-import { EtcdService } from './etcd-service';
+import { ServiceOptions } from './interfaces/service-options.interface';
+import { SERVICE_OPTIONS_PROVIDER } from './service.constants';
+import { ServiceFactory } from './service.factory';
+import { BOOT, CONFIG, IBoot, IConfig, CONSUL, ETCD, IConsul, IEtcd, SERVICE } from '@nestcloud/common';
+import { NO_DEPS_MODULE_FOUND } from './service.messages';
+import { ServiceStore } from './service.store';
 
 @Global()
-@Module({})
+@Module({
+    imports: [],
+})
 export class ServiceModule {
-    static register(options: IServiceOptions = {}): DynamicModule {
-        const inject = [];
-        if (options.dependencies) {
-            if (options.dependencies.includes(NEST_BOOT)) {
-                inject.push(NEST_BOOT_PROVIDER);
-            }
-            if (options.dependencies.includes(NEST_CONSUL)) {
-                inject.push(NEST_CONSUL_PROVIDER);
-            }
-            if (options.dependencies.includes(NEST_ETCD)) {
-                inject.push(NEST_ETCD_PROVIDER);
-            }
-        }
+    private static CONFIG_PREFIX = 'service';
 
-        const consulServiceProvider = {
-            provide: NEST_SERVICE_PROVIDER,
-            useFactory: async (...args: any[]): Promise<ConsulService> => {
-                const boot: IBoot = args[inject.indexOf(NEST_BOOT_PROVIDER)];
-                const consul: Consul = args[inject.indexOf(NEST_CONSUL_PROVIDER)];
-                const etcd: Consul = args[inject.indexOf(NEST_ETCD_PROVIDER)];
+    static register(options: ServiceOptions = {}): DynamicModule {
+        const inject = options.inject || [];
+        const serviceOptionsProvider = {
+            provide: SERVICE_OPTIONS_PROVIDER,
+            useFactory: (...params: any[]) => {
+                let registerOptions = options;
+                const boot: IBoot = params[inject.indexOf(BOOT)];
                 if (boot) {
-                    options = boot.get<IServiceOptions>('service', {});
-                }
-                let service;
-                if (consul) {
-                    service = new ConsulService(consul, options);
-                } else if (etcd) {
-                    service = new EtcdService(etcd, options);
-                } else {
-                    throw new Error('Please specific NEST_CONSUL or NEST_ETCD in dependencies attribute');
+                    options = boot.get<ServiceOptions>(this.CONFIG_PREFIX);
+                    registerOptions = Object.assign(registerOptions, options);
                 }
 
-                await service.init();
-                return service;
+                const config: IConfig = params[inject.indexOf(CONFIG)];
+                if (config) {
+                    options = config.get<ServiceOptions>(this.CONFIG_PREFIX);
+                }
+                return Object.assign(registerOptions, options);
             },
             inject,
         };
 
+        const serviceProvider = {
+            provide: SERVICE,
+            useFactory: (options: ServiceOptions, ...params: any[]) => {
+                const factory = new ServiceFactory(options);
+                const consul: IConsul = params[inject.indexOf(CONSUL)];
+                if (consul) {
+                    return factory.create(CONSUL, consul).init();
+                }
+                const etcd: IEtcd = params[inject.indexOf(ETCD)];
+                if (etcd) {
+                    return factory.create(ETCD, etcd).init();
+                }
+
+                throw new Error(NO_DEPS_MODULE_FOUND);
+            },
+            inject: [SERVICE_OPTIONS_PROVIDER, ...inject],
+        };
+
         return {
             module: ServiceModule,
-            providers: [consulServiceProvider],
-            exports: [consulServiceProvider],
+            providers: [serviceOptionsProvider, serviceProvider, ServiceStore],
+            exports: [serviceProvider],
         };
     }
 }

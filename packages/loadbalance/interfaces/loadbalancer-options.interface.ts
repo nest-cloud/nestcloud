@@ -1,10 +1,9 @@
 import { Server } from '../server';
-import { IRule } from './rule.interface';
+import { Rule } from './rule.interface';
 
-export interface ILoadbalanerOptions {
+export interface LoadbalancerOptions {
     id: string;
     name?: string;
     servers?: Server[];
-    ruleCls?: IRule | Function | string;
-    customRulePath?: string;
+    rule?: Rule;
 }

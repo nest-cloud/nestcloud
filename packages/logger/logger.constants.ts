@@ -1,0 +1,1 @@
+export const TYPEORM_LOGGER = 'TYPEORM_LOGGER';

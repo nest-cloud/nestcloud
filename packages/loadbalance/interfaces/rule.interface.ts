@@ -1,6 +1,6 @@
 import { ILoadbalancer, IServer } from '@nestcloud/common';
 
-export interface IRule {
+export interface Rule {
     init(loadbalancer: ILoadbalancer);
 
     choose(): IServer;

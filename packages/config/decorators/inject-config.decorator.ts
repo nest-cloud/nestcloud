@@ -1,4 +1,4 @@
 import { Inject } from '@nestjs/common';
-import { NEST_CONFIG_PROVIDER } from '@nestcloud/common';
+import { CONFIG } from '@nestcloud/common';
 
-export const InjectConfig = () => Inject(NEST_CONFIG_PROVIDER);
+export const InjectConfig = () => Inject(CONFIG);

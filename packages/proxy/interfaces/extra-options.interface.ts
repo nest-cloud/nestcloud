@@ -1,4 +1,4 @@
-export interface IExtraOptions {
+export interface ExtraOptions {
     /** Object to be passed to http(s).request. */
     agent?: any;
     /** Object to be passed to https.createServer(). */

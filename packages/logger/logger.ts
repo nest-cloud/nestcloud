@@ -3,7 +3,7 @@ import * as winston from 'winston';
 import { LoggerInstance } from 'winston';
 import 'winston-daily-rotate-file';
 import { LoggerOptions } from './interfaces/logger-options.interface';
-import { Boot, BootConfig, BootLoader } from '@nestcloud/boot';
+import { Boot } from '@nestcloud/boot';
 import { dirname } from 'path';
 import { TransportBuilder } from './transport.builder';
 
@@ -15,8 +15,7 @@ export class Logger {
     constructor(options: LoggerOptions) {
         if (options.filePath) {
             if (fs.existsSync(options.filePath)) {
-                const bootConfig = new BootConfig({ filePath: options.filePath });
-                const boot = new Boot(bootConfig, new BootLoader(bootConfig));
+                const boot = new Boot({ filePath: options.filePath });
                 this.options = boot.get<LoggerOptions>('logger', {
                     transports: [],
                     level: 'info',

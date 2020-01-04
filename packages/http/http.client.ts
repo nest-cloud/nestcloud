@@ -1,123 +1,95 @@
-import { HttpException, InternalServerErrorException, ServiceUnavailableException } from '@nestjs/common';
-import { AxiosRequestConfig, AxiosResponse, AxiosInstance } from 'axios';
-import { RESPONSE, RESPONSE_HEADER } from './constants';
+import {
+    HttpException,
+    Inject,
+    Injectable,
+    InternalServerErrorException,
+    ServiceUnavailableException,
+} from '@nestjs/common';
+import { ILoadbalance } from '../common';
+import { Interceptor } from './interfaces/interceptor.interface';
+import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios from 'axios';
+import { RequestOptions } from './interfaces/request-options.interface';
 import * as LbModule from '@nestcloud/loadbalance';
-import { IInterceptor } from './interfaces/interceptor.interface';
-import { ILoadbalance } from '@nestcloud/common';
-import * as BrakesModule from '@nestcloud/brakes';
+import { AxiosOptions } from './interfaces/axios-options.interface';
+import { HttpOptions } from './interfaces/http-options.interface';
+import { AXIOS_INSTANCE_PROVIDER, HTTP_OPTIONS_PROVIDER } from './http.constants';
 
+@Injectable()
 export class HttpClient {
-    private loadbalance: ILoadbalance;
-    private http: AxiosInstance;
-    private brakesName: string | boolean;
-    private interceptors: IInterceptor[];
+    private lb: ILoadbalance;
+    private interceptors: Interceptor[];
 
-    constructor(private readonly service?: string) {
+    constructor(
+        @Inject(AXIOS_INSTANCE_PROVIDER) private readonly http: AxiosInstance,
+        @Inject(HTTP_OPTIONS_PROVIDER) private readonly options: HttpOptions,
+    ) {
     }
 
-    setLoadbalance(lb: ILoadbalance) {
-        this.loadbalance = lb;
+    create(options: AxiosOptions = {}) {
+        const globalAxiosOptions = this.options.axios || {};
+        return new HttpClient(
+            axios.create(Object.assign(globalAxiosOptions, options)),
+            this.options,
+        );
     }
 
-    setAxiosInstance(instance: AxiosInstance) {
-        this.http = instance;
+    useLb(lb: ILoadbalance) {
+        this.lb = lb;
+        return this;
     }
 
-    setBrakes(brakesName: boolean) {
-        this.brakesName = brakesName;
-    }
-
-    setMiddleware(interceptors: IInterceptor[]) {
+    useInterceptors(...interceptors: Interceptor[]) {
         this.interceptors = interceptors;
+        this.registerInterceptors();
+        return this;
     }
 
-    private async doRequest(config: AxiosRequestConfig): Promise<AxiosResponse | Headers | any> {
-        const enableLb = !!this.service && this.service !== 'none';
+    public async request(options: RequestOptions): Promise<AxiosResponse | any> {
         let response: AxiosResponse;
-        if (enableLb && this.loadbalance) {
+        if (options.service && this.lb) {
             const module: typeof LbModule = require('@nestcloud/loadbalance');
-            const server = this.loadbalance.choose(this.service);
+            const server = this.lb.choose(options.service);
             if (!server) {
                 throw new InternalServerErrorException(`No available server can handle this request`);
             }
-            response = await new module.HttpDelegate(server).send(this.http as any, config as any);
-        } else if (enableLb) {
-            if (config.url && config.url.charAt(0) !== '/') {
-                config.url = '/' + config.url;
+            response = await new module.HttpDelegate(server).send(this.http, options);
+        } else if (options.service) {
+            if (options.url && options.url.charAt(0) !== '/') {
+                options.url = '/' + options.url;
             }
-            config.url = `http://${this.service}${config.url}`;
-            response = await this.send(config);
-        } else {
-            response = await this.send(config);
+            options.url = `http://${options.service}${options.url}`;
+            response = await this.send(options);
         }
-
         return response;
     }
 
-    async request(
-        config: AxiosRequestConfig,
-        options: { responseType: string },
-    ): Promise<AxiosResponse | Headers | any> {
-        const requestInterceptors = [];
-        const responseInterceptors = [];
+    private registerInterceptors() {
         if (this.interceptors) {
             this.interceptors.forEach(interceptor => {
-                if (interceptor) {
-                    requestInterceptors.push(
-                        this.http.interceptors.request.use(
-                            interceptor.onRequest.bind(interceptor),
-                            interceptor.onRequestError.bind(interceptor),
-                        ),
-                    );
-                    responseInterceptors.push(
-                        this.http.interceptors.response.use(
-                            interceptor.onResponse.bind(interceptor),
-                            interceptor.onResponseError.bind(interceptor),
-                        ),
-                    );
-                }
+                this.http.interceptors.request.use(
+                    interceptor.onRequest.bind(interceptor),
+                    interceptor.onRequestError.bind(interceptor),
+                );
+                this.http.interceptors.response.use(
+                    interceptor.onResponse.bind(interceptor),
+                    interceptor.onResponseError.bind(interceptor),
+                );
             });
         }
-
-        let response;
-        if (this.brakesName) {
-            try {
-                const brakesModule: typeof BrakesModule = require('@nestcloud/brakes');
-                response = await brakesModule.BrakesFactory.exec(
-                    this.brakesName as string,
-                    async (config: AxiosRequestConfig) => this.doRequest(config),
-                    config,
-                );
-            } catch (e) {
-                if (e instanceof HttpException) {
-                    throw e;
-                } else {
-                    throw new ServiceUnavailableException(e.message);
-                }
-            }
-        } else {
-            response = await this.doRequest(config);
-        }
-
-        requestInterceptors.forEach(interceptor => this.http.interceptors.request.eject(interceptor));
-        responseInterceptors.forEach(interceptor => this.http.interceptors.response.eject(interceptor));
-
-        return options.responseType === RESPONSE
-            ? response
-            : options.responseType === RESPONSE_HEADER
-                ? response.headers
-                : response.data;
     }
 
-    async send(config: AxiosRequestConfig): Promise<AxiosResponse> {
+    private async send(config: AxiosRequestConfig): Promise<AxiosResponse> {
         try {
             return await this.http.request(config);
         } catch (e) {
             if (e.response) {
                 throw new HttpException(e.response.data, e.response.status);
-            } else if (e.request) {
+            }
+            if (e.request) {
                 throw new HttpException(e.message, 400);
             }
+            throw new ServiceUnavailableException(e.message);
         }
     }
 }

@@ -1,58 +1,59 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
-import {
-    NEST_LOADBALANCE,
-    NEST_HTTP_PROVIDER,
-    NEST_LOADBALANCE_PROVIDER,
-    NEST_BOOT,
-    NEST_BOOT_PROVIDER,
-    NEST_CONFIG,
-    NEST_CONFIG_PROVIDER,
-    IBoot,
-    IConfig,
-} from '@nestcloud/common';
-import { IHttpOptions } from './interfaces/http-options.interface';
-import { NestCloud } from '@nestcloud/core';
+import { HTTP, BOOT, CONFIG, IBoot, IConfig, Scanner } from '@nestcloud/common';
+import { HttpOptions } from './interfaces/http-options.interface';
+import { AXIOS_INSTANCE_PROVIDER, HTTP_OPTIONS_PROVIDER } from './http.constants';
+import axios from 'axios';
+import { DiscoveryModule } from '@nestjs/core';
+import { HttpOrchestrator } from './http.orchestrator';
+import { HttpMetadataAccessor } from './http-metadata.accessor';
+import { HttpExplorer } from './http.explorer';
+import { HttpClient } from './http.client';
 
 @Global()
-@Module({})
+@Module({
+    imports: [DiscoveryModule],
+    providers: [HttpOrchestrator, HttpMetadataAccessor, Scanner],
+})
 export class HttpModule {
-    private static readonly configPath = 'http.axios';
+    private static readonly CONFIG_PREFIX = 'http';
 
-    static register(options: IHttpOptions = {}): DynamicModule {
-        const inject = [];
-        if (options.dependencies) {
-            if (options.dependencies.includes(NEST_BOOT)) {
-                inject.push(NEST_BOOT_PROVIDER);
-            } else if (options.dependencies.includes(NEST_CONFIG)) {
-                inject.push(NEST_CONFIG_PROVIDER);
-            }
-
-            if (options.dependencies.includes(NEST_LOADBALANCE)) {
-                inject.push(NEST_LOADBALANCE_PROVIDER);
-            }
-        }
-
-        const httpProvider = {
-            provide: NEST_HTTP_PROVIDER,
-            useFactory: async (...args: any[]): Promise<any> => {
-                const boot: IBoot = args[inject.indexOf(NEST_BOOT_PROVIDER)];
-                const config: IConfig = args[inject.indexOf(NEST_CONFIG_PROVIDER)];
-                NestCloud.global.axiosConfig = options.axiosConfig;
+    static register(options: HttpOptions = {}): DynamicModule {
+        const inject = options.inject || [];
+        const httpOptionsProvider = {
+            provide: HTTP_OPTIONS_PROVIDER,
+            useFactory: (...params: any[]) => {
+                let registerOptions = options;
+                const boot: IBoot = params[inject.indexOf(BOOT)];
                 if (boot) {
-                    NestCloud.global.axiosConfig = boot.get(this.configPath, {});
-                } else if (config) {
-                    NestCloud.global.axiosConfig = config.get(this.configPath, {});
-                    (config as IConfig).watch(this.configPath, config => {
-                        NestCloud.global.axiosConfig = config;
-                    });
+                    options = boot.get<HttpOptions>(this.CONFIG_PREFIX);
+                    registerOptions = Object.assign(registerOptions, options);
                 }
+
+                const config: IConfig = params[inject.indexOf(CONFIG)];
+                if (config) {
+                    options = config.get<HttpOptions>(this.CONFIG_PREFIX);
+                }
+                return Object.assign(registerOptions, options);
             },
             inject,
         };
 
+        const axiosProvider = {
+            provide: AXIOS_INSTANCE_PROVIDER,
+            useFactory: () => axios,
+        };
+
+        const httpProvider = {
+            provide: HTTP,
+            useFactory: async (httpClient: HttpClient): Promise<any> => {
+                return httpClient;
+            },
+            inject: [HttpClient],
+        };
+
         return {
             module: HttpModule,
-            providers: [httpProvider],
+            providers: [httpProvider, httpOptionsProvider, axiosProvider, HttpExplorer, HttpClient],
             exports: [httpProvider],
         };
     }

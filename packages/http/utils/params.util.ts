@@ -1,21 +1,7 @@
-import { BODY_METADATA, HEADER_METADATA, PARAMS_METADATA, QUERY_METADATA } from '../constants';
+import { BODY_METADATA, HEADER_METADATA, PARAMS_METADATA, QUERY_METADATA } from '../http.constants';
 import { isEmpty } from 'lodash';
 
-export const getMetadata = (value, target, oldValue) => (paramType) => {
-    let result = Reflect.getMetadata(paramType, value);
-    if (!result && oldValue) {
-        result = Reflect.getMetadata(paramType, oldValue);
-    }
-    if (!result) {
-        result = Reflect.getMetadata(paramType, target.constructor);
-    }
-    if (!result) {
-        result = Reflect.getMetadata(paramType, target);
-    }
-    return result;
-};
-
-export const getParams = (metadata, args) => {
+export const getRequestParams = (metadata, args) => {
     const params = {}, data = {}, uriParams = {}, headers = {};
 
     for (const key in metadata) {

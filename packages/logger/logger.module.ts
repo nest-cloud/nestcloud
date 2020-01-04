@@ -1,6 +1,7 @@
 import { Module, DynamicModule, Global, Logger } from '@nestjs/common';
-import { NEST_LOGGER_PROVIDER, NEST_TYPEORM_LOGGER_PROVIDER } from '@nestcloud/common';
+import { LOGGER } from '@nestcloud/common';
 import { TypeormLogger } from './typeorm-logger';
+import { TYPEORM_LOGGER } from './logger.constants';
 
 @Global()
 @Module({})
@@ -11,7 +12,7 @@ export class LoggerModule {
         const inject = [];
 
         const loggerProvider = {
-            provide: NEST_LOGGER_PROVIDER,
+            provide: LOGGER,
             useFactory: (): Logger => {
                 if (!this.logger) {
                     this.logger = new Logger();
@@ -23,7 +24,7 @@ export class LoggerModule {
         };
 
         const typeormLoggerProvider = {
-            provide: NEST_TYPEORM_LOGGER_PROVIDER,
+            provide: TYPEORM_LOGGER,
             useFactory: () => {
                 return new TypeormLogger();
             },

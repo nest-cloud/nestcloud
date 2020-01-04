@@ -5,8 +5,8 @@ import { MetadataScanner } from '@nestjs/core/metadata-scanner';
 import { SchedulerType } from './enums/scheduler-type.enum';
 import { SchedulerMetadataAccessor } from './schedule-metadata.accessor';
 import { SchedulerOrchestrator } from './scheduler.orchestrator';
-import { ScheduleScanner } from './schedule.scanner';
 import { Locker } from './interfaces/locker.interface';
+import { Scanner } from '@nestcloud/common';
 
 @Injectable()
 export class ScheduleExplorer implements OnModuleInit {
@@ -15,7 +15,7 @@ export class ScheduleExplorer implements OnModuleInit {
         private readonly discoveryService: DiscoveryService,
         private readonly metadataAccessor: SchedulerMetadataAccessor,
         private readonly metadataScanner: MetadataScanner,
-        private readonly scheduleScanner: ScheduleScanner,
+        private readonly scanner: Scanner,
     ) {
     }
 
@@ -43,7 +43,7 @@ export class ScheduleExplorer implements OnModuleInit {
         const metadata = this.metadataAccessor.getSchedulerType(methodRef);
         const options = this.metadataAccessor.getJobOptions(methodRef);
         const LockerClass = this.metadataAccessor.getLocker(methodRef);
-        const lockerInstance: Locker = this.scheduleScanner.scan<Locker>(LockerClass);
+        const lockerInstance: Locker = this.scanner.findInjectable<Locker>(LockerClass);
 
         switch (metadata) {
             case SchedulerType.CRON: {

@@ -1,5 +1,11 @@
 import 'reflect-metadata';
-import { REQUEST_PARAMS_METADATA, PARAMS_METADATA, BODY_METADATA, QUERY_METADATA, HEADER_METADATA } from '../constants';
+import {
+    REQUEST_PARAMS_METADATA,
+    PARAMS_METADATA,
+    BODY_METADATA,
+    QUERY_METADATA,
+    HEADER_METADATA,
+} from '../http.constants';
 
 export const Param = (field?: string): ParameterDecorator => createParamDecorator(PARAMS_METADATA)(field);
 export const Body = (field?: string): ParameterDecorator => createParamDecorator(BODY_METADATA)(field);
@@ -13,22 +19,32 @@ export const SetParam = (field: string, value: any): MethodDecorator => createSe
 const createParamDecorator = (paramType) => {
     return (data: string, value?: any) => (target, key, index) => {
         const args = Reflect.getMetadata(REQUEST_PARAMS_METADATA, target.constructor, key) || {};
-        Reflect.defineMetadata(REQUEST_PARAMS_METADATA, assignMetadata(args, paramType, index, data, value), target.constructor, key);
+        Reflect.defineMetadata(
+            REQUEST_PARAMS_METADATA,
+            assignMetadata(args, paramType, index, data, value),
+            target.constructor,
+            key,
+        );
     };
 };
 
 const createSetParamDecorator = (paramType) => {
     return (data: string, value?: any) => (target, key) => {
         const args = Reflect.getMetadata(REQUEST_PARAMS_METADATA, target.constructor, key) || {};
-        Reflect.defineMetadata(REQUEST_PARAMS_METADATA, assignMetadata(args, paramType, 'const__' + data, data, value), target.constructor, key);
+        Reflect.defineMetadata(
+            REQUEST_PARAMS_METADATA,
+            assignMetadata(args, paramType, 'const__' + data, data, value),
+            target.constructor,
+            key,
+        );
     };
 };
 
 const assignMetadata = (args, paramType, index, data, value) =>
     (Object.assign({}, args, {
-        [`${ paramType }:${ index }`]: {
+        [`${paramType}:${index}`]: {
             index,
             data,
-            value
-        }
+            value,
+        },
     }));

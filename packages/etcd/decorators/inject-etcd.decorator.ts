@@ -1,4 +1,4 @@
 import { Inject } from '@nestjs/common';
-import { NEST_ETCD_PROVIDER } from '@nestcloud/common';
+import { ETCD } from '@nestcloud/common';
 
-export const InjectEtcd = () => Inject(NEST_ETCD_PROVIDER);
+export const InjectEtcd = () => Inject(ETCD);

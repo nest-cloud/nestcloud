@@ -1,22 +1,24 @@
 import { IBoot } from '@nestcloud/common';
-import { Store } from './store';
-import { Injectable } from '@nestjs/common';
-import { BootConfig } from './boot.config';
-import { BootLoader } from './boot.loader';
+import { Inject, Injectable } from '@nestjs/common';
+import { BootFileLoader } from './boot-file.loader';
+import { BootStore } from './boot.store';
+import { BootOptions } from './interfaces/boot-options.interface';
+import { BOOT_OPTIONS_PROVIDER } from './boot.constants';
 
 @Injectable()
 export class Boot implements IBoot {
     constructor(
-        private readonly bootConfig: BootConfig,
-        private readonly bootLoader: BootLoader,
+        @Inject(BOOT_OPTIONS_PROVIDER) private readonly options: BootOptions,
+        private readonly fileLoader: BootFileLoader = new BootFileLoader(options),
+        private readonly store: BootStore = new BootStore(),
     ) {
-        Store.data = this.bootLoader.load();
-        if (this.bootConfig.isWatch()) {
-            this.bootLoader.watch(data => Store.data = data);
+        this.store.data = this.fileLoader.load();
+        if (this.options.watch) {
+            this.fileLoader.watch(data => this.store.data = data);
         }
     }
 
     get<T extends any>(path?: string, defaults?: T): T {
-        return Store.get<T>(path, defaults);
+        return this.store.get<T>(path, defaults);
     }
 }

@@ -2,8 +2,8 @@ import { Boot } from './boot.class';
 import { writeFileSync, unlinkSync } from 'fs';
 import { resolve } from 'path';
 import { expect } from 'chai';
-import { BootConfig } from './boot.config';
-import { BootLoader } from './boot.loader';
+import { BootFileLoader } from './boot-file.loader';
+import { BootStore } from './boot.store';
 
 describe('Boot Class', () => {
     process.env.SERVICE = 'your-service-name';
@@ -17,8 +17,8 @@ web:
     let boot: Boot;
     before(async () => {
         writeFileSync(resolve(__dirname, filename), config);
-        const bootConfig = new BootConfig({ filePath: resolve(__dirname, filename) });
-        boot = new Boot(bootConfig, new BootLoader(bootConfig));
+        const options = { filePath: resolve(__dirname, filename) };
+        boot = new Boot(options, new BootFileLoader(options), new BootStore());
     });
 
     it(`boot.get()`, () => {

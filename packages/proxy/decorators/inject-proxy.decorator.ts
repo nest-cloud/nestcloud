@@ -1,4 +1,4 @@
 import { Inject } from '@nestjs/common';
-import { NEST_PROXY_PROVIDER } from '@nestcloud/common';
+import { Proxy } from '../proxy';
 
-export const InjectProxy = () => Inject(NEST_PROXY_PROVIDER);
+export const InjectProxy = () => Inject(Proxy);

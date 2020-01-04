@@ -1,17 +1,17 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
 import {
-    NEST_GRPC_PROVIDER,
-    NEST_LOADBALANCE_PROVIDER,
+    GRPC,
+    LOADBALANCE,
 } from '@nestcloud/common';
 
 @Global()
 @Module({})
 export class GrpcModule {
     static register(): DynamicModule {
-        const inject = [NEST_LOADBALANCE_PROVIDER];
+        const inject = [LOADBALANCE];
 
         const grpcProvider = {
-            provide: NEST_GRPC_PROVIDER,
+            provide: GRPC,
             useFactory: async (): Promise<any> => {
             },
             inject,

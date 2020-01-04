@@ -20,6 +20,9 @@ export function extendMetadata<T extends any>(
 
 export const getMetadata = <T extends any>(key, ...targets): T => {
     for (let i = 0; i < targets.length; i++) {
+        if (!targets[i]) {
+            continue;
+        }
         const metadata = Reflect.getMetadata(key, targets[i]);
         if (metadata) {
             return metadata;

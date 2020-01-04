@@ -1,6 +1,6 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 
-export interface IInterceptor {
+export interface Interceptor {
     onRequest?(request: AxiosRequestConfig): AxiosRequestConfig;
 
     onResponse?(response: AxiosResponse): AxiosResponse;

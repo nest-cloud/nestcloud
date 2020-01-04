@@ -1,10 +1,10 @@
-export interface IRoute {
+export interface Route {
     id: string;
     uri: string;
-    filters?: IRouteFilter[];
+    filters?: RouteFilter[];
 }
 
-export interface IRouteFilter {
+export interface RouteFilter {
     name: string;
     parameters?: { [key: string]: any };
 }
