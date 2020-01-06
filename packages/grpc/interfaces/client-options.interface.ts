@@ -1,4 +1,4 @@
-export interface IClientConfig {
+export interface ClientOptions {
     service?: string;
     url?: string;
     package: string;

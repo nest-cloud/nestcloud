@@ -7,7 +7,6 @@ const deleteEmpty = require('delete-empty');
 const packages = {
     common: ts.createProject('packages/common/tsconfig.json'),
     boot: ts.createProject('packages/boot/tsconfig.json'),
-    core: ts.createProject('packages/core/tsconfig.json'),
     consul: ts.createProject('packages/consul/tsconfig.json'),
     etcd: ts.createProject('packages/etcd/tsconfig.json'),
     config: ts.createProject('packages/config/tsconfig.json'),
@@ -41,7 +40,6 @@ gulp.task('copy-misc', function() {
         .src(['LICENSE', '.npmignore'])
         .pipe(gulp.dest(`${source}/common`))
         .pipe(gulp.dest(`${source}/boot`))
-        .pipe(gulp.dest(`${source}/core`))
         .pipe(gulp.dest(`${source}/etcd`))
         .pipe(gulp.dest(`${source}/consul`))
         .pipe(gulp.dest(`${source}/config`))

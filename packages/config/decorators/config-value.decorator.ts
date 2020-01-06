@@ -1,13 +1,13 @@
 import 'reflect-metadata';
-import { applyDecorators, SetMetadata } from '@nestcloud/common';
-import { CONFIG_VALUE_DEFAULTS, CONFIG_VALUE_NAME, CONFIG_VALUE_PROPERTY } from '../config.constants';
+import { applyDecorators, ExtendMetadata } from '@nestcloud/common';
+import { CONFIG_VALUE } from '../config.constants';
 
-export function ConfigValue(path?: string, defaults?: string): PropertyDecorator {
-    return applyDecorators(
-        SetMetadata(CONFIG_VALUE_DEFAULTS, defaults),
-        SetMetadata(CONFIG_VALUE_NAME, path),
-        (target, propertyKey) => {
-            return SetMetadata(CONFIG_VALUE_PROPERTY, propertyKey)(target, propertyKey);
-        },
-    );
+export function ConfigValue(name?: string, defaults?: any): PropertyDecorator {
+    return applyDecorators((target, property) => {
+        return ExtendMetadata(CONFIG_VALUE, {
+            property,
+            name,
+            defaults,
+        })(target, property);
+    });
 }

@@ -46,6 +46,7 @@ export class HttpExplorer implements OnModuleInit {
         const serviceName = this.metadataAccessor.getService(instance, target);
         const brakesName = this.metadataAccessor.getBrakesName(instance, target);
         const InterceptorTargets = this.metadataAccessor.getInterceptorTargets(instance, target) || [];
+
         if (options.url) {
             this.httpOrchestrator.addDecoratorRequests(
                 instance,

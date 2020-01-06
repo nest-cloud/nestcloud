@@ -1,13 +1,14 @@
 import { GrpcClient } from './grpc-client';
-import { IClientConfig } from './interfaces/grpc-configuration.interface';
+import { ClientOptions } from './interfaces/client-options.interface';
+import { ILoadbalance } from '../common';
 
-export class ClientFactory {
+export class GrpcClientFactory {
     private static cache = new Map<string, GrpcClient>();
 
-    public static create(config: IClientConfig, force?: boolean): GrpcClient {
+    public static create(lb: ILoadbalance, config: ClientOptions, force?: boolean): GrpcClient {
         const key = this.generateKey(config);
         if (!this.cache.has(key) || force) {
-            const client = new GrpcClient(config);
+            const client = new GrpcClient(lb, config);
             this.cache.set(key, client);
             return client;
         }
@@ -15,7 +16,7 @@ export class ClientFactory {
         return this.cache.get(key);
     }
 
-    private static generateKey(config: IClientConfig) {
+    private static generateKey(config: ClientOptions) {
         const service = config.service || config.url;
         return `${service}/${config.package}/${config.protoPath}`;
     }

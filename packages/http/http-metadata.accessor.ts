@@ -6,7 +6,7 @@ import {
     PATH_METADATA,
     REQUEST_PARAMS_METADATA,
     RESPONSE,
-    RESPONSE_HEADER, SERVICE,
+    RESPONSE_HEADER,
 } from './http.constants';
 import { getMetadata } from '@nestcloud/common';
 import { Injectable } from '@nestjs/common';

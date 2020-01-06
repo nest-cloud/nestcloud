@@ -1,1 +1,1 @@
-export const CONSUL_WATCH_ERROR = (name: string) => `Watch kv with given name ${name} error.`;
+export const CONSUL_WATCH_ERROR = (name: string) => `@KeyValue with given name ${name} error.`;

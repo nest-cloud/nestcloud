@@ -1,23 +1,21 @@
 import { Injectable, Logger, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
-import { WatchOptions } from './decorators/watch-kv.decorator';
-import { Scanner, Watch } from '@nestcloud/common';
+import { Scanner, Watch, KeyValueOptions, KeyValueMetadata, setValue } from '@nestcloud/common';
 import { Consul } from './consul.class';
 import { KVResponse } from './interfaces/consul-kv-response.interface';
-import * as YAML from 'yamljs';
 import { CONSUL_WATCH_ERROR } from './consul.messages';
 import { InjectConsul } from './decorators/inject-consul.decorator';
 
-interface WatcherOptions {
+interface KeyValue {
     name: string;
     property: string;
     target: Function;
-    options: WatchOptions;
+    options: KeyValueOptions;
     watcher?: Watch;
 }
 
 @Injectable()
 export class ConsulOrchestrator implements OnApplicationBootstrap, OnApplicationShutdown {
-    private readonly watchers = new Map<string, WatcherOptions>();
+    private readonly keyValues = new Map<string, KeyValue>();
     private logger = new Logger(ConsulOrchestrator.name);
 
     constructor(
@@ -26,25 +24,30 @@ export class ConsulOrchestrator implements OnApplicationBootstrap, OnApplication
     ) {
     }
 
-    public addWatcher(name: string, property: string, target: Function, options: WatchOptions) {
-        const key = `${name}__${property}__${target.constructor.name}`;
-        this.watchers.set(key, { name, property, target, options });
+    public addKeyValues(target: Function, keyValues: KeyValueMetadata[]) {
+        keyValues.forEach(({ name, property, options }) => {
+            const key = `${name}__${property}__${target.constructor.name}`;
+            this.keyValues.set(key, { name, property, target, options });
+        });
+
     }
 
     async onApplicationBootstrap(): Promise<void> {
-        await this.mountWatcher();
+        await this.mountKeyValues();
     }
 
     onApplicationShutdown(signal?: string): any {
-        this.watchers.forEach(item => item.watcher ? item.watcher.end() : '');
+        this.keyValues.forEach(item => item.watcher ? item.watcher.end() : '');
     }
 
-    private async mountWatcher() {
-        for (const item of this.watchers.values()) {
+    private async mountKeyValues() {
+        for (const item of this.keyValues.values()) {
             const { name, property, target, options = {} } = item;
             try {
                 const res = await this.consul.kv.get<KVResponse>(name);
-                this.setValue(target, res.Value, property, options);
+                if (res) {
+                    setValue(target, res.Value, property, options);
+                }
             } catch (e) {
                 this.logger.error(CONSUL_WATCH_ERROR(name), e);
             }
@@ -53,26 +56,13 @@ export class ConsulOrchestrator implements OnApplicationBootstrap, OnApplication
                 method: this.consul.kv.get,
                 options: { key: name, wait: '5m', timeout: 3000000 },
             });
-            watcher.on('change', (res: KVResponse) => this.setValue(target, res.Value, property, options));
+            watcher.on('change', (res: KVResponse) => {
+                if (res) {
+                    setValue(target, res.Value, property, options);
+                }
+            });
             watcher.on('error', e => this.logger.error(CONSUL_WATCH_ERROR(name), e));
             item.watcher = watcher;
         }
-    }
-
-    private setValue(target: Function, value: any, property: string, options: WatchOptions = { type: 'text' }) {
-        if (options.type === 'json') {
-            try {
-                value = JSON.parse(value);
-            } catch (e) {
-                value = {};
-            }
-        } else if (options.type === 'yaml') {
-            try {
-                value = YAML.parse(value);
-            } catch (e) {
-                value = {};
-            }
-        }
-        target.constructor.prototype[property] = value;
     }
 }

@@ -29,11 +29,9 @@ export class ConsulExplorer implements OnModuleInit {
     }
 
     lookupWatchers(instance: Function) {
-        const name = this.metadataAccessor.getWatchKey(instance);
-        const options = this.metadataAccessor.getWatchOptions(instance);
-        const property = this.metadataAccessor.getWatchProperty(instance);
-        if (name) {
-            this.consulOrchestrator.addWatcher(name, property, instance, options);
+        const keyValues = this.metadataAccessor.getKeyValues(instance);
+        if (keyValues) {
+            this.consulOrchestrator.addKeyValues(instance, keyValues);
         }
     }
 }

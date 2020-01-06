@@ -1,5 +1,5 @@
 {
-  "name": "@nestcloud/core",
+  "name": "@nestcloud/common",
   "version": "0.6.9",
   "description": "Nest micro service solution.",
   "author": "Miaowing <i@zfeng.net>",
@@ -26,6 +26,7 @@
     "@nestjs/core": "^6.10.12",
     "@nestjs/microservices": "^6.10.12",
     "@nestjs/terminus": "^6.5.5",
+    "@nestjs/testing": "^6.10.13",
     "@nestjs/typeorm": "^6.2.0",
     "@types/cache-manager": "^1.2.7",
     "@types/chai": "4.1.7",
@@ -55,6 +56,7 @@
     "coveralls": "3.0.3",
     "delete-empty": "^2.0.0",
     "etcd3": "^0.2.13",
+    "grpc": "^1.24.2",
     "gulp": "4.0.0",
     "gulp-clang-format": "1.0.27",
     "gulp-clean": "0.4.0",

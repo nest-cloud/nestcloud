@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { CONSUL_WATCH_KV_NAME, CONSUL_WATCH_KV_OPTIONS, CONSUL_WATCH_KV_PROPERTY } from './consul.constants';
-import { WatchOptions } from './decorators/watch-kv.decorator';
+import { CONSUL_KEY_VALUE } from './consul.constants';
+import { KeyValueMetadata } from '@nestcloud/common';
 
 @Injectable()
 export class ConsulMetadataAccessor {
@@ -10,15 +10,7 @@ export class ConsulMetadataAccessor {
     ) {
     }
 
-    getWatchKey(target: Function): string | undefined {
-        return this.reflector.get(CONSUL_WATCH_KV_NAME, target);
-    }
-
-    getWatchOptions(target: Function): WatchOptions | undefined {
-        return this.reflector.get(CONSUL_WATCH_KV_OPTIONS, target);
-    }
-
-    getWatchProperty(target: Function): string | undefined {
-        return this.reflector.get(CONSUL_WATCH_KV_PROPERTY, target);
+    getKeyValues(target: Function): KeyValueMetadata[] | undefined {
+        return this.reflector.get(CONSUL_KEY_VALUE, target);
     }
 }

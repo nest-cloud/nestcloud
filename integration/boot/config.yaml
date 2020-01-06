@@ -1,0 +1,4 @@
+web:
+  service: ${{ SERVICE }}
+  port: 3000
+  address: http://${{ web.service }}:${{ web.port }}

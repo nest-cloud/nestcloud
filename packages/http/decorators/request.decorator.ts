@@ -49,22 +49,3 @@ const createMappingDecorator = (method: string, path: string, options?: object) 
         SetMetadata(METHOD_METADATA, method),
         AssignMetadata(OPTIONS_METADATA, options || {}),
     );
-
-// const createMappingDecorator = (method: string, path: string, options?: object) => (target, key, descriptor) => {
-//     applyDecorators(
-//         SetMetadata(PATH_METADATA, path),
-//         SetMetadata(METHOD_METADATA, method),
-//         AssignMetadata(OPTIONS_METADATA, options || {}),
-//     );
-//
-//     const oldDescriptorValue = descriptor.value;
-//     descriptor.value = '';
-//
-//     const metadataKeys = Reflect.getMetadataKeys(oldDescriptorValue);
-//     metadataKeys.forEach(key => Reflect.defineMetadata(
-//         key,
-//         Reflect.getMetadata(key, oldDescriptorValue),
-//         descriptor.value,
-//     ));
-//     return descriptor;
-// };

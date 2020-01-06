@@ -29,11 +29,9 @@ export class ConfigExplorer implements OnModuleInit {
     }
 
     lookupWatchers(instance: Function) {
-        const name = this.metadataAccessor.getConfigValueName(instance);
-        const defaults = this.metadataAccessor.getConfigValueDefaults(instance);
-        const property = this.metadataAccessor.getConfigValueProperty(instance);
-        if (name) {
-            this.configOrchestrator.addConfigValue(name, property, instance, defaults);
+        const configValues = this.metadataAccessor.getConfigValues(instance);
+        if (configValues) {
+            this.configOrchestrator.addConfigValues(instance, configValues);
         }
     }
 }

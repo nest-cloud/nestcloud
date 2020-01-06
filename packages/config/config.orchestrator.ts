@@ -1,7 +1,8 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigStore } from './config.store';
+import { ConfigValueMetadata } from './interfaces/config-value-metadata.interface';
 
-interface WatcherOptions {
+interface ConfigValue {
     name: string;
     property: string;
     target: Function;
@@ -10,16 +11,18 @@ interface WatcherOptions {
 
 @Injectable()
 export class ConfigOrchestrator implements OnApplicationBootstrap {
-    private readonly configValues = new Map<string, WatcherOptions>();
+    private readonly configValues = new Map<string, ConfigValue>();
 
     constructor(
         private readonly store: ConfigStore,
     ) {
     }
 
-    public addConfigValue(name: string, property: string, target: Function, defaults?: any) {
-        const key = `${name}__${property}__${target.constructor.name}`;
-        this.configValues.set(key, { name, property, target, defaults });
+    public addConfigValues(target: Function, configValues: ConfigValueMetadata[]) {
+        configValues.forEach(({ name, defaults, property }) => {
+            const key = `${name}__${property}__${target.constructor.name}`;
+            this.configValues.set(key, { name, property, target, defaults });
+        });
     }
 
     async onApplicationBootstrap(): Promise<void> {

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { CONFIG_VALUE_DEFAULTS, CONFIG_VALUE_NAME, CONFIG_VALUE_PROPERTY } from './config.constants';
+import { CONFIG_VALUE } from './config.constants';
+import { ConfigValueMetadata } from './interfaces/config-value-metadata.interface';
 
 @Injectable()
 export class ConfigMetadataAccessor {
@@ -9,15 +10,7 @@ export class ConfigMetadataAccessor {
     ) {
     }
 
-    getConfigValueName(target: Function): string | undefined {
-        return this.reflector.get(CONFIG_VALUE_NAME, target);
-    }
-
-    getConfigValueDefaults(target: Function): any | undefined {
-        return this.reflector.get(CONFIG_VALUE_DEFAULTS, target);
-    }
-
-    getConfigValueProperty(target: Function): string | undefined {
-        return this.reflector.get(CONFIG_VALUE_PROPERTY, target);
+    getConfigValues(target: Function): ConfigValueMetadata[] | undefined {
+        return this.reflector.get(CONFIG_VALUE, target);
     }
 }

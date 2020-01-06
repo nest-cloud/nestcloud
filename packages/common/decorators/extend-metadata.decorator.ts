@@ -1,5 +1,4 @@
 import 'reflect-metadata';
-import { OPTIONS_METADATA } from '../../http/http.constants';
 
 export const ExtendMetadata = <K = any, V = any>(
     metadataKey: K,
@@ -8,7 +7,7 @@ export const ExtendMetadata = <K = any, V = any>(
     if (descriptor) {
         const previousValue = Reflect.getMetadata(metadataKey, descriptor.value) || [];
         const value = [...previousValue, metadataValue];
-        Reflect.defineMetadata(key, value, target);
+        Reflect.defineMetadata(metadataKey, value, descriptor.value);
         return descriptor;
     }
 
@@ -42,7 +41,7 @@ export const ExtendArrayMetadata = <K = any, V = any>(
     if (descriptor) {
         const previousValue = Reflect.getMetadata(metadataKey, descriptor.value) || [];
         const value = [...previousValue, ...metadataValues];
-        Reflect.defineMetadata(key, value, target);
+        Reflect.defineMetadata(metadataKey, value,  descriptor.value);
         return descriptor;
     }
 

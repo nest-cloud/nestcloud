@@ -3,7 +3,7 @@ import { objectToMap } from '@nestcloud/common';
 import { compile } from 'handlebars';
 
 export class ConfigStore {
-    private _data: any;
+    private _data: any = {};
     private readonly _map: { [key: string]: any } = {};
     private readonly watchRefs: {
         [key: string]: Array<(value: any) => void>;

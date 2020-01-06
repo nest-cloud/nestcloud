@@ -4,7 +4,7 @@ import { ParamsMetadata } from './interfaces/params-metadata.interface';
 import { getRequestParams } from './utils/params.util';
 import { HTTP_OPTIONS_PROVIDER, RESPONSE, RESPONSE_BODY, RESPONSE_HEADER } from './http.constants';
 import { HttpOptions } from './interfaces/http-options.interface';
-import * as uriParams from 'uri-params';
+import uriParams from 'uri-params';
 import { Scanner } from '@nestcloud/common';
 import { HttpClient } from './http.client';
 import { ILoadbalance, LOADBALANCE } from '../common';

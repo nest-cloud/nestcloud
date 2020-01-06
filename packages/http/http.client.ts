@@ -60,7 +60,10 @@ export class HttpClient {
             }
             options.url = `http://${options.service}${options.url}`;
             response = await this.send(options);
+        } else {
+            response = await this.send(options);
         }
+
         return response;
     }
 
@@ -68,12 +71,12 @@ export class HttpClient {
         if (this.interceptors) {
             this.interceptors.forEach(interceptor => {
                 this.http.interceptors.request.use(
-                    interceptor.onRequest.bind(interceptor),
-                    interceptor.onRequestError.bind(interceptor),
+                    interceptor.onRequest ? interceptor.onRequest.bind(interceptor) : undefined,
+                    interceptor.onRequestError ? interceptor.onRequestError.bind(interceptor) : undefined,
                 );
                 this.http.interceptors.response.use(
-                    interceptor.onResponse.bind(interceptor),
-                    interceptor.onResponseError.bind(interceptor),
+                    interceptor.onResponse ? interceptor.onResponse.bind(interceptor) : undefined,
+                    interceptor.onResponseError ? interceptor.onResponseError.bind(interceptor) : undefined,
                 );
             });
         }

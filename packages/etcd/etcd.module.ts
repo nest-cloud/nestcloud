@@ -1,12 +1,19 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
-import { IEtcdOptions, Scanner, IBoot, BOOT } from '@nestcloud/common';
+import { ETCD, IBoot, BOOT } from '@nestcloud/common';
 import { ETCD_OPTIONS_PROVIDER } from './etcd.constants';
 import { Etcd } from './etcd';
 import { EtcdOptions } from './interfaces/etcd-options.interface';
 import { Etcd3 } from 'etcd3';
+import { DiscoveryModule } from '@nestjs/core';
+import { EtcdMetadataAccessor } from './etcd-metadata.accessor';
+import { EtcdOrchestrator } from './etcd.orchestrator';
+import { EtcdExplorer } from './etcd.explorer';
 
 @Global()
-@Module({})
+@Module({
+    imports: [DiscoveryModule],
+    providers: [EtcdMetadataAccessor, EtcdOrchestrator],
+})
 export class EtcdModule {
     private static CONFIG_PREFIX = 'etcd';
 
@@ -26,7 +33,7 @@ export class EtcdModule {
         };
 
         const etcdProvider = {
-            provide: Etcd,
+            provide: ETCD,
             useFactory: (options: EtcdOptions): Etcd => {
                 this.parseCertificate(options);
                 return new Etcd3(options);
@@ -36,12 +43,12 @@ export class EtcdModule {
 
         return {
             module: EtcdModule,
-            providers: [etcdOptionsProvider, etcdProvider, Scanner],
+            providers: [etcdOptionsProvider, etcdProvider, EtcdExplorer],
             exports: [etcdProvider],
         };
     }
 
-    private static parseCertificate(options: IEtcdOptions): IEtcdOptions {
+    private static parseCertificate(options: EtcdOptions): EtcdOptions {
         if (options.credentials) {
             if (options.credentials.rootCertificate) {
                 options.credentials.rootCertificate = new Buffer(options.credentials.rootCertificate);

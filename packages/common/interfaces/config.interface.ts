@@ -1,10 +1,9 @@
 import { IComponent } from './component.interface';
-import { ConfigOptions } from './config-options.interface';
 
 export interface IConfig extends IComponent {
     watch<T extends any>(path: string, callback: (data: T) => void): void;
 
-    getOptions?(): ConfigOptions;
+    getOptions?(): any;
 
     get<T extends any>(path?: string, defaults?): T;
 

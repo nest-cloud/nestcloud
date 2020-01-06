@@ -7,11 +7,14 @@ import { LOADBALANCE } from '../common';
 import { Loadbalance } from './loadbalance';
 import { LoadbalanceChecker } from './loadbalance.checker';
 import axios from 'axios';
+import { LoadbalanceMetadataAccessor } from './loadbalance-metadata.accessor';
+import { LoadbalanceOrchestrator } from './loadbalance.orchestrator';
+import { LoadbalanceExplorer } from './loadbalance.explorer';
 
 @Global()
 @Module({
     imports: [DiscoveryModule],
-    providers: [Scanner],
+    providers: [Scanner, LoadbalanceMetadataAccessor, LoadbalanceOrchestrator],
 })
 export class LoadbalanceModule {
     private static CONFIG_PREFIX = 'loadbalance';
@@ -52,7 +55,14 @@ export class LoadbalanceModule {
 
         return {
             module: LoadbalanceModule,
-            providers: [loadbalanceOptionsProvider, ...customRules as any, Loadbalance, LoadbalanceChecker, loadbalanceProvider, axiosProvider],
+            providers: [loadbalanceOptionsProvider,
+                ...customRules as any,
+                Loadbalance,
+                LoadbalanceChecker,
+                loadbalanceProvider,
+                axiosProvider,
+                LoadbalanceExplorer,
+            ],
             exports: [loadbalanceProvider],
         };
     }
