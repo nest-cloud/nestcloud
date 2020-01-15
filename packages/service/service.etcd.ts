@@ -7,11 +7,6 @@ import { ServiceNode } from './service.node';
 import { getIPAddress } from './utils/os.util';
 import { Watcher } from 'etcd3/lib/src/watch';
 
-interface WatcherWrapper {
-    connected: boolean;
-    watcher: Watcher;
-}
-
 export class EtcdService implements IService, OnModuleInit, OnModuleDestroy {
     // nestcloud-service/service__${serviceName}__${ip}__${port}
     private readonly namespace = 'nestcloud-service/';

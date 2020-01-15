@@ -3,7 +3,8 @@ import {
     Inject,
     Injectable,
     InternalServerErrorException,
-    NotFoundException, OnApplicationBootstrap,
+    NotFoundException,
+    OnApplicationBootstrap,
 } from '@nestjs/common';
 import * as HttpProxy from 'http-proxy';
 import { IProxy, ILoadbalance } from '@nestcloud/common';

@@ -1,5 +1,5 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
-import { AsyncProxyOptions, ProxyOptions } from './interfaces/proxy-options.interface';
+import { ProxyOptions } from './interfaces/proxy-options.interface';
 import { Proxy } from './proxy';
 import { PROXY_OPTIONS_PROVIDER } from './proxy.constants';
 import { ProxyExplorer } from './proxy.explorer';
@@ -20,15 +20,13 @@ export class ProxyModule {
     private static CONFIG_PREFIX = 'proxy';
 
     public static forRoot(options: ProxyOptions): DynamicModule {
-        return this.register(options);
+        return this.forRootAsync(options);
     }
 
-    public static forRootAsync(options: AsyncProxyOptions): DynamicModule {
-        return this.register(options);
-    }
-
-    private static register(options: ProxyOptions & AsyncProxyOptions = {}): DynamicModule {
+    public static forRootAsync(options: ProxyOptions = {}): DynamicModule {
         const inject = options.inject || [];
+        const filters = options.filters || [];
+
         const proxyOptionsProvider = {
             provide: PROXY_OPTIONS_PROVIDER,
             useFactory: (...params: any[]) => {
@@ -68,6 +66,7 @@ export class ProxyModule {
                 LoadbalanceFilter,
                 RequestHeaderFilter,
                 ResponseHeaderFilter,
+                ...filters as any,
             ],
             exports: [proxyProvider],
         };

@@ -3,14 +3,9 @@ import { ProxyErrorException } from '../exceptions/proxy-error.exception';
 import { Response } from '../interfaces/response.interface';
 import { Request } from '../interfaces/request.interface';
 import { Injectable } from '@nestjs/common';
-import { ERROR_RESPONSE_FILTER } from '../proxy.constants';
 
 @Injectable()
 export class ErrorResponseFilter implements Filter {
-    getName(): string {
-        return ERROR_RESPONSE_FILTER;
-    }
-
     error(error: ProxyErrorException, request: Request, response: Response) {
         try {
             response.setHeader('Content-Type', 'application/json');

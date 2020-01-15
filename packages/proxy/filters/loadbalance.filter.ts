@@ -3,15 +3,10 @@ import { Filter } from '../interfaces/filter.interface';
 import { Response } from '../interfaces/response.interface';
 import { Request } from '../interfaces/request.interface';
 import { ProxyErrorException } from '../exceptions/proxy-error.exception';
-import { LOADBALANCE_FILTER } from '../proxy.constants';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class LoadbalanceFilter implements Filter {
-    getName(): string {
-        return LOADBALANCE_FILTER;
-    }
-
     error(error: ProxyErrorException, request: Request, response: Response) {
         try {
             const server = get(request.proxy, 'server');

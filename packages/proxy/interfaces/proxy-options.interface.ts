@@ -1,11 +1,10 @@
 import { Route } from './route.interface';
 import { ExtraOptions } from './extra-options.interface';
+import { Filter } from './filter.interface';
 
 export interface ProxyOptions {
+    inject?: string[];
     routes?: Route[];
     extras?: ExtraOptions;
-}
-
-export interface AsyncProxyOptions {
-    inject?: string[];
+    filters?: Function | Filter;
 }

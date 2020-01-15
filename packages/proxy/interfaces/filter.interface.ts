@@ -4,8 +4,6 @@ import { Request } from './request.interface';
 import { Response } from './response.interface';
 
 export interface Filter {
-    getName(): string;
-
     before?(request: Request, response: Response): boolean | Promise<boolean>;
 
     request?(proxyReq: ClientRequest, request: Request, response: Response);

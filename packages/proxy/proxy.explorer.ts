@@ -1,15 +1,19 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { DiscoveryService } from '@nestjs/core';
-import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
 import { MetadataScanner } from '@nestjs/core/metadata-scanner';
 import { ProxyMetadataAccessor } from './proxy-metadata.accessor';
 import { Scanner } from '@nestcloud/common';
 import { ProxyFilterRegistry } from './proxy-filter.registry';
-import { Filter } from './interfaces/filter.interface';
+import { PROXY_OPTIONS_PROVIDER } from './proxy.constants';
+import { ProxyOptions } from './interfaces/proxy-options.interface';
+import { STATIC_CONTEXT } from '@nestjs/core/injector/constants';
 
 @Injectable()
 export class ProxyExplorer implements OnModuleInit {
+    private readonly filters: string[] = [];
+
     constructor(
+        @Inject(PROXY_OPTIONS_PROVIDER) private readonly options: ProxyOptions,
         private readonly discoveryService: DiscoveryService,
         private readonly metadataAccessor: ProxyMetadataAccessor,
         private readonly metadataScanner: MetadataScanner,
@@ -22,31 +26,29 @@ export class ProxyExplorer implements OnModuleInit {
         this.explore();
     }
 
-    explore() {
-        const providers: InstanceWrapper[] = this.discoveryService.getProviders();
-        providers.forEach((wrapper: InstanceWrapper) => {
-            const { instance } = wrapper;
-            if (!instance) {
-                return;
-            }
-            this.metadataScanner.scanFromPrototype(
-                instance,
-                Object.getPrototypeOf(instance),
-                (key: string) => this.lookupFilters(instance, key),
-            );
+    private explore() {
+        const routes = this.options.routes || [];
+        routes.forEach(route => {
+            const routeFilters = route.filters || [];
+            routeFilters.forEach(routeFilter => this.filters.push(routeFilter.name));
         });
+        this.lookupFilters();
     }
 
-    lookupFilters(instance: Record<string, Function>, key: string) {
-        const methodRef = instance[key];
-        const Filters = this.metadataAccessor.getFilters(methodRef);
-        if (Filters) {
-            Filters.forEach(ref => {
-                const filter = this.scanner.findInjectable<Filter>(ref as Function);
-                if (filter) {
-                    this.filterRegistry.addFilter(filter.getName(), filter);
-                }
-            });
+    lookupFilters() {
+        const contextName = this.scanner.findContextModuleName(ProxyExplorer.constructor);
+        if (!contextName) {
+            return;
         }
+        this.filters.forEach(filter => {
+            const instanceWrapper = this.scanner.findInstance(contextName, filter);
+            if (instanceWrapper) {
+                const instanceHost = instanceWrapper.getInstanceByContextId(STATIC_CONTEXT);
+                const instance = instanceHost && instanceHost.instance;
+                if (instance) {
+                    this.filterRegistry.addFilter(filter, instance);
+                }
+            }
+        });
     }
 }

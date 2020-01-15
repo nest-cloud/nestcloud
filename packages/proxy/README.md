@@ -55,10 +55,10 @@ proxy:
     - id: user
       uri: lb://nestcloud-user-service
       filters:
-       - name: AddRequestHeaderFilter
+       - name: RequestHeaderFilter
          paramters: 
            request-id: 123
-       - name: AddResponseHeaderFilter
+       - name: ResponseHeaderFilter
          parameters:
            request-id: 456
     - id: pay
@@ -83,38 +83,49 @@ export class ProxyController {
     do(@Req() req: Request, @Res() res: Response, @Param('service') id) {
         this.proxy.forward(req, res, id);
     }
-    
-    private updatRoutes() {
-        const routes = [{id: 'example', uri: 'lb://example-service'}];
-        this.proxy.updateRoutes(routes);
-    }
 }
 ```
 
 ### Filters
 
-There are `AddRequestHeaderFilter` and `AddResponseHeaderFilter` filters in internal proxy,
-if you want to use your own filter, please implement `IFilter` interface, 
-then call `registerFilter(filter: IFilter)` function for registering filter.
+There are `RequestHeaderFilter` and `ResponseHeaderFilter` internal filters.
+If you want to use your custom filter, please implement `Filter` interface.
 
 ```typescript
-class CustomFilter implements IFilter {
-    before(request: IRequest, response: IResponse): boolean | Promise<boolean> {
+import { ClientRequest, IncomingMessage } from 'http';
+import { Filter, Request, Response, ProxyErrorException } from '@nestcloud/proxy';
+
+class CustomFilter implements Filter {
+    before(request: Request, response: Response): boolean | Promise<boolean> {
         return undefined;
     }
 
-    error(error: ProxyErrorException, request: IRequest, response: IResponse) {
+    error(error: ProxyErrorException, request: Request, response: Response) {
     }
 
-    getName(): string {
-        return "CustomFilter";
+    request(proxyReq: ClientRequest, request: Request, response: Response) {
     }
 
-    request(proxyReq: ClientRequest, request: IRequest, response: IResponse) {
+    response(proxyRes: IncomingMessage, request: Request, response: Response) {
     }
+}
+```
 
-    response(proxyRes: IncomingMessage, request: IRequest, response: IResponse) {
-    }
+```typescript
+import { Module } from '@nestjs/common';
+import { ProxyModule } from "@nestcloud/proxy";
+import { BOOT } from '@nestcloud/common';
+import { CustomFilter } from './proxy-filters/CustomFilter';
+
+@Module({
+    imports: [
+        ProxyModule.forRootAsync({ 
+          inject: [BOOT],
+          filters: [CustomFilter],
+        }),
+    ],
+})
+export class AppModule {
 }
 ```
 
@@ -122,26 +133,22 @@ class CustomFilter implements IFilter {
 
 ### class ProxyModule
 
-#### static register\(options: IProxyOptions = {}, proxy?: IExtraOptions\): DynamicModule
+#### static forRoot\(options: ProxyOptions = {}\): DynamicModule
 
 Register proxy module.
 
-| field | type | description |
-| :--- | :--- | :--- |
-| options.dependencies | string[] | NEST_BOOT or NEST_CONSUL_CONFIG |
-| options.routes | IRoute[] | routes of proxy |
-| proxy | IExtraOptions | please see http-proxy doc for detail |
+| field           | type         | description                          |
+| :-------------- | :----------- | :----------------------------------- |
+| options.inject  | string[]     | BOOT CONFIG LOADBALANCE              |
+| options.routes  | Route[]      | routes of proxy                      |
+| options.filters | Function[]   | your custom filters                  |
+| proxy           | ExtraOptions | please see http-proxy doc for detail |
 
 ### class Proxy
 
-#### updateRoutes(routes: IRoute[], sync: boolean = true): void
+#### forward\(req: Request, res: Response, id: string\)
 
-Update proxy routes.
-
-#### registerFilter(filter: IFilter)
-
-Register your custom filter.
-
+forward the http request.
 
 ## Stay in touch
 
@@ -149,4 +156,4 @@ Register your custom filter.
 
 ## License
 
-  NestCloud is [MIT licensed](LICENSE).
+NestCloud is [MIT licensed](LICENSE).
