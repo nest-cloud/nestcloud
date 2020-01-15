@@ -5,18 +5,25 @@ import { Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import * as YAML from 'yamljs';
 import { ServiceNode } from './service-node';
 import { getIPAddress } from './utils/os.util';
-import { add } from 'random-js/dist/utils/add';
+import { Watcher } from 'etcd3/lib/src/watch';
+
+interface WatcherWrapper {
+    connected: boolean;
+    watcher: Watcher;
+}
 
 export class EtcdService implements IService, OnModuleInit, OnModuleDestroy {
     // nestcloud-service/service__${serviceName}__${ip}__${port}
     private readonly namespace = 'nestcloud-service/';
-    private readonly logger = new Logger('ServiceModule');
+    private readonly logger = new Logger(EtcdService.name);
 
     private services: { [p: string]: IServiceNode[] } = {};
 
     private readonly self: IServiceNode;
     private readonly serviceCallbackMaps: Map<string, ((nodes: IServiceNode[]) => void)[]> = new Map();
     private readonly servicesCallbacks: ((services: string[]) => void)[] = [];
+
+    private watcherWrapper: WatcherWrapper = { connected: false, watcher: null };
 
     constructor(
         private readonly client: IEtcd,
@@ -34,9 +41,11 @@ export class EtcdService implements IService, OnModuleInit, OnModuleDestroy {
 
     public async init() {
         await this.registerService();
+        return this;
     }
 
     public async onModuleInit(): Promise<void> {
+        this.checkServiceWatcher();
         await this.initServices();
         await this.initServicesWatcher();
     }
@@ -147,9 +156,41 @@ export class EtcdService implements IService, OnModuleInit, OnModuleDestroy {
         }
     }
 
+    private checkServiceWatcher() {
+        setTimeout(async () => {
+            if (this.watcherWrapper.watcher && !this.watcherWrapper.connected) {
+                try {
+                    await this.watcherWrapper.watcher.cancel();
+                    this.watcherWrapper.watcher = null;
+                } catch (e) {
+                    this.logger.warn(`Cancel the service watcher fail`);
+                }
+                try {
+                    await this.initServicesWatcher();
+                } catch (e) {
+                    this.logger.error('Service watcher created error.', e);
+                }
+
+                this.checkServiceWatcher();
+            }
+        }, 60000);
+    }
+
     private async initServicesWatcher() {
-        const watcher = await this.client.namespace(this.namespace).watch().prefix('').create();
-        watcher.on('data', (res) => {
+        this.watcherWrapper.watcher = await this.client.namespace(this.namespace).watch().prefix('').create();
+        this.watcherWrapper.connected = true;
+        this.watcherWrapper.watcher.on('connected', () => {
+            this.watcherWrapper.connected = true;
+            this.logger.log('Service watcher connected');
+        });
+        this.watcherWrapper.watcher.on('disconnected', () => {
+            this.watcherWrapper.connected = false;
+            this.logger.log('Service watcher disconnected');
+        });
+        this.watcherWrapper.watcher.on('connecting', () => {
+            this.logger.log('Service watcher connecting...');
+        });
+        this.watcherWrapper.watcher.on('data', (res) => {
             res.events.forEach(evt => {
                 const key = evt.kv.key.toString();
                 const chunks = key.split('__');
