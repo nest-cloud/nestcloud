@@ -19,8 +19,6 @@
 
 The kubernetes client module for nestcloud.
 
-[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/kuberentes.md)
-
 ## Installation
 
 ```bash
@@ -37,10 +35,10 @@ import { KubernetesModule } from '@nestcloud/kubernetes';
 
 @Module({
   imports: [
-      KubernetesModule.register({kubeConfig: '/root/.kube/config'})
+      KubernetesModule.forRoot({ kubeConfig: '/root/.kube/config' })
   ],
 })
-export class ApplicationModule {}
+export class AppModule {}
 ```
 
 ### Use Internal Cluster
@@ -51,10 +49,10 @@ import { KubernetesModule } from '@nestcloud/kubernetes';
 
 @Module({
   imports: [
-      KubernetesModule.register()
+      KubernetesModule.forRoot()
   ],
 })
-export class ApplicationModule {}
+export class AppModule {}
 ```
 
 ### Use Client
@@ -65,10 +63,15 @@ import { InjectKubernetes } from '@nestcloud/kubernetes';
 
 @Injectable()
 export class TestService {
-  constructor(@InjectKubernetes() private readonly client: IKubernetes) {}
+  constructor(
+    @InjectKubernetes() private readonly client: IKubernetes,
+  ) {
+  }
 
   async getConfigMaps() {
-      const result = await this.client.api.v1.namespaces('default').configmaps('test-configmap').get();
+      const namespace = 'default';
+      const configMap = 'test-configmap';
+      const result = await this.client.api.v1.namespaces(namespace).configmaps(configMap).get();
       console.log(result);
   }
 }

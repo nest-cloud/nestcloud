@@ -1,5 +1,5 @@
 import { OnModuleDestroy, OnModuleInit, Logger } from '@nestjs/common';
-import * as md5encode from 'blueimp-md5';
+import md5encode from 'blueimp-md5';
 import { IConsul } from '@nestcloud/common';
 import { get } from 'lodash';
 

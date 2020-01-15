@@ -1,6 +1,6 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
 import { HTTP, BOOT, CONFIG, IBoot, IConfig, Scanner } from '@nestcloud/common';
-import { HttpOptions } from './interfaces/http-options.interface';
+import { AsyncHttpOptions, HttpOptions } from './interfaces/http-options.interface';
 import { AXIOS_INSTANCE_PROVIDER, HTTP_OPTIONS_PROVIDER } from './http.constants';
 import axios from 'axios';
 import { DiscoveryModule } from '@nestjs/core';
@@ -17,7 +17,15 @@ import { HttpClient } from './http.client';
 export class HttpModule {
     private static readonly CONFIG_PREFIX = 'http';
 
-    static register(options: HttpOptions = {}): DynamicModule {
+    public static forRoot(options: HttpOptions = {}): DynamicModule {
+        return this.register(options);
+    }
+
+    public static forRootAsync(options: AsyncHttpOptions): DynamicModule {
+        return this.register(options);
+    }
+
+    private static register(options: HttpOptions & AsyncHttpOptions = {}): DynamicModule {
         const inject = options.inject || [];
         const httpOptionsProvider = {
             provide: HTTP_OPTIONS_PROVIDER,

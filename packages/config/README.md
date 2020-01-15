@@ -19,8 +19,6 @@
 
 A NestCloud component for getting and watching configurations from consul kv or kubernetes configmaps.
 
-[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/config.md)
-
 ## Installation
 
 ```bash
@@ -29,66 +27,41 @@ $ npm i --save @nestcloud/consul consul @nestcloud/config
 # etcd backend
 $ npm i --save @nestcloud/etcd etcd3 @nestcloud/config
 # kubernetes backend
-$ npm i --save @nestcloud/config
+$ npm i --save @nestcloud/config @nestcloud/kubernetes
 ```
 
 ## Quick Start
 
 ### Import Module
 
-#### Consul Backend
-
 ```typescript
 import { Module } from '@nestjs/common';
+import * as path from 'path';
 import { ConsulModule } from '@nestcloud/consul';
-import { ConfigModule } from '@nestcloud/config';
-import { BootModule } from '@nestcloud/boot';
-import { NEST_BOOT, NEST_CONSUL } from '@nestcloud/common';
-
-@Module({
-  imports: [
-      ConsulModule.register({dependencies: [NEST_BOOT]}),
-      BootModule.register(__dirname, 'bootstrap.yml'),
-      ConfigModule.register({dependencies: [NEST_BOOT, NEST_CONSUL]})
-  ],
-})
-export class ApplicationModule {}
-```
-
-#### Kubernetes Backend
-
-```typescript
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestcloud/config';
-import { BootModule } from '@nestcloud/boot';
-import { NEST_BOOT, NEST_KUBERNETES } from '@nestcloud/common';
-
-@Module({
-  imports: [
-      BootModule.register(__dirname, 'bootstrap.yml'),
-      ConfigModule.register({dependencies: [NEST_BOOT, NEST_KUBERNETES]})
-  ],
-})
-export class ApplicationModule {}
-```
-
-#### Etcd Backend
-
-```typescript
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestcloud/config';
 import { EtcdModule } from '@nestcloud/etcd';
+import { KubernetesModule } from '@nestcloud/kuberentes';
+import { ConfigModule } from '@nestcloud/config';
 import { BootModule } from '@nestcloud/boot';
-import { NEST_BOOT, NEST_ETCD } from '@nestcloud/common';
+import { BOOT, CONSUL, ETCD, KUBERNETES } from '@nestcloud/common';
 
 @Module({
-  imports: [
-      BootModule.register(__dirname, 'bootstrap.yml'),
-      EtcdModule.register({dependencies: [NEST_BOOT]}),
-      ConfigModule.register({dependencies: [NEST_BOOT, NEST_ETCD]})
-  ],
+    imports: [
+        BootModule.forRoot({
+            filePath: path.resolve(__dirname, '../config.yaml'),
+        }),
+        // Consul Backend
+        ConsulModule.forRootAsync({ inject: [BOOT] }),
+        ConfigModule.forRootAsync({ inject: [BOOT, CONSUL] }),
+        // Etcd Backend
+        EtcdModule.forRootAsync({ inject: [BOOT] }),
+        ConfigModule.forRootAsync({ inject: [BOOT, ETCD] }),
+        // Kubernetes Backend
+        KubernetesModule.forRootAsync({ inject: [BOOT] }),
+        ConfigModule.forRootAsync({ inject: [BOOT, KUBERNETES] }),
+    ],
 })
-export class ApplicationModule {}
+export class AppModule {
+}
 ```
 
 ### Configurations
@@ -98,7 +71,7 @@ export class ApplicationModule {}
 
 ```yaml
 config:
-  key: nestcloud-conf
+  name: nestcloud-conf
   namespace: default
   path: config.yaml
 ```
@@ -125,22 +98,21 @@ kind: ConfigMap
 metadata:
   name: nestcloud-conf
   namespace: default
-
 ```
 
 #### Inject Config Client
 
 ```typescript
-import { Injectable } from '@nestjs/common';
+import { Injectable,OnModuleInit } from '@nestjs/common';
 import { InjectConfig, Config } from '@nestcloud/config';
 
 @Injectable()
-export class TestService {
+export class ConfigService implements OnModuleInit {
   constructor(
       @InjectConfig() private readonly config: Config
   ) {}
 
-  getUserInfo() {
+  onModuleInit() {
       const userInfo = this.config.get('user.info', {name: 'judi'});
       console.log(userInfo);
   }
@@ -154,13 +126,9 @@ import { Injectable } from '@nestjs/common';
 import { ConfigValue } from '@nestcloud/config';
 
 @Injectable()
-export class TestService {
+export class ConfigService {
   @ConfigValue('user.info', {name: 'judi'})
   private readonly userInfo;
-
-  getUserInfo() {
-      return this.userInfo;
-  }
 }
 ```
 
@@ -168,16 +136,16 @@ export class TestService {
 
 ### class ConfigModule
 
-#### static register\(options\): DynamicModule
+#### static forRootAsync\(options\): DynamicModule
 
-Register consul config module.
+Register config module.
 
-| field | type | description |
-| :--- | :--- | :--- |
-| options.dependencies | string[] | NEST_BOOT, NEST_CONSUL, NEST_KUBERNETES |
-| options.key | key of the consul kv or name of the kubernetes configMap |
-| options.namespace | the kubernetes namespace |
-| options.path | the path of the kubernetes configMap |
+| field             | type     | description                                              |
+| :---------------- | :------- | :------------------------------------------------------- |
+| options.inject    | string[] | BOOT, CONSUL, KUBERNETES                                 |
+| options.name      | string   | key of the consul kv or name of the kubernetes configMap |
+| options.namespace | string   | the kubernetes namespace                                 |
+| options.path      | string   | the path of the kubernetes configMap                     |
 
 ### class Config
 
@@ -185,10 +153,10 @@ Register consul config module.
 
 Get configuration from consul kv.
 
-| field | type | description |
-| :--- | :--- | :--- |
-| path | string | the path of the configuration |
-| defaults | any | default value if the specific configuration is not exist |
+| field    | type   | description                                              |
+| :------- | :----- | :------------------------------------------------------- |
+| path     | string | the path of the configuration                            |
+| defaults | any    | default value if the specific configuration is not exist |
 
 #### getKey\(\): string
 
@@ -198,18 +166,18 @@ Get the current key.
 
 Watch the configurations.
 
-| field | type | description |
-| :--- | :--- | :--- |
+| field    | type                   | description       |
+| :------- | :--------------------- | :---------------- |
 | callback | \(configs\) =&gt; void | callback function |
 
 #### async set\(path: string, value: any\): void
 
 Update configuration.
 
-| field | type | description |
-| :--- | :--- | :--- |
-| path | string | the path of the configuration |
-| value | any | the configuration |
+| field | type   | description                   |
+| :---- | :----- | :---------------------------- |
+| path  | string | the path of the configuration |
+| value | any    | the configuration             |
 
 
 ### Decorators

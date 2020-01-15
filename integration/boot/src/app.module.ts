@@ -4,7 +4,9 @@ import { BootModule } from '../../../packages/boot';
 
 @Module({
     imports: [
-        BootModule.register({ filePath: resolve(__dirname, '../config.yaml') }),
+        BootModule.forRoot({
+            filePath: resolve(__dirname, '../config.yaml'),
+        }),
     ],
 })
 export class AppModule {

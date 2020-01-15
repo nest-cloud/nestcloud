@@ -1,5 +1,5 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
-import { KubernetesOptions } from './interfaces/kubernetes-options.interface';
+import { AsyncKubernetesOptions, KubernetesOptions } from './interfaces/kubernetes-options.interface';
 import { KUBERNETES_OPTIONS_PROVIDER } from './kubernetes.constants';
 import { Kubernetes } from './kubernetes';
 import { BOOT, CONFIG, IBoot, IConfig, KUBERNETES } from '@nestcloud/common';
@@ -12,7 +12,15 @@ import Api = require('kubernetes-client');
 export class KubernetesModule {
     private static CONFIG_PREFIX = 'kubernetes';
 
-    public static register(options: KubernetesOptions = {}): DynamicModule {
+    public static forRoot(options: KubernetesOptions): DynamicModule {
+        return this.register(options);
+    }
+
+    public static forRootAsync(options: AsyncKubernetesOptions): DynamicModule {
+        return this.register(options);
+    }
+
+    private static register(options: KubernetesOptions & AsyncKubernetesOptions = {}): DynamicModule {
         const inject = options.inject || [];
         const kubernetesOptionsProvider = {
             provide: KUBERNETES_OPTIONS_PROVIDER,

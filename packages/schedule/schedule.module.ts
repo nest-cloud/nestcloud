@@ -12,7 +12,7 @@ import { Scanner } from '@nestcloud/common';
     providers: [SchedulerMetadataAccessor, SchedulerOrchestrator, Scanner],
 })
 export class ScheduleModule {
-    static register(): DynamicModule {
+    static forRoot(): DynamicModule {
         return {
             global: true,
             module: ScheduleModule,

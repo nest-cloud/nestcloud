@@ -1,5 +1,5 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
-import { LoadbalanceOptions } from './interfaces/loadbalance-options.interface';
+import { AsyncLoadbalanceOptions, LoadbalanceOptions } from './interfaces/loadbalance-options.interface';
 import { AXIOS_INSTANCE_PROVIDER, LOADBALANCE_OPTIONS_PROVIDER } from './loadbalance.constants';
 import { Scanner, BOOT, CONFIG, IBoot, IConfig } from '@nestcloud/common';
 import { DiscoveryModule } from '@nestjs/core';
@@ -10,6 +10,7 @@ import axios from 'axios';
 import { LoadbalanceMetadataAccessor } from './loadbalance-metadata.accessor';
 import { LoadbalanceOrchestrator } from './loadbalance.orchestrator';
 import { LoadbalanceExplorer } from './loadbalance.explorer';
+import { RandomRule, RoundRobinRule, WeightedResponseTimeRule } from './rules';
 
 @Global()
 @Module({
@@ -19,7 +20,15 @@ import { LoadbalanceExplorer } from './loadbalance.explorer';
 export class LoadbalanceModule {
     private static CONFIG_PREFIX = 'loadbalance';
 
-    public static register(options: LoadbalanceOptions = {}): DynamicModule {
+    public static forRoot(options: LoadbalanceOptions): DynamicModule {
+        return this.register(options);
+    }
+
+    public static forRootAsync(options: AsyncLoadbalanceOptions): DynamicModule {
+        return this.register(options);
+    }
+
+    private static register(options: LoadbalanceOptions & AsyncLoadbalanceOptions = {}): DynamicModule {
         const inject = options.inject || [];
         const loadbalanceOptionsProvider = {
             provide: LOADBALANCE_OPTIONS_PROVIDER,
@@ -62,6 +71,9 @@ export class LoadbalanceModule {
                 loadbalanceProvider,
                 axiosProvider,
                 LoadbalanceExplorer,
+                RandomRule,
+                RoundRobinRule,
+                WeightedResponseTimeRule,
             ],
             exports: [loadbalanceProvider],
         };

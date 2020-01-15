@@ -7,8 +7,8 @@ import { CONFIG_NAME } from './constants';
 
 @Module({
     imports: [
-        ConsulModule.register({ host: 'localhost', port: '8500' }),
-        ConfigModule.register({ name: CONFIG_NAME, inject: [CONSUL] }),
+        ConsulModule.forRoot({ host: 'localhost', port: '8500' }),
+        ConfigModule.forRootAsync({ name: CONFIG_NAME, inject: [CONSUL] }),
     ],
     providers: [TestService],
 })

@@ -9,9 +9,7 @@ import { ILoadbalance } from '../common';
 import { Interceptor } from './interfaces/interceptor.interface';
 import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
-import { RequestOptions } from './interfaces/request-options.interface';
 import * as LbModule from '@nestcloud/loadbalance';
-import { AxiosOptions } from './interfaces/axios-options.interface';
 import { HttpOptions } from './interfaces/http-options.interface';
 import { AXIOS_INSTANCE_PROVIDER, HTTP_OPTIONS_PROVIDER } from './http.constants';
 
@@ -19,6 +17,7 @@ import { AXIOS_INSTANCE_PROVIDER, HTTP_OPTIONS_PROVIDER } from './http.constants
 export class HttpClient {
     private lb: ILoadbalance;
     private interceptors: Interceptor[];
+    private service: string;
 
     constructor(
         @Inject(AXIOS_INSTANCE_PROVIDER) private readonly http: AxiosInstance,
@@ -26,8 +25,9 @@ export class HttpClient {
     ) {
     }
 
-    create(options: AxiosOptions = {}) {
-        const globalAxiosOptions = this.options.axios || {};
+    create(options: HttpOptions = {}) {
+        this.service = options.service;
+        const globalAxiosOptions = this.options || {};
         return new HttpClient(
             axios.create(Object.assign(globalAxiosOptions, options)),
             this.options,
@@ -45,20 +45,44 @@ export class HttpClient {
         return this;
     }
 
-    public async request(options: RequestOptions): Promise<AxiosResponse | any> {
+    public async get(url: string, config: AxiosRequestConfig = {}): Promise<AxiosResponse | any> {
+        return this.request({ method: 'get', url, ...config });
+    }
+
+    public async delete(url: string, config: AxiosRequestConfig = {}): Promise<AxiosResponse | any> {
+        return this.request({ method: 'delete', url, ...config });
+    }
+
+    public async head(url: string, config: AxiosRequestConfig = {}): Promise<AxiosResponse | any> {
+        return this.request({ method: 'head', url, ...config });
+    }
+
+    public async post(url: string, data?: any, config: AxiosRequestConfig = {}): Promise<AxiosResponse | any> {
+        return this.request({ method: 'post', url, data, ...config });
+    }
+
+    public async put(url: string, data?: any, config: AxiosRequestConfig = {}): Promise<AxiosResponse | any> {
+        return this.request({ method: 'put', url, data, ...config });
+    }
+
+    public async patch(url: string, data?: any, config: AxiosRequestConfig = {}): Promise<AxiosResponse | any> {
+        return this.request({ method: 'patch', url, data, ...config });
+    }
+
+    public async request(options: AxiosRequestConfig): Promise<AxiosResponse | any> {
         let response: AxiosResponse;
-        if (options.service && this.lb) {
+        if (this.service && this.lb) {
             const module: typeof LbModule = require('@nestcloud/loadbalance');
-            const server = this.lb.choose(options.service);
+            const server = this.lb.choose(this.service);
             if (!server) {
                 throw new InternalServerErrorException(`No available server can handle this request`);
             }
             response = await new module.HttpDelegate(server).send(this.http, options);
-        } else if (options.service) {
+        } else if (this.service) {
             if (options.url && options.url.charAt(0) !== '/') {
                 options.url = '/' + options.url;
             }
-            options.url = `http://${options.service}${options.url}`;
+            options.url = `http://${this.service}${options.url}`;
             response = await this.send(options);
         } else {
             response = await this.send(options);

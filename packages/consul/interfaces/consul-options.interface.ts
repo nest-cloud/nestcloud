@@ -4,7 +4,6 @@
 import { IConsulOptions } from '@nestcloud/common';
 
 export interface ConsulOptions extends IConsulOptions {
-    inject?: string[];
     host?: string;
     port?: string;
     secure?: boolean;
@@ -20,4 +19,8 @@ export interface ConsulOptions extends IConsulOptions {
         'node-meta'?: string[];
         timeout?: number;
     };
+}
+
+export interface AsyncConsulOptions {
+    inject?: string[];
 }

@@ -16,7 +16,7 @@ import { BootExplorer } from './boot.explorer';
     providers: [BootMetadataAccessor, BootOrchestrator],
 })
 export class BootModule {
-    static register(options: BootOptions): DynamicModule {
+    static forRoot(options: BootOptions): DynamicModule {
         const bootOptionsProvider = {
             provide: BOOT_OPTIONS_PROVIDER,
             useValue: options,

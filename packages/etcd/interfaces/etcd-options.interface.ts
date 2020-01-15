@@ -1,5 +1,4 @@
-export class EtcdOptions {
-    inject?: string[];
+export interface EtcdOptions {
     credentials?: {
         rootCertificate: Buffer;
         privateKey?: Buffer;
@@ -10,8 +9,12 @@ export class EtcdOptions {
         username: string;
         password: string;
     };
-    hosts: string[] | string;
+    hosts?: string[] | string;
     dialTimeout?: number;
     backoffStrategy?: any;
     retry?: boolean;
+}
+
+export interface AsyncEtcdOptions {
+    inject?: string[];
 }

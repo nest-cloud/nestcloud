@@ -17,16 +17,12 @@
 
 ## Description
 
-A component of [nestcloud](http://github.com/nest-cloud/nestcloud). NestCloud is a nest framework micro-service solution.
-  
-[中文文档](https://nestcloud.org/solutions/http-ke-hu-duan)
-
 This is a [Nest](https://github.com/nestjs/nest) module for writing nestjs http clients easier.
 
 ## Installation
 
 ```bash
-$ npm i --save @nestcloud/http @nestcloud/loadbalance @nestcloud/consul consul
+$ npm i --save @nestcloud/http
 ```
 
 ## Quick Start
@@ -70,99 +66,43 @@ import { Get, Query, Post, Body, Param, Put, Delete } from "@nestcloud/http";
 
 @Injectable()
 export class UserClient {
-    @Get('/users')
+    @Get('http://test.com/users')
     getUsers(@Query('role') role: string) {
     }
     
-    @Get('http://test.com/users')
-    getRemoteUsers() {
-    }
-    
-    @Post('/users')
+    @Post('http://test.com/users')
     createUser(@Body('user') user: any) {
     }
     
-    @Put('/users/:userId')
+    @Put('http://test.com/users/:userId')
     updateUser(@Param('userId') userId: string, @Body('user') user: any) {
     }
     
-    @Delete('/users/:userId')
+    @Delete('http://test.com/users/:userId')
     deleteUser(@Param('userId') userId: string) {
-       
     }
 }
 ```
 
 ### Loadbalance
 
-```yaml
+```typescript
 import { Injectable } from "@nestjs/common";
 import { Loadbalanced, Get, Query } from "@nestcloud/http";
 
 @Injectable()
-@Loadbalanced('user-service') // open loadbalance supports, need @nestcloud/loadbalance module.
+// enable loadbalance supports, need import @nestcloud/loadbalance module at first.
+@Loadbalanced('user-service')
 export class UserClient {
     @Get('/users')
     getUsers(@Query('role') role: string) {
     }
     
     @Get('http://test.com/users')
-    @Loadbalanced(false) // close loadbalance supports.
+    // disable loadbalance supports.
+    @Loadbalanced(false)
     getRemoteUsers() {
     }
-}
-```
-
-### Brakes
-
-```typescript
-import { IFallback } from "@nestcloud/http";
-import { Injectable, ServiceUnavailableException } from "@nestjs/common";
-import { AxiosResponse } from "axios";
-
-@Injectable()
-export class CustomFallback implements IFallback {
-    fallback(): Promise<AxiosResponse | void> | AxiosResponse | void {
-        throw new ServiceUnavailableException('The service is unavailable, please retry soon.');
-    }
-}
-```
-
-```typescript
-import { IHealthCheck } from "@nestcloud/http";
-import { Injectable } from "@nestjs/common";
-import { HealthClient } from "./health.client";
-
-@Injectable()
-export class CustomCheck implements IHealthCheck {
-    constructor(
-        private readonly client: HealthClient
-    ) {
-    }
-
-    async check(): Promise<void> {
-        await this.client.checkHealth();
-    }
-}
-```
-
-```typescript
-import { Injectable } from "@nestjs/common";
-import { UseBrakes, UseFallback, UseHealthCheck, Get, Query } from "@nestcloud/http";
-import { CustomFallback } from "./custom.fallback";
-import { CustomCheck } from "./custom.check";
-
-@Injectable()
-@UseBrakes({
-    statInterval: 2500,
-    threshold: 0.5,
-    circuitDuration: 15000,
-    timeout: 250,
-    healthCheck: true,
-})
-@UseFallback(CustomFallback)
-@UseHealthCheck(CustomCheck)
-export class UserClient {
 }
 ```
 
@@ -170,11 +110,11 @@ export class UserClient {
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { IInterceptor } from "@nestcloud/http";
+import { Interceptor } from "@nestcloud/http";
 import { AxiosResponse, AxiosRequestConfig } from 'axios';
 
 @Injectable()
-export class AddHeaderInterceptor implements IInterceptor {
+export class AddHeaderInterceptor implements Interceptor {
     onRequest(request: AxiosRequestConfig): AxiosRequestConfig {
         request.headers['x-service'] = 'service-name';
         return request;
@@ -196,11 +136,11 @@ export class AddHeaderInterceptor implements IInterceptor {
 
 ```typescript
 import { Injectable } from "@nestjs/common";
-import { Get, UseInterceptor } from "@nestcloud/http";
+import { Get, UseInterceptors } from "@nestcloud/http";
 import { AddHeaderInterceptor } from "./middlewares/AddHeaderInterceptor";
 
 @Injectable()
-@UseInterceptor(AddHeaderInterceptor)
+@UseInterceptors(AddHeaderInterceptor)
 export class ArticleClient {
     @Get('https://api.apiopen.top/recommendPoetry')
     getArticles() {
@@ -211,12 +151,12 @@ export class ArticleClient {
 examples:
 
 ```typescript
-@UseInterceptor(Interceptor1)
-@UseInterceptor(Interceptor2)
+@UseInterceptors(Interceptor1)
+@UseInterceptors(Interceptor2)
 export class Client {
 
-    @UseInterceptor(Interceptor3)
-    @UseInterceptor(Interceptor4)
+    @UseInterceptors(Interceptor3)
+    @UseInterceptors(Interceptor4)
     getArticles() {
     }
 }
@@ -242,27 +182,27 @@ interceptor1 response
 
 Route decorator.
 
-| field | type | description |
-| :--- | :--- | :--- |
-| uri | string | the url |
+| field   | type   | description                                               |
+| :------ | :----- | :-------------------------------------------------------- |
+| uri     | string | the url                                                   |
 | options | object | axios config，see [axios](https://github.com/axios/axios) |
 
 ### Param\|Body\|Query\|Header\(field?: string\): ParameterDecorator
 
 Parameter decorator.
 
-| field | type | description |
-| :--- | :--- | :--- |
+| field | type   | description    |
+| :---- | :----- | :------------- |
 | field | string | the field name |
 
 ### SetHeader\|SetQuery\|SetParam\|SetBody\(field: string, value: any\): MethodDecorator
 
 constant parameter decorator
 
-| field | type | description |
-| :--- | :--- | :--- |
+| field | type   | description     |
+| :---- | :----- | :-------------- |
 | field | string | the field name  |
-| value | string \| number \| object | the field value |
+| value | any    | the field value |
 
 ### Response\(\): MethodDecorator
 
@@ -288,27 +228,9 @@ Set response data encode, default 'utf8'
 
 Open or close lb support.
 
-### UseInterceptor&lt;T extends IInterceptor&gt;\(interceptor: { new\(\): T }\)
+### UseInterceptors&lt;T extends IInterceptor&gt;\(...interceptors: Function[]\)
 
 Use interceptor, supports dynamic import and inject.
-
-### UseBrakes(config?: BrakesConfig | boolean): ClassDecorator \| MethodDecorator
-
-Open circuit supports.
-
-### UseFallback<T extends IFallback>(Fall: { new(): T })
-
-Add Custom fallback, use together with Brakes decorator, supports dynamic import and inject.
-
-### UseHealthChecker<T extends IHealthChecker>(Checker: { new(): T })
-
-Add Health Checker for Brakes, use together with Brakes decorator, supports dynamic import and inject.
- 
-If you use health check, please set heathCheck: true, such as
-
-```typescript
-@Brakes({healthCheck: true})
-```
 
 ## Stay in touch
 

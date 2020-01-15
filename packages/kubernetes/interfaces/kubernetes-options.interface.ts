@@ -1,8 +1,11 @@
 export interface KubernetesOptions {
-    inject?: string[];
     config?: string | any;
     cluster?: KubernetesCluster;
     user?: KubernetesUser;
+}
+
+export interface AsyncKubernetesOptions {
+    inject?: string[];
 }
 
 export interface KubernetesCluster {

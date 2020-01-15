@@ -2,8 +2,8 @@ import { Module, DynamicModule, Global } from '@nestjs/common';
 import { ETCD, IBoot, BOOT } from '@nestcloud/common';
 import { ETCD_OPTIONS_PROVIDER } from './etcd.constants';
 import { Etcd } from './etcd';
-import { EtcdOptions } from './interfaces/etcd-options.interface';
-import { Etcd3 } from 'etcd3';
+import { AsyncEtcdOptions, EtcdOptions } from './interfaces/etcd-options.interface';
+import { Etcd3, IOptions } from 'etcd3';
 import { DiscoveryModule } from '@nestjs/core';
 import { EtcdMetadataAccessor } from './etcd-metadata.accessor';
 import { EtcdOrchestrator } from './etcd.orchestrator';
@@ -17,7 +17,15 @@ import { EtcdExplorer } from './etcd.explorer';
 export class EtcdModule {
     private static CONFIG_PREFIX = 'etcd';
 
-    public static register(options: EtcdOptions = { hosts: '127.0.0.1:2379' }): DynamicModule {
+    public static forRoot(options: EtcdOptions): DynamicModule {
+        return this.register(options);
+    }
+
+    public static forRootAsync(options: AsyncEtcdOptions): DynamicModule {
+        return this.register(options);
+    }
+
+    private static register(options: EtcdOptions & AsyncEtcdOptions = { hosts: '127.0.0.1:2379' }): DynamicModule {
         const inject = options.inject || [];
         const etcdOptionsProvider = {
             provide: ETCD_OPTIONS_PROVIDER,
@@ -36,7 +44,7 @@ export class EtcdModule {
             provide: ETCD,
             useFactory: (options: EtcdOptions): Etcd => {
                 this.parseCertificate(options);
-                return new Etcd3(options);
+                return new Etcd3(options as IOptions);
             },
             inject: [ETCD_OPTIONS_PROVIDER],
         };

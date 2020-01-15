@@ -1,4 +1,4 @@
-export class ConfigOptions {
+export interface ConfigOptions {
     inject?: string[];
     name?: string;
     namespace?: string;

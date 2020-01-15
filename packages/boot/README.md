@@ -19,8 +19,6 @@
 
 NestCloud component for getting local configurations and environment values when the app bootstrap.
 
-[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/bootstrap.md)
-
 ## Installation
 
 ```bash
@@ -37,9 +35,13 @@ import { BootModule } from '@nestcloud/boot';
 import * as path from 'path';
 
 @Module({
-  imports: [BootModule.register({ filePath: path.resolve(__dirname, 'config.yaml') })],
+  imports: [
+    BootModule.forRoot({ 
+      filePath: path.resolve(__dirname, 'config.yaml'),
+    }),
+  ],
 })
-export class ApplicationModule {}
+export class AppModule {}
 ```
 
 ### Configurations
@@ -59,17 +61,17 @@ There are two ways to get your config data,
  1. Inject Boot instance:
 
 ```typescript
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectBoot, Boot } from '@nestcloud/boot';
 
 @Injectable()
-export class TestService {
+export class ConfigService implements OnModuleInit {
   constructor(
-    private readonly boot: Boot
+    @InjectBoot() private readonly boot: Boot
   ) {}
 
-  getPort() {
-      return this.boot.get<number>('web.port', 3000);
+  onModuleInit() {
+      const port = this.boot.get<number>('service.port', 3000);
   }
 }
 ```
@@ -81,13 +83,9 @@ import { Injectable } from '@nestjs/common';
 import { BootValue } from '@nestcloud/boot';
 
 @Injectable()
-export class TestService {
+export class ConfigService {
   @BootValue('service.port', 3000)
   private readonly port: number;
-
-  getPort() {
-      return this.port;
-  }
 }
 ```
 
@@ -124,33 +122,33 @@ service:
 
 ### class BootModule
 
-#### static register\(options: BootOptions\): DynamicModule
+#### static forRoot\(options: BootOptions\): DynamicModule
 
 Register boot module.
 
-| field | type | description |
-| :--- | :--- | :--- |
-| options.filePath | string | the config file path |
-| options.watch | boolean | watch file change or not |
+| field            | type    | description              |
+| :--------------- | :------ | :----------------------- |
+| options.filePath | string  | the config file path     |
+| options.watch    | boolean | watch file change or not |
 
 ### class Boot
 
-#### get&lt;T&gt;\(path: string, defaults?: T\): T
+#### get&lt;T&gt;\(path?: string, defaults?: T\): T
 
 Get configurations
 
-| field | type | description |
-| :--- | :--- | :--- |
-| path |  string | path of configurations |
-| defaults | any | default value if the specific configuration is not exist |
+| field    | type   | description                                              |
+| :------- | :----- | :------------------------------------------------------- |
+| path     | string | path of configurations                                   |
+| defaults | any    | default value if the specific configuration is not exist |
 
-### Decorator
+## Decorators
 
-#### InjectBoot\(\): PropertyDecorator
+### InjectBoot\(\): PropertyDecorator
 
 Inject Boot instance.
 
-#### BootValue\(path?: string, defaultValue?: any\): PropertyDecorator
+### BootValue\(path?: string, defaultValue?: any\): PropertyDecorator
 
 Inject configuration to class attribute.
 

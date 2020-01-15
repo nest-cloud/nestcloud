@@ -11,7 +11,7 @@ import { GrpcExplorer } from './grpc.explorer';
     providers: [GrpcMetadataAccessor, GrpcOrchestrator],
 })
 export class GrpcModule {
-    static register(): DynamicModule {
+    static forRoot(): DynamicModule {
         const inject = [LOADBALANCE];
 
         const grpcProvider = {

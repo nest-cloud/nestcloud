@@ -13,7 +13,7 @@ import { ServiceStore } from './service.store';
 export class ServiceModule {
     private static CONFIG_PREFIX = 'service';
 
-    static register(options: ServiceOptions = {}): DynamicModule {
+    public static forRootAsync(options: ServiceOptions = {}): DynamicModule {
         const inject = options.inject || [];
         const serviceOptionsProvider = {
             provide: SERVICE_OPTIONS_PROVIDER,

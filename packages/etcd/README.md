@@ -19,8 +19,6 @@
 
 Etcd module for nestcloud
 
-[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/etcd.md)
-
 ## Installation
 
 ```bash
@@ -37,7 +35,7 @@ import { EtcdModule } from '@nestcloud/etcd';
 
 @Module({
   imports: [
-      EtcdModule.register(),
+      EtcdModule.forRoot(),
   ],
 })
 export class ApplicationModule {}

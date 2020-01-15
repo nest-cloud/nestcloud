@@ -4,7 +4,7 @@ import { TestClient } from './test.client';
 
 @Module({
     imports: [
-        HttpModule.register(),
+        HttpModule.forRoot(),
     ],
     providers: [TestClient],
 })

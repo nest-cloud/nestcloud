@@ -27,7 +27,6 @@ And add some new features:
 
 * Executing job immediately for `Interval` and `Timeout` job.
 
-
 ## Installation
 
 ```bash
@@ -42,7 +41,7 @@ import { ScheduleModule } from '@nestcloud/schedule';
 
 @Module({
   imports: [
-    ScheduleModule.register(),
+    ScheduleModule.forRoot(),
   ]
 })
 export class AppModule {
@@ -183,13 +182,15 @@ Register schedule module.
 
 Schedule a cron job.
 
-| field | type | required | description |
-| --- | --- | --- | --- |
-| rule | Date string number [CronObject CronObjLiteral](https://github.com/nest-cloud/nestcloud/tree/master/packages/schedule/interfaces/cron-options.interface)] | true | The cron rule |
-| rule.dayOfWeek | number | true | Timezone |
-| options.name | string | false | The unique job key |
-| options.retries | number | false |  the max retry count, default is -1 not retry |
-| options.retry | number | false | the retry interval, default is 5000 |
+| field           | type                                         | required | description                                   |
+| --------------- | -------------------------------------------- | -------- | --------------------------------------------- |
+| rule            | Date string number CronObject CronObjLiteral | true     | The cron rule                                 |
+| rule.dayOfWeek  | number                                       | true     | Timezone                                      |
+| options.name    | string                                       | false    | The unique job key                            |
+| options.retries | number                                       | false    |  the max retry count, default is -1 not retry |
+| options.retry   | number                                       | false    | the retry interval, default is 5000           |
+
+[CronObject CronObjLiteral](https://github.com/nest-cloud/nestcloud/tree/master/packages/schedule/interfaces/cron-options.interface)]
 
 ### Interval(timeout: number): MethodDecorator
 ### Interval(name: string, timeout: number): MethodDecorator
@@ -197,12 +198,12 @@ Schedule a cron job.
 
 Schedule a interval job.
 
-| field | type | required | description |
-| --- | --- | --- | --- |
-| timeout | number | true | milliseconds |
-| options.retries | number | false |  the max retry count, default is -1 not retry |
-| options.retry | number | false | the retry interval, default is 5000 |
-| options.immediate | boolean | false | executing job immediately |
+| field             | type    | required     | description                                   |
+| ----------------- | ------- | ------------ | --------------------------------------------- |
+| timeout | number  | true    | milliseconds |                                               |
+| options.retries   | number  | false        |  the max retry count, default is -1 not retry |
+| options.retry     | number  | false        | the retry interval, default is 5000           |
+| options.immediate | boolean | false        | executing job immediately                     |
 
 ### Timeout(timeout: number): MethodDecorator
 ### Timeout(name: string, timeout: number): MethodDecorator
@@ -210,12 +211,12 @@ Schedule a interval job.
 
 Schedule a timeout job.
 
-| field | type | required | description |
-| --- | --- | --- | --- |
-| timeout | number | true | milliseconds |
-| options.retries | number | false |  the max retry count, default is -1 not retry |
-| options.retry | number | false | the retry interval, default is 5000 |
-| options.immediate | boolean | false | executing job immediately |
+| field             | type    | required | description                                   |
+| ----------------- | ------- | -------- | --------------------------------------------- |
+| timeout           | number  | true     | milliseconds                                  |
+| options.retries   | number  | false    |  the max retry count, default is -1 not retry |
+| options.retry     | number  | false    | the retry interval, default is 5000           |
+| options.immediate | boolean | false    | executing job immediately                     |
 
 ### InjectSchedule(): PropertyDecorator
 
@@ -224,7 +225,6 @@ Inject Schedule instance
 ### UseLocker(locker: Locker | Function): MethodDecorator
 
 Set a locker for this job.
-
 
 ## Stay in touch
 

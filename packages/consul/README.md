@@ -19,8 +19,6 @@
 
 A NestCloud component for providing consul api based on [node-consul](https://github.com/silas/node-consul).
 
-[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/consul.md)
-
 ## Installation
 
 ```bash
@@ -33,17 +31,20 @@ $ npm i --save @nestcloud/consul consul
 
 ```typescript
 import { Module } from '@nestjs/common';
+import { resolve } from 'path';
 import { ConsulModule } from '@nestcloud/consul';
 import { BootModule } from '@nestcloud/boot';
-import { NEST_BOOT } from '@nestcloud/common';
+import { BOOT } from '@nestcloud/common';
 
 @Module({
   imports: [
-      BootModule.register(__dirname, 'bootstrap.yml'),
-      ConsulModule.register({dependencies: [NEST_BOOT]})
+    BootModule.forRoot({
+      filePath: resolve(__dirname, '../config.yaml'),
+    }),
+    ConsulModule.forRootAsync({ inject: [BOOT] })
   ],
 })
-export class ApplicationModule {}
+export class AppModule {}
 ```
 
 ### Configurations
@@ -87,14 +88,25 @@ export class TestService {
 
 ### class ConsulModule
 
-#### static register\(options: Options\): DynamicModule
+#### static forRoot\(options: Options\): DynamicModule
 
-Import nest consul module.
+Import consul module.
 
-| field | type | description |
-| :--- | :--- | :--- |
-| options.dependencies | string[] | if you are using @nestcloud/boot module, please set [NEST_BOOT] |
-| 其他 | any | see [node-consul](https://github.com/silas/node-consul) |
+| field            | type     | description           |
+| :--------------- | :------- | :-------------------- |
+| options.host     | string   | consul host           |
+| options.port     | string   | consul port           |
+| options.secure   | boolean  | security or not       |
+| options.ca       | string[] | certs                 |
+| options.defaults | any      | default consul config |
+
+#### static forRootAsync\(options: Options\): DynamicModule
+
+Import consul module.
+
+| field          | type     | description |
+| :------------- | :------- | :---------- |
+| options.inject | string[] | BOOT        |
 
 ### class Consul
 
@@ -102,9 +114,15 @@ see [node-consul](https://github.com/silas/node-consul)
 
 ### Decorators
 
-#### WatchKV(key: string, type?: 'json' | 'yaml' | 'text', defaults?: any): PropertyDecorator
+#### KeyValue(name: string, options?: KeyValueOptions): PropertyDecorator
 
 Inject consul kv to the class attribute, it will update immediately when consul kv update.
+
+| field            | type           | description           |
+| :--------------- | :------------- | :-------------------- |
+| name             | string         | consul key            |
+| options.type     | text json yaml | value type            |
+| options.defaults | any            | default value         |
 
 ## Stay in touch
 

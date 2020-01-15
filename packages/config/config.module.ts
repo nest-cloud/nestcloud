@@ -20,7 +20,7 @@ import { ConfigExplorer } from './config.explorer';
 export class ConfigModule {
     private static CONFIG_PREFIX = 'config';
 
-    public static register(options: ConfigOptions = { name: '' }): DynamicModule {
+    public static forRootAsync(options: ConfigOptions = { name: '' }): DynamicModule {
         const inject = options.inject || [];
         const optionsProvider = {
             provide: CONFIG_OPTIONS_PROVIDER,

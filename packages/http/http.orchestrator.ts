@@ -82,7 +82,7 @@ export class HttpOrchestrator implements OnApplicationBootstrap {
                 }
             });
 
-            const http = this.http.create();
+            const http = this.http.create({ service: serviceName });
             http.useLb(lb);
             http.useInterceptors(...interceptors);
 
@@ -91,7 +91,6 @@ export class HttpOrchestrator implements OnApplicationBootstrap {
                 const requestOptions = {
                     ...this.options,
                     ...options,
-                    service: serviceName,
                     params: requestParams.params,
                     data: requestParams.data,
                     headers: requestParams.headers,

@@ -7,8 +7,8 @@ import { CONFIG_NAME } from './constants';
 
 @Module({
     imports: [
-        EtcdModule.register({ hosts: 'http://localhost:2379' }),
-        ConfigModule.register({ name: CONFIG_NAME, inject: [ETCD] }),
+        EtcdModule.forRoot({ hosts: 'http://localhost:2379' }),
+        ConfigModule.forRootAsync({ name: CONFIG_NAME, inject: [ETCD] }),
     ],
     providers: [TestService],
 })

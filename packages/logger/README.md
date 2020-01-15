@@ -19,8 +19,6 @@
 
 The logger module for nestcloud.
 
-[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/logger.md)
-
 ## Installation
 
 ```bash
@@ -30,14 +28,16 @@ $ npm i --save @nestcloud/logger
 ## Quick Start
 
 ```typescript
-import { NestFactory } from '@nestjs/core'
-import { Injectable } from '@nestjs/core';
-import { NestLogger, Logger } from '@nestcloud/logger';
+import { NestFactory } from '@nestjs/core';
+import { resolve } from 'path';
+import { NestLogger } from '@nestcloud/logger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { 
-      logger: new NestLogger({path: __dirname, filename: 'logger.yml'})
+      logger: new NestLogger({
+        filePath: resolve(__dirname, 'config.yaml'),
+      }),
   });
 }
 ```
@@ -76,26 +76,26 @@ logger:
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { LoggerModule, Logger } from '@nestcloud/logger';
+import { LoggerModule } from '@nestcloud/logger';
 
 @Module({
   imports: [
-      LoggerModule.register()
+      LoggerModule.forRoot()
   ],
 })
-export class ApplicationModule {}
+export class AppModule {}
 ```
 
 ```typescript
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectLogger, Logger } from '@nestcloud/logger';
+import { InjectLogger } from '@nestcloud/logger';
 
 @Injectable()
 export class TestService {
   constructor(@InjectLogger() private readonly logger: Logger) {}
 
   log() {
-      this.logger.info('The first log');
+      this.logger.log('The first log');
   }
 }
 ```
@@ -118,7 +118,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       })
   ],
 })
-export class ApplicationModule {}
+export class AppModule {}
 ```
 
 ## Stay in touch

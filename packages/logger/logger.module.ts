@@ -8,9 +8,7 @@ import { TYPEORM_LOGGER } from './logger.constants';
 export class LoggerModule {
     private static logger: Logger;
 
-    static register(): DynamicModule {
-        const inject = [];
-
+    static forRoot(): DynamicModule {
         const loggerProvider = {
             provide: LOGGER,
             useFactory: (): Logger => {
@@ -20,7 +18,6 @@ export class LoggerModule {
 
                 return this.logger;
             },
-            inject,
         };
 
         const typeormLoggerProvider = {

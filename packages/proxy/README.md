@@ -19,8 +19,6 @@
 
 The proxy module for nestcloud.
 
-[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/proxy.md)
-
 ## Installation
 
 ```bash
@@ -33,16 +31,16 @@ You should not use body parser middleware when use this module or the post reque
 
 ## Quick Start
 
-### Register Module
+### Import Module
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { NEST_BOOT } from '@nestcloud/common';
 import { ProxyModule } from "@nestcloud/proxy";
+import { BOOT } from '@nestcloud/common';
 
 @Module({
     imports: [
-        ProxyModule.register({dependencies: [NEST_BOOT]}),
+        ProxyModule.forRootAsync({ inject: [BOOT] }),
     ]
 })
 export class AppModule {
