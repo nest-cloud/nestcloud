@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/proxy",
-  "version": "0.6.9",
+  "version": "0.6.10",
   "description": "proxy module for nestcloud",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
@@ -8,13 +8,13 @@
     "access": "public"
   },
   "optionalDependencies": {
-    "@nestcloud/boot": "^0.6.9",
-    "@nestcloud/config": "^0.6.9",
-    "@nestcloud/loadbalance": "^0.6.9",
-    "@nestcloud/redis": "^0.6.9"
+    "@nestcloud/boot": "^0.6.10",
+    "@nestcloud/config": "^0.6.10",
+    "@nestcloud/loadbalance": "^0.6.10",
+    "@nestcloud/redis": "^0.6.10"
   },
   "peerDependencies": {
-    "@nestcloud/common": "^0.6.9",
+    "@nestcloud/common": "^0.6.10",
     "@nestjs/common": "^6.0.0"
   },
   "repository": {
