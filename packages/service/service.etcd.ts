@@ -156,7 +156,7 @@ export class EtcdService implements IService, OnModuleInit, OnModuleDestroy {
         }
     }
 
-    private checkServiceWatcher() {
+    private checkServiceWatcher(immediate?: boolean) {
         setTimeout(async () => {
             if (this.watcherWrapper.watcher && !this.watcherWrapper.connected) {
                 try {
@@ -171,9 +171,11 @@ export class EtcdService implements IService, OnModuleInit, OnModuleDestroy {
                     this.logger.error('Service watcher created error.', e);
                 }
 
-                this.checkServiceWatcher();
+                this.logger.log('Service watcher recreate succeed.');
+
+                this.checkServiceWatcher(false);
             }
-        }, 60000 * 5);
+        }, immediate ? 0 : 60000);
     }
 
     private async initServicesWatcher() {
@@ -189,6 +191,18 @@ export class EtcdService implements IService, OnModuleInit, OnModuleDestroy {
         });
         this.watcherWrapper.watcher.on('connecting', () => {
             this.logger.log('Service watcher connecting...');
+        });
+        this.watcherWrapper.watcher.on('end', async () => {
+            this.logger.error('Service watcher unexpected end and will recreate soon');
+
+            this.watcherWrapper.connected = false;
+            this.checkServiceWatcher(true);
+        });
+        this.watcherWrapper.watcher.on('error', async e => {
+            this.logger.error('Service watcher occur unexpected error and will recreate soon', e.stack);
+
+            this.watcherWrapper.connected = false;
+            this.checkServiceWatcher(true);
         });
         this.watcherWrapper.watcher.on('data', (res) => {
             res.events.forEach(evt => {
