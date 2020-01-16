@@ -1,68 +1,31 @@
-import { ILoadbalance, IServiceNode, IServer, ILoadbalancer, IService, Scanner, SERVICE } from '@nestcloud/common';
+import { ILoadbalance, IServiceServer, IServer, ILoadbalancer, IService, Scanner, SERVICE } from '@nestcloud/common';
 import { ServiceOptions } from './interfaces/service-options.interface';
 import { Loadbalancer } from './loadbalancer';
 import { Server } from './server';
 import { ServerState } from './server-state';
 import { Rule } from './interfaces/rule.interface';
 import { ServiceNotExistException } from './exceptions/service-not-exist.exception';
-import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { LoadbalanceOptions } from './interfaces/loadbalance-options.interface';
-import { LOADBALANCE_OPTIONS_PROVIDER } from './loadbalance.constants';
-import { RandomRule } from './rules';
-import { STATIC_CONTEXT } from '@nestjs/core/injector/constants';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { LoadbalanceChecker } from './loadbalance.checker';
+import { LoadbalanceRuleRegistry } from './loadbalance-rule.registry';
+import { LoadbalanceConfig } from './loadbalance.config';
 
 @Injectable()
-export class Loadbalance implements ILoadbalance, OnApplicationBootstrap {
-    private options: LoadbalanceOptions = {};
+export class Loadbalance implements ILoadbalance, OnModuleInit {
     private readonly loadbalancers = new Map<string, Loadbalancer>();
-    private globalRule: Rule;
-    private serviceRules = new Map<string, Rule>();
     private timer = null;
 
     constructor(
-        @Inject(LOADBALANCE_OPTIONS_PROVIDER) private readonly registerOptions: LoadbalanceOptions,
+        private readonly config: LoadbalanceConfig,
         private readonly scanner: Scanner,
         private readonly loadbalanceChecker: LoadbalanceChecker,
+        private readonly loadbalanceRuleRegistry: LoadbalanceRuleRegistry,
         @Inject(SERVICE) private readonly service: IService,
     ) {
     }
 
-    async onApplicationBootstrap(): Promise<void> {
-        this.initRules();
+    async onModuleInit(): Promise<void> {
         await this.init();
-    }
-
-    private initRules() {
-        const contextName = this.scanner.findContextModuleName(Loadbalance.constructor);
-        if (!contextName) {
-            this.globalRule = new RandomRule();
-            return;
-        }
-        const globalRuleName = this.options.rule || 'RandomRule';
-        const instanceWrapper = this.scanner.findInstance(contextName, globalRuleName);
-        if (instanceWrapper) {
-            const instanceHost = instanceWrapper.getInstanceByContextId(STATIC_CONTEXT);
-            let rule = instanceHost && instanceHost.instance;
-            if (!rule) {
-                rule = new RandomRule();
-            }
-            this.globalRule = rule;
-        } else {
-            this.globalRule = new RandomRule();
-        }
-
-        if (this.options.services) {
-            this.options.services.forEach(opts => {
-                const instanceWrapper = this.scanner.findInstance(contextName, opts.rule);
-                if (!instanceWrapper) {
-                    return null;
-                }
-                const instanceHost = instanceWrapper.getInstanceByContextId(STATIC_CONTEXT);
-                const rule = instanceHost && instanceHost.instance;
-                this.serviceRules.set(opts.name, rule);
-            });
-        }
     }
 
     private async init() {
@@ -102,22 +65,26 @@ export class Loadbalance implements ILoadbalance, OnApplicationBootstrap {
 
     private updateServices(services: string[]) {
         services.forEach(service => {
-            const nodes = this.service.getServiceNodes(service);
+            const nodes = this.service.getServiceServers(service);
             if (!service || this.loadbalancers.has(service)) {
                 return null;
             }
 
-            const rule: Rule = this.serviceRules[service] || this.globalRule;
+            const ruleName = this.config.getRule(service);
+            const rule: Rule = this.loadbalanceRuleRegistry.getRule(ruleName);
+            if (!rule) {
+                throw new Error(`The rule ${ruleName} is not exist`);
+            }
             this.createLoadbalancer(service, nodes, rule);
             this.createServiceWatcher(service, rule);
         });
     }
 
     private createServiceWatcher(service: string, rule: Rule) {
-        this.service.watch(service, (nodes: IServiceNode[]) => this.createLoadbalancer(service, nodes, rule));
+        this.service.watch(service, (nodes: IServiceServer[]) => this.createLoadbalancer(service, nodes, rule));
     }
 
-    private createLoadbalancer(serviceName: string, nodes: IServiceNode[], rule: Rule) {
+    private createLoadbalancer(serviceName: string, nodes: IServiceServer[], rule: Rule) {
         const loadbalancer: Loadbalancer = this.loadbalancers.get(serviceName);
         const servers = nodes.map(node => {
             const server = new Server(node.address, node.port);
@@ -141,7 +108,7 @@ export class Loadbalance implements ILoadbalance, OnApplicationBootstrap {
 
     private pingServers() {
         this.loadbalancers.forEach((loadbalancer, service) => {
-            const servicesOptions = this.options.services || [];
+            const servicesOptions = this.config.getServiceOptions();
             const options: ServiceOptions = servicesOptions.filter(rule => rule.name === service)[0];
             this.loadbalanceChecker.pingServer(loadbalancer, options);
         });

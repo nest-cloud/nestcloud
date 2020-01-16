@@ -1,8 +1,7 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { Scanner } from '@nestcloud/common';
+import { Scanner, ILoadbalance, IServer } from '@nestcloud/common';
 import { ChooseMetadata } from './interfaces/choose-metadata.interface';
 import { InjectLoadbalance } from './decorators/inject-loadbalance.decorator';
-import { ILoadbalance, IServer } from '../common';
 
 interface Choose {
     service: string;

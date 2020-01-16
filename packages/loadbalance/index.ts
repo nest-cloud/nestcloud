@@ -3,6 +3,7 @@ export * from './interfaces/rule.interface';
 export * from './decorators/inject-loadbalance.decorator';
 export * from './decorators/choose.decorator';
 export * from './decorators/loadbalanced.decorator';
+export * from './decorators/use-rules.decorator';
 export * from './loadbalance';
 export * from './loadbalancer';
 export * from './server';

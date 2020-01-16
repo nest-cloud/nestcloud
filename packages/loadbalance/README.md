@@ -29,36 +29,59 @@ $ npm i --save @nestcloud/loadbalance
 
 ### Import Module
 
+Before you import the lb module, you need import `@nestcloud/service` module at first.
+
 ```typescript
 import { Module } from '@nestjs/common';
-import { resolve } from 'path';
-import { ConsulModule } from '@nestcloud/consul';
-import { ServiceModule } from '@nestcloud/service';
 import { LoadbalanceModule } from '@nestcloud/loadbalance';
-import { BootModule } from '@nestcloud/boot';
-import { BOOT, CONSUL, SERVICE } from '@nestcloud/common';
 
 @Module({
   imports: [
-      ConsulModule.forRootAsync({inject: [BOOT]}),
-      ServiceModule.forRootAsync({inject: [BOOT, CONSUL]}),
-      BootModule.forRoot({
-        filePath: resolve(__dirname, 'config.yaml'),
-      }),
-      LoadbalanceModule.forRootAsync({inject: [BOOT, SERVICE]})
+      LoadbalanceModule.forRoot({
+        rule: 'RandomRule',
+        services: [{
+          name: 'test-service',
+          rule: 'RoundRobinRule',
+        }],
+      })
   ],
 })
 export class AppModule {}
 ```
 
-### Configurations
+#### Import With Boot Module
+
+Except `@nestcloud/boot` module you can also use `@nestcloud/config` module too. 
+
+app.module.ts:
+
+```typescript
+import { Module } from '@nestjs/common';
+import { BOOT } from "@nestcloud/common";
+import { BootModule } from "@nestcloud/boot";
+import { LoadbalanceModule } from '@nestcloud/loadbalance';
+import { resolve } from 'path';
+
+@Module({
+  imports: [
+    BootModule.forRoot({
+      filePath: resolve(__dirname, 'config.yaml'),
+    }),
+    LoadbalanceModule.forRootAsync({ inject: [BOOT] }),
+  ]
+})
+export class AppModule {
+}
+```
+
+config.yaml:
 
 ```yaml
 loadbalance:
   rule: RandomRule
   services:
-    - {name: 'your-service-name', rule: 'RoundRobinRule'}
-    - {name: 'your-service-name', rule: 'CustomLBRule'}
+    - name: test-service
+      rule: RoundRobinRule
 ```
 
 ## Usage
@@ -74,7 +97,7 @@ export class TestService {
   ) {
   }
 
-  async chooseOneNode() {
+  chooseOneNode() {
       const node = this.lb.choose('your-service-name');
   }
 }
@@ -82,14 +105,16 @@ export class TestService {
 
 ### Use Choose decorator
 
+It will call `lb.choose` every you use `this.server`.
+
 ```typescript
 import { Injectable } from '@nestjs/common';
 import { Choose, Server } from '@nestcloud/loadbalance';
 
 @Injectable()
 export class TestService {
-  @Choose('your-service-name')
-  private readonly yourServiceServer: Server;
+  @Choose('test-service')
+  private readonly server: Server;
 }
 ```
 
@@ -98,7 +123,7 @@ export class TestService {
 ```typescript
 import { Rule, Loadbalancer } from '@nestcloud/loadbalance';
 
-export class CustomLBRule implements Rule {
+export class CustomLoadbalanceRule implements Rule {
     private loadbalancer: Loadbalancer;
     
     init(loadbalancer: Loadbalancer) {
@@ -113,18 +138,14 @@ export class CustomLBRule implements Rule {
 ```
 
 ```typescript
-import { Module } from '@nestjs/common';
-import { LoadbalanceModule } from '@nestcloud/loadbalance';
-import { CustomLBRule } from './CustomLBRule';
-import { BOOT, SERVICE } from '@nestcloud/common';
+import { Injectable } from '@nestjs/common';
+import { UseRules } from '@nestcloud/loadbalance';
+import { CustomLoadbalanceRule } from './CustomLoadbalanceRule';
 
-@Module({
-  imports: [
-      /* ignore */
-      LoadbalanceModule.forRootAsync({inject: [BOOT, SERVICE], rules: [CustomLBRule]})
-  ],
-})
-export class AppModule {}
+@Injectable()
+@UseRules(CustomLoadbalanceRule)
+export class LoadbalanceRuleRegister {
+}
 ```
 
 ## API
@@ -138,7 +159,6 @@ Import loadbalance module.
 | field            | type            | description         |
 | :--------------- | :-------------- | :------------------ |
 | options.rule     | string          | global lb rule name |
-| options.rules    | Function<Rule>  | your custom rules   |
 | options.services | ServiceOptions  | set service rule    |
 
 #### static forRootAsync\(options\): DynamicModule
