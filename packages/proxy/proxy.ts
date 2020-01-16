@@ -1,10 +1,9 @@
 import {
     ForbiddenException,
-    Inject,
     Injectable,
     InternalServerErrorException,
     NotFoundException,
-    OnApplicationBootstrap,
+    OnModuleInit,
 } from '@nestjs/common';
 import * as HttpProxy from 'http-proxy';
 import { IProxy, ILoadbalance } from '@nestcloud/common';
@@ -15,19 +14,20 @@ import { Request } from './interfaces/request.interface';
 import { Response } from './interfaces/response.interface';
 import { ClientRequest, IncomingMessage } from 'http';
 import { ProxyErrorException } from './exceptions/proxy-error.exception';
-import { HEADER_TIMEOUT, PROXY_OPTIONS_PROVIDER } from './proxy.constants';
-import { ProxyOptions } from './interfaces/proxy-options.interface';
+import { HEADER_TIMEOUT } from './proxy.constants';
 import { ERROR_RESPONSE_FILTER, LOADBALANCE_FILTER } from './proxy.constants';
 import { ProxyFilterRegistry } from './proxy-filter.registry';
 import { ProxyRouteRegistry } from './proxy-route.registry';
+import { URL } from 'url';
+import { ProxyConfig } from './proxy.config';
 
 @Injectable()
-export class Proxy implements IProxy, OnApplicationBootstrap {
+export class Proxy implements IProxy, OnModuleInit {
     private proxy: HttpProxy;
     private lb: ILoadbalance;
 
     constructor(
-        @Inject(PROXY_OPTIONS_PROVIDER) private readonly options: ProxyOptions,
+        private readonly config: ProxyConfig,
         private readonly filterRegistry: ProxyFilterRegistry,
         private readonly routeRegistry: ProxyRouteRegistry,
     ) {
@@ -46,9 +46,17 @@ export class Proxy implements IProxy, OnApplicationBootstrap {
         }
     }
 
-    onApplicationBootstrap(): any {
+    onModuleInit(): any {
         this.initRoutes();
         this.initProxy();
+
+        this.config.on(() => {
+            if (this.proxy) {
+                this.proxy.close();
+            }
+            this.initRoutes();
+            this.initProxy();
+        });
     }
 
     public useLb(lb: ILoadbalance) {
@@ -56,7 +64,7 @@ export class Proxy implements IProxy, OnApplicationBootstrap {
     }
 
     private initRoutes() {
-        const routes: Route[] = this.options.routes;
+        const routes: Route[] = this.config.getRoutes();
         routes.forEach(route => {
             if (!route.filters) {
                 route.filters = [];
@@ -70,38 +78,38 @@ export class Proxy implements IProxy, OnApplicationBootstrap {
 
     private initProxy() {
         this.proxy = HttpProxy.createProxyServer(
-            Object.assign(this.options.extras || {
+            Object.assign(this.config.getExtras() || {
                 prependPath: true,
                 ignorePath: true,
             }),
         );
-        this.proxy.on('error', async (err: Error, req: Request, res: Response) => {
+        this.proxy.on('error', (err: Error, req: Request, res: Response) => {
             const filters = this.filterRegistry.getRouteFilters(get(req.proxy, 'id'));
             for (let i = 0; i < filters.length; i++) {
                 const [routeFilter, filter] = filters[i];
                 if (filter.error) {
                     req.proxy.parameters = routeFilter.parameters;
-                    await filter.error(err as ProxyErrorException, req, res);
+                    filter.error(err as ProxyErrorException, req, res);
                 }
             }
         });
-        this.proxy.on('proxyReq', async (proxyReq: ClientRequest, req: Request, res: Response) => {
+        this.proxy.on('proxyReq', (proxyReq: ClientRequest, req: Request, res: Response) => {
             const filters = this.filterRegistry.getRouteFilters(get(req.proxy, 'id'));
             for (let i = 0; i < filters.length; i++) {
                 const [routeFilter, filter] = filters[i];
                 if (filter.request) {
                     req.proxy.parameters = routeFilter.parameters;
-                    await filter.request(proxyReq, req, res);
+                    filter.request(proxyReq, req, res);
                 }
             }
         });
-        this.proxy.on('proxyRes', async (proxyRes: IncomingMessage, req: Request, res: Response) => {
+        this.proxy.on('proxyRes', (proxyRes: IncomingMessage, req: Request, res: Response) => {
             const filters = this.filterRegistry.getRouteFilters(get(req.proxy, 'id'));
             for (let i = 0; i < filters.length; i++) {
                 const [routeFilter, filter] = filters[i];
                 if (filter.response) {
                     req.proxy.parameters = routeFilter.parameters;
-                    await filter.response(proxyRes, req, res);
+                    filter.response(proxyRes, req, res);
                 }
             }
         });
@@ -114,7 +122,11 @@ export class Proxy implements IProxy, OnApplicationBootstrap {
         const timeout = req.headers[HEADER_TIMEOUT] || 1000 * 30;
         const proxyTimeout = req.headers[HEADER_TIMEOUT] || 1000 * 30;
         const target = route.uri + req.url;
+        const proxyOptions = route.extras || {};
+
+        req.headers.host = new URL(target).host;
         this.proxy.web(req, res, {
+            ...proxyOptions,
             target,
             timeout: Number(timeout),
             proxyTimeout: Number(proxyTimeout),
@@ -138,11 +150,15 @@ export class Proxy implements IProxy, OnApplicationBootstrap {
         };
         await this.processBeforeFilter(req, res);
 
-        const secure = get(this.options.extras, 'secure', false);
+        const secure = get(route.extras, 'secure', false);
         const target = `${secure ? 'https' : 'http'}://${server.address}:${server.port}${req.url}`;
         const timeout = req.headers[HEADER_TIMEOUT] || 1000 * 30;
         const proxyTimeout = req.headers[HEADER_TIMEOUT] || 1000 * 30;
+        const proxyOptions = route.extras || {};
+
+        req.headers.host = new URL(target).host;
         this.proxy.web(req, res, {
+            ...proxyOptions,
             target,
             prependPath: true,
             ignorePath: true,

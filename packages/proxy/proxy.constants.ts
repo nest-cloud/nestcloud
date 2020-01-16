@@ -1,5 +1,3 @@
-export const PROXY_OPTIONS_PROVIDER = 'PROXY_OPTIONS_PROVIDER';
-
 export const ERROR_RESPONSE_FILTER = 'ErrorResponseFilter';
 export const LOADBALANCE_FILTER = 'LoadbalanceFilter';
 export const REQUEST_HEADER_FILTER = 'RequestHeaderFilter';

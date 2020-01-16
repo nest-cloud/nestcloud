@@ -1,6 +1,9 @@
+import { ExtraOptions } from './extra-options.interface';
+
 export interface Route {
     id: string;
     uri: string;
+    extras?: ExtraOptions;
     filters?: RouteFilter[];
 }
 

@@ -27,7 +27,7 @@ $ npm install --save @nestcloud/proxy
 
 ## Notification
 
-You should not use body parser middleware when use this module or the post request will hang.
+Don't use the body parser middleware when use this module.
 
 ## Quick Start
 
@@ -36,33 +36,53 @@ You should not use body parser middleware when use this module or the post reque
 ```typescript
 import { Module } from '@nestjs/common';
 import { ProxyModule } from "@nestcloud/proxy";
-import { BOOT } from '@nestcloud/common';
 
 @Module({
-    imports: [
-        ProxyModule.forRootAsync({ inject: [BOOT] }),
-    ]
+  imports: [
+    ProxyModule.forRoot({
+      routes: [{
+        id: 'github',
+        uri: 'https://api.github.com',
+      }],
+    }),
+  ]
 })
 export class AppModule {
 }
 ```
 
-### Configurations
+#### Import With Config Module
+
+Except `@nestcloud/boot` module you can also use `@nestcloud/config` module too.
+
+app.module.ts:
+
+```typescript
+import { Module } from '@nestjs/common';
+import { BOOT } from "@nestcloud/common";
+import { BootModule } from "@nestcloud/boot";
+import { ProxyModule } from "@nestcloud/proxy";
+import { resolve } from 'path';
+
+@Module({
+  imports: [
+    BootModule.forRoot({
+      filePath: resolve(__dirname, 'config.yaml'),
+    }),
+    ProxyModule.forRootAsync({ inject: [BOOT] }),
+  ]
+})
+export class AppModule {
+}
+```
+
+config.yaml:
 
 ```yaml
 proxy:
   routes:
-    - id: user
-      uri: lb://nestcloud-user-service
-      filters:
-       - name: RequestHeaderFilter
-         paramters: 
-           request-id: 123
-       - name: ResponseHeaderFilter
-         parameters:
-           request-id: 456
-    - id: pay
-      uri: https://example.com/pay
+    - id: github
+      uri: https://api.github.com
 ```
 
 ## Usage
@@ -86,10 +106,45 @@ export class ProxyController {
 }
 ```
 
+Then visit http://localhost:{port}/proxy/github
+
 ### Filters
 
-There are `RequestHeaderFilter` and `ResponseHeaderFilter` internal filters.
-If you want to use your custom filter, please implement `Filter` interface.
+Proxy module have `RequestHeaderFilter` and `ResponseHeaderFilter` internal filters.
+
+If you want to use a custom filter, please implement `Filter` interface
+ 
+and then use `UseFilters` decorator import your custom filter.
+
+#### How To Use Filter
+
+```typescript
+import { Module } from '@nestjs/common';
+import { ProxyModule } from "@nestcloud/proxy";
+
+@Module({
+  imports: [
+    ProxyModule.forRoot({
+      routes: [{
+        id: 'github',
+        uri: 'https://api.github.com',
+        filters: [{
+          name: 'RequestHeaderFilter',
+          parameters: {
+            Authorization: 'Basic dGVzdDp0ZXN0',
+          },
+        }],
+      }],
+    }),
+  ]
+})
+export class AppModule {
+}
+```
+
+#### Custom Filter
+
+If you need custom a proxy filter, you need implement `Filter` interface:
 
 ```typescript
 import { ClientRequest, IncomingMessage } from 'http';
@@ -97,7 +152,7 @@ import { Filter, Request, Response, ProxyErrorException } from '@nestcloud/proxy
 
 class CustomFilter implements Filter {
     before(request: Request, response: Response): boolean | Promise<boolean> {
-        return undefined;
+        return true;
     }
 
     error(error: ProxyErrorException, request: Request, response: Response) {
@@ -111,23 +166,20 @@ class CustomFilter implements Filter {
 }
 ```
 
-```typescript
-import { Module } from '@nestjs/common';
-import { ProxyModule } from "@nestcloud/proxy";
-import { BOOT } from '@nestcloud/common';
-import { CustomFilter } from './proxy-filters/CustomFilter';
+And then, create a register class, use `UseFilters` to import your custom filter.
 
-@Module({
-    imports: [
-        ProxyModule.forRootAsync({ 
-          inject: [BOOT],
-          filters: [CustomFilter],
-        }),
-    ],
-})
-export class AppModule {
+```typescript
+import { Injectable } from '@nestjs/common';
+import { UseFilters } from "@nestcloud/proxy";
+import { CustomFilter } from './filters/CustomFilter'
+
+@Injectable()
+@UseFilters(CustomFilter)
+export class ProxyFilterRegister {
 }
 ```
+
+Now you can specific your custom filter by filter classname.
 
 ## API
 
@@ -141,8 +193,7 @@ Register proxy module.
 | :-------------- | :----------- | :----------------------------------- |
 | options.inject  | string[]     | BOOT CONFIG LOADBALANCE              |
 | options.routes  | Route[]      | routes of proxy                      |
-| options.filters | Function[]   | your custom filters                  |
-| proxy           | ExtraOptions | please see http-proxy doc for detail |
+| options.extras  | ExtraOptions | please see http-proxy doc for detail |
 
 ### class Proxy
 

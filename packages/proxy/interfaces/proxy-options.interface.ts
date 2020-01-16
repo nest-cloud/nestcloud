@@ -1,10 +1,11 @@
 import { Route } from './route.interface';
 import { ExtraOptions } from './extra-options.interface';
-import { Filter } from './filter.interface';
 
 export interface ProxyOptions {
+    /**
+     * One or many of these: BOOT, CONFIG, LOADBALANCE
+     */
     inject?: string[];
     routes?: Route[];
     extras?: ExtraOptions;
-    filters?: Function | Filter;
 }
