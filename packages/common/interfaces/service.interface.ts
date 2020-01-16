@@ -1,14 +1,14 @@
-import { IServiceNode } from './service-node.interface';
+import { IServiceServer } from './service-server.interface';
 import { IComponent } from './component.interface';
 
 export interface IService extends IComponent {
-    watch(service: string, callback: (services: IServiceNode[]) => void): void;
+    watch(service: string, callback: (services: IServiceServer[]) => void): void;
 
     watchServiceList(callback: (service: string[]) => void): void;
 
-    getServices(): { [service: string]: IServiceNode[] };
+    getServices(): { [service: string]: IServiceServer[] };
 
     getServiceNames(): string[];
 
-    getServiceNodes(service: string, passing?: boolean): IServiceNode[];
+    getServiceServers(service: string, passing?: boolean): IServiceServer[];
 }

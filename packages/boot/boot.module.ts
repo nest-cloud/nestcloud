@@ -2,7 +2,7 @@ import { Module, DynamicModule, Global } from '@nestjs/common';
 import { BootOptions } from './interfaces/boot-options.interface';
 import { Boot } from './boot.class';
 import { BootFileLoader } from './boot-file.loader';
-import { BOOT } from '../common';
+import { BOOT } from '@nestcloud/common';
 import { BootStore } from './boot.store';
 import { BOOT_OPTIONS_PROVIDER } from './boot.constants';
 import { DiscoveryModule } from '@nestjs/core';

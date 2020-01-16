@@ -21,4 +21,8 @@ export class Boot implements IBoot {
     get<T extends any>(path?: string, defaults?: T): T {
         return this.store.get<T>(path, defaults);
     }
+
+    public watch<T extends any>(path: string, callback: (data: T) => void = () => void 0) {
+        this.store.watch(path, callback);
+    }
 }

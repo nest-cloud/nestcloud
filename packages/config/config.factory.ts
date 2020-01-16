@@ -2,7 +2,7 @@ import { ConsulConfig } from './config.consul';
 import { EtcdConfig } from './config.etcd';
 import { KubernetesConfig } from './config.kubernetes';
 import { NO_DEPS_MODULE_FOUND } from './config.messages';
-import { CONSUL, ETCD, KUBERNETES } from '../common';
+import { CONSUL, ETCD, KUBERNETES } from '@nestcloud/common';
 import { ConfigOptions } from './interfaces/config-options.interface';
 import { ConfigStore } from './config.store';
 

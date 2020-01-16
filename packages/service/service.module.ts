@@ -13,6 +13,10 @@ import { ServiceStore } from './service.store';
 export class ServiceModule {
     private static CONFIG_PREFIX = 'service';
 
+    public static forRoot(options: ServiceOptions): DynamicModule {
+        return this.forRootAsync(options);
+    }
+
     public static forRootAsync(options: ServiceOptions = {}): DynamicModule {
         const inject = options.inject || [];
         const serviceOptionsProvider = {

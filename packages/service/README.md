@@ -22,15 +22,14 @@ A NestCloud component for service registration and service discovery.
 ## Installation
 
 ```bash
-# consul backend
-$ npm install @nestcloud/service @nestcloud/consul consul --save
-# etcd backend
-$ npm install @nestcloud/service @nestcloud/etcd etcd3 --save
+$ npm install @nestcloud/service --save
 ```
 
 ## Quick Start
 
 ### Import Module
+
+This module dependency other modules, you need import `@nestcloud/consul` or `@nestcloud/etcd` module before import it.
 
 ```typescript
 import { Module } from '@nestjs/common';
@@ -87,8 +86,8 @@ export class TestService {
   ) {
   }
 
-  getServiceNodes() {
-      const nodes = this.service.getServiceNodes('user-service', {passing: true});
+  getServiceServers() {
+      const servers = this.service.getServiceServers('user-service', {passing: true});
       this.service.watch('user-service', nodes => {
           console.log(nodes);
       });
@@ -180,7 +179,7 @@ Import nest consul service module.
 
 ### class Service
 
-#### getServices\(\): ServiceNode[]
+#### getServices\(\): ServiceServer[]
 
 Get all services with nodes.
 
@@ -188,7 +187,7 @@ Get all services with nodes.
 
 Get all service names
 
-#### watch(service: string, callback: (nodes: IServiceNode[]) => void): void
+#### watch(service: string, callback: (nodes: IServiceServer[]) => void): void
 
 watch service nodes change
 

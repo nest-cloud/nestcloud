@@ -5,9 +5,8 @@ import { getRequestParams } from './utils/params.util';
 import { HTTP_OPTIONS_PROVIDER, RESPONSE, RESPONSE_BODY, RESPONSE_HEADER } from './http.constants';
 import { HttpOptions } from './interfaces/http-options.interface';
 import uriParams from 'uri-params';
-import { Scanner } from '@nestcloud/common';
+import { Scanner, ILoadbalance, LOADBALANCE } from '@nestcloud/common';
 import { HttpClient } from './http.client';
-import { ILoadbalance, LOADBALANCE } from '../common';
 import { Interceptor } from './interfaces/interceptor.interface';
 
 interface DecoratorRequest {

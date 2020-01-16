@@ -1,8 +1,8 @@
-import { ServiceNode } from '../service.node';
-import { IServiceNode, CRITICAL, PASSING, WARNING } from '@nestcloud/common';
+import { ServiceServer } from '../service.server';
+import { IServiceServer, CRITICAL, PASSING, WARNING } from '@nestcloud/common';
 import { get } from 'lodash';
 
-export function handleConsulNodes(nodes): IServiceNode[] {
+export function handleConsulNodes(nodes): IServiceServer[] {
     return nodes.map(node => {
         let status = CRITICAL;
         if (node.Checks.length) {
@@ -21,7 +21,7 @@ export function handleConsulNodes(nodes): IServiceNode[] {
 
         return { ...node, status };
     }).map(node => {
-        const serviceNode = new ServiceNode(
+        const serviceNode = new ServiceServer(
             get(node, 'Service.Address', '127.0.0.1'),
             get(node, 'Service.Port'),
         );

@@ -3,7 +3,7 @@ import md5encode from 'blueimp-md5';
 import { IConsul } from '@nestcloud/common';
 import { get } from 'lodash';
 
-import { IService, sleep, IServiceNode } from '@nestcloud/common';
+import { IService, sleep, IServiceServer } from '@nestcloud/common';
 import { ServiceOptions } from './interfaces/service-options.interface';
 import { ServiceCheck } from './interfaces/service-check.interface';
 import { getIPAddress } from './utils/os.util';
@@ -77,7 +77,7 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IService {
         return this;
     }
 
-    watch(service: string, callback: (services: IServiceNode[]) => void) {
+    watch(service: string, callback: (services: IServiceServer[]) => void) {
         this.store.watch(service, callback);
     }
 
@@ -85,7 +85,7 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IService {
         this.store.watchServiceList(callback);
     }
 
-    getServices(): { [service: string]: IServiceNode[] } {
+    getServices(): { [service: string]: IServiceServer[] } {
         return this.store.getServices();
     }
 
@@ -93,8 +93,8 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IService {
         return this.store.getServiceNames();
     }
 
-    getServiceNodes(service: string, passing?: boolean): IServiceNode[] {
-        return this.store.getServiceNodes(service, passing);
+    getServiceServers(service: string, passing?: boolean): IServiceServer[] {
+        return this.store.getServiceServers(service, passing);
     }
 
     async onModuleInit(): Promise<any> {

@@ -4,7 +4,7 @@ import { DynamicModule, Global, Module } from '@nestjs/common';
 import { CONFIG_OPTIONS_PROVIDER } from './config.constants';
 import { ConfigFactory } from './config.factory';
 import { DiscoveryModule } from '@nestjs/core';
-import { IConfig } from '../common';
+import { IConfig } from '@nestcloud/common';
 import { NO_DEPS_MODULE_FOUND } from './config.messages';
 import { ConfigOptions } from './interfaces/config-options.interface';
 import { ConfigStore } from './config.store';

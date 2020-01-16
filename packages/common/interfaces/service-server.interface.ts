@@ -1,4 +1,4 @@
-export interface IServiceNode {
+export interface IServiceServer {
     id: string;
     service: string;
     name: string;

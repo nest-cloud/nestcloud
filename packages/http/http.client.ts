@@ -5,7 +5,7 @@ import {
     InternalServerErrorException,
     ServiceUnavailableException,
 } from '@nestjs/common';
-import { ILoadbalance } from '../common';
+import { ILoadbalance } from '@nestcloud/common';
 import { Interceptor } from './interfaces/interceptor.interface';
 import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';

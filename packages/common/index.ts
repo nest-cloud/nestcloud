@@ -17,7 +17,7 @@ export * from './interfaces/loadbalance.interface';
 export * from './interfaces/loadbalancer.interface';
 export * from './interfaces/server.interface';
 export * from './interfaces/server-state.interface';
-export * from './interfaces/service-node.interface';
+export * from './interfaces/service-server.interface';
 export * from './interfaces/proxy.interface';
 export * from './interfaces/consul.interface';
 export * from './interfaces/brakes-config.interface';

@@ -1,6 +1,6 @@
-import { IServiceNode } from '@nestcloud/common';
+import { IServiceServer } from '@nestcloud/common';
 
-export class ServiceNode implements IServiceNode {
+export class ServiceServer implements IServiceServer {
     id: string;
     service: string;
     name: string;

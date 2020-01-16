@@ -1,6 +1,6 @@
 import * as Consul from 'consul';
 import { intersection } from 'lodash';
-import { IServiceNode, PASSING } from '@nestcloud/common';
+import { IServiceServer, PASSING } from '@nestcloud/common';
 import { handleConsulNodes } from './utils/service.util';
 import { Watcher } from './service-watcher.consul';
 import { toList, toValueList } from './utils/array.util';
@@ -10,8 +10,8 @@ export class ServiceStore {
     private watchers = {};
     private readonly WATCH_TIMEOUT = 305000;
 
-    private readonly services: { [service: string]: IServiceNode[] } = {};
-    private readonly serviceCallbackMaps: Map<string, ((nodes: IServiceNode[]) => void)[]> = new Map();
+    private readonly services: { [service: string]: IServiceServer[] } = {};
+    private readonly serviceCallbackMaps: Map<string, ((nodes: IServiceServer[]) => void)[]> = new Map();
     private readonly servicesCallbacks: ((services: string[]) => void)[] = [];
 
     constructor(
@@ -32,7 +32,7 @@ export class ServiceStore {
         this.createServicesWatcher();
     }
 
-    public watch(service: string, callback: (nodes: IServiceNode[]) => void) {
+    public watch(service: string, callback: (nodes: IServiceServer[]) => void) {
         const callbacks = this.serviceCallbackMaps.get(service);
         if (!callbacks) {
             this.serviceCallbackMaps.set(service, [callback]);
@@ -46,7 +46,7 @@ export class ServiceStore {
         this.servicesCallbacks.push(callback);
     }
 
-    public getServices(): { [service: string]: IServiceNode[] } {
+    public getServices(): { [service: string]: IServiceServer[] } {
         return this.services;
     }
 
@@ -60,7 +60,7 @@ export class ServiceStore {
         return services;
     }
 
-    public getServiceNodes(service: string, passing?: boolean): IServiceNode[] {
+    public getServiceServers(service: string, passing?: boolean): IServiceServer[] {
         const nodes = this.services[service] || [];
         if (passing) {
             return nodes.filter(node => node.status === PASSING);
@@ -68,7 +68,7 @@ export class ServiceStore {
         return nodes;
     }
 
-    private setNodes(service: string, nodes: IServiceNode[]) {
+    private setNodes(service: string, nodes: IServiceServer[]) {
         this.services[service] = nodes;
         if (this.serviceCallbackMaps.has(service)) {
             const callbacks = this.serviceCallbackMaps.get(service);
@@ -86,12 +86,12 @@ export class ServiceStore {
                 const nodes = await this.consul.health.service(service);
                 const serviceNodes = handleConsulNodes(nodes);
                 this.setNodes(service, serviceNodes);
-                this.createServiceNodesWatcher(service);
+                this.createServiceServersWatcher(service);
             }),
         );
     }
 
-    private createServiceNodesWatcher(service: string) {
+    private createServiceServersWatcher(service: string) {
         if (this.watchers[service]) {
             this.watchers[service].clear();
         }

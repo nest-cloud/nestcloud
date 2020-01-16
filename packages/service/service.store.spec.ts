@@ -1,7 +1,7 @@
 import { ServiceStore } from './service.store';
 import * as Consul from 'consul';
 import { expect } from 'chai';
-import { IServiceNode } from '@nestcloud/common';
+import { IServiceServer } from '@nestcloud/common';
 
 describe('Consul Service Store', () => {
     let consul: Consul;
@@ -34,8 +34,8 @@ describe('Consul Service Store', () => {
         expect(nodes.length).equal(1);
     });
 
-    it(`Store.getServiceNodes()`, () => {
-        const nodes = store.getServiceNodes('my-consul-service');
+    it(`Store.getServiceServers()`, () => {
+        const nodes = store.getServiceServers('my-consul-service');
         expect(nodes.length).equal(1);
     });
 
@@ -61,8 +61,8 @@ describe('Consul Service Store', () => {
     });
 
     it(`Store.watch()`, async () => {
-        const nodes: IServiceNode[] = await new Promise(resolve => {
-            store.watch('my-consul-service-3', (nodes: IServiceNode[]) => {
+        const nodes: IServiceServer[] = await new Promise(resolve => {
+            store.watch('my-consul-service-3', (nodes: IServiceServer[]) => {
                 resolve(nodes);
             });
             consul.agent.service.register({

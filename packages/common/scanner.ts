@@ -87,7 +87,10 @@ export class Scanner implements OnModuleInit {
         return '';
     }
 
-    public findInstance<T extends Record<string, any>>(context: string, metaTypeOrName: Function | string): InstanceWrapper | undefined {
+    public findInjectableInstance<T extends Record<string, any>>(
+        context: string,
+        metaTypeOrName: Function | string,
+    ): InstanceWrapper | undefined {
         const collection = this.container.getModules();
         const module = collection.get(context);
         if (!module) {
@@ -95,6 +98,19 @@ export class Scanner implements OnModuleInit {
         }
         const injectables = module.injectables;
         return injectables.get(typeof metaTypeOrName === 'string' ? metaTypeOrName : metaTypeOrName.name);
+    }
+
+    public findProviderInstance<T extends Record<string, any>>(
+        context: string,
+        metaTypeOrName: Function | string,
+    ): InstanceWrapper | undefined {
+        const collection = this.container.getModules();
+        const module = collection.get(context);
+        if (!module) {
+            return undefined;
+        }
+        const providers = module.providers;
+        return providers.get(typeof metaTypeOrName === 'string' ? metaTypeOrName : metaTypeOrName.name);
     }
 
     public findProviderByClassName(module: Module, className: string): boolean {

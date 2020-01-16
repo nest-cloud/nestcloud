@@ -1,9 +1,9 @@
 import { get } from 'lodash';
-import { IService, IServiceNode, IEtcd, sleep } from '@nestcloud/common';
+import { IService, IServiceServer, IEtcd, sleep } from '@nestcloud/common';
 import { ServiceOptions } from './interfaces/service-options.interface';
 import { Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import * as YAML from 'yamljs';
-import { ServiceNode } from './service.node';
+import { ServiceServer } from './service.server';
 import { getIPAddress } from './utils/os.util';
 import { Watcher } from 'etcd3/lib/src/watch';
 
@@ -12,10 +12,10 @@ export class EtcdService implements IService, OnModuleInit, OnModuleDestroy {
     private readonly namespace = 'nestcloud-service/';
     private readonly logger = new Logger(EtcdService.name);
 
-    private services: { [p: string]: IServiceNode[] } = {};
+    private services: { [p: string]: IServiceServer[] } = {};
 
-    private readonly self: IServiceNode;
-    private readonly serviceCallbackMaps: Map<string, ((nodes: IServiceNode[]) => void)[]> = new Map();
+    private readonly self: IServiceServer;
+    private readonly serviceCallbackMaps: Map<string, ((nodes: IServiceServer[]) => void)[]> = new Map();
     private readonly servicesCallbacks: ((services: string[]) => void)[] = [];
 
     private watcher: Watcher;
@@ -27,7 +27,7 @@ export class EtcdService implements IService, OnModuleInit, OnModuleDestroy {
     ) {
         const address = this.options.discoveryHost || getIPAddress();
         const port = this.options.port;
-        const serviceNode = new ServiceNode(address, port + '');
+        const serviceNode = new ServiceServer(address, port + '');
         serviceNode.tags = this.options.tags || [];
         if (this.options.name) {
             serviceNode.name = this.options.name;
@@ -59,15 +59,15 @@ export class EtcdService implements IService, OnModuleInit, OnModuleDestroy {
         return names;
     }
 
-    public getServiceNodes(service: string, passing?: boolean): IServiceNode[] {
+    public getServiceServers(service: string, passing?: boolean): IServiceServer[] {
         return this.services[service];
     }
 
-    public getServices(): { [p: string]: IServiceNode[] } {
+    public getServices(): { [p: string]: IServiceServer[] } {
         return this.services;
     }
 
-    public watch(service: string, callback: (services: IServiceNode[]) => void): void {
+    public watch(service: string, callback: (services: IServiceServer[]) => void): void {
         const callbacks = this.serviceCallbackMaps.get(service) || [];
         callbacks.push(callback);
         this.serviceCallbackMaps.set(service, callbacks);

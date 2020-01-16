@@ -9,6 +9,7 @@ export const PROXY = 'PROXY';
 export const HTTP = 'HTTP';
 export const COMMON = 'COMMON';
 export const GRPC = 'GRPC';
+export const SCHEDULE = 'SCHEDULE';
 export const RBAC = 'RBAC';
 export const KUBERNETES = 'KUBERNETES';
 export const MEMCACHED = 'MEMCACHED';
