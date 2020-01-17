@@ -4,10 +4,11 @@ import { ParamsMetadata } from './interfaces/params-metadata.interface';
 import { getRequestParams } from './utils/params.util';
 import { HTTP_OPTIONS_PROVIDER, RESPONSE, RESPONSE_BODY, RESPONSE_HEADER } from './http.constants';
 import { HttpOptions } from './interfaces/http-options.interface';
-import uriParams from 'uri-params';
-import { Scanner, ILoadbalance, LOADBALANCE } from '@nestcloud/common';
+import uriParams = require('uri-params');
+import { Scanner, ILoadbalance, LOADBALANCE, BRAKES } from '@nestcloud/common';
 import { HttpClient } from './http.client';
 import { Interceptor } from './interfaces/interceptor.interface';
+import { Brakes } from '@nestcloud/brakes';
 
 interface DecoratorRequest {
     instance: Function;
@@ -17,8 +18,8 @@ interface DecoratorRequest {
     responseConfig: string;
     paramsMetadata: ParamsMetadata;
     serviceName: string;
-    brakesName: string;
-    interceptorTargets: Function[];
+    FallbackRef: Function;
+    InterceptorRefs: Function[];
 }
 
 @Injectable()
@@ -39,8 +40,8 @@ export class HttpOrchestrator implements OnApplicationBootstrap {
         responseConfig: string,
         paramsMetadata: ParamsMetadata,
         serviceName: string,
-        brakesName: string,
-        interceptorTargets: Function[],
+        FallbackRef: Function,
+        InterceptorRefs: Function[],
     ) {
         const key = `${instance.constructor.name}__${method}`;
         this.decoratorRequests.set(key, {
@@ -51,8 +52,8 @@ export class HttpOrchestrator implements OnApplicationBootstrap {
             responseConfig,
             paramsMetadata,
             serviceName,
-            brakesName,
-            interceptorTargets,
+            FallbackRef,
+            InterceptorRefs,
         });
     }
 
@@ -62,6 +63,7 @@ export class HttpOrchestrator implements OnApplicationBootstrap {
 
     private async mountDecoratorRequests() {
         const lb: ILoadbalance = this.scanner.findProviderByName(LOADBALANCE);
+        const brakes: Brakes = this.scanner.findProviderByName(BRAKES);
         for (const item of this.decoratorRequests.values()) {
             const {
                 instance,
@@ -70,20 +72,22 @@ export class HttpOrchestrator implements OnApplicationBootstrap {
                 responseConfig,
                 paramsMetadata,
                 serviceName,
-                brakesName,
-                interceptorTargets,
+                FallbackRef,
+                InterceptorRefs,
             } = item;
             const interceptors: Interceptor[] = [];
-            interceptorTargets.forEach(target => {
-                const interceptor: Interceptor = this.scanner.findInjectable(target);
+            InterceptorRefs.forEach(ref => {
+                const interceptor: Interceptor = this.scanner.findInjectable(ref);
                 if (interceptor) {
                     interceptors.push(interceptor);
                 }
             });
 
+            const fallback = this.scanner.findInjectable(FallbackRef);
             const http = this.http.create({ service: serviceName });
             http.useLb(lb);
             http.useInterceptors(...interceptors);
+            http.useBrakes(brakes, fallback);
 
             instance[method] = async (...params: any[]) => {
                 const requestParams = getRequestParams(paramsMetadata, params);

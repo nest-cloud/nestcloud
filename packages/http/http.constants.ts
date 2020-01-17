@@ -1,7 +1,3 @@
-export const HTTP_CLIENT = 'HTTP_CLIENT';
-export const HTTP_LOADBALANCE_CLIENT = 'HTTP_LOADBALANCE_CLIENT';
-
-export const SERVICE = 'SERVICE';
 export const INTERCEPTOR_METADATA = 'INTERCEPTOR_METADATA';
 
 export const PATH_METADATA = 'PATH';
@@ -22,14 +18,6 @@ export const BLOB = 'blob';
 export const DOCUMENT = 'document';
 export const TEXT = 'text';
 export const STREAM = 'stream';
-
-export const GLOBAL_BRAKES_CONFIG = 'GLOBAL_BRAKES_CONFIG';
-export const BRAKES = 'BRAKES';
-export const BRAKES_CIRCUIT = 'BRAKES_CIRCUIT';
-export const BRAKES_HEALTH_CHECK_METADATA = 'BRAKES_HEALTH_CHECK_METADATA';
-export const BRAKES_FALLBACK_METADATA = 'BRAKES_FALLBACK_METADATA';
-
-export const GUARDS_METADATA = '__guards__';
 
 export const HTTP_OPTIONS_PROVIDER = 'HTTP_OPTIONS_PROVIDER';
 export const AXIOS_INSTANCE_PROVIDER = 'AXIOS_INSTANCE_PROVIDER';

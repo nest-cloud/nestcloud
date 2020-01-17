@@ -41,11 +41,6 @@ export class LoadbalanceConfig implements OnModuleInit {
         if (this.boot) {
             const bootOptions = this.boot.get<LoadbalanceOptions>(this.CONFIG_PREFIX, {});
             this.options = Object.assign(this.opts, this.options, bootOptions);
-
-            this.boot.watch(this.CONFIG_PREFIX, bootOptions => {
-                this.options = Object.assign(this.opts, this.options, bootOptions);
-                this.ref && this.ref(this.options);
-            });
         }
         if (this.config) {
             const configOptions = this.config.get<LoadbalanceOptions>(this.CONFIG_PREFIX, {});

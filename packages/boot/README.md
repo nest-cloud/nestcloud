@@ -129,7 +129,6 @@ Register boot module.
 | field            | type    | description              |
 | :--------------- | :------ | :----------------------- |
 | options.filePath | string  | the config file path     |
-| options.watch    | boolean | watch file change or not |
 
 ### class Boot
 

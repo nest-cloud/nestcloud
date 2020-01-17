@@ -20,7 +20,6 @@ export * from './interfaces/server-state.interface';
 export * from './interfaces/service-server.interface';
 export * from './interfaces/proxy.interface';
 export * from './interfaces/consul.interface';
-export * from './interfaces/brakes-config.interface';
 export * from './interfaces/kubernetes.interface';
 export * from './interfaces/etcd.interface';
 export * from './interfaces/key-value-options.interface';

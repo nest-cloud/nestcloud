@@ -3,8 +3,6 @@ export * from './decorators/response.decorator';
 export * from './decorators/config.decorator';
 export * from './decorators/params.decorator';
 export * from './decorators/use-interceptor.decorator';
-export * from './decorators/use-health-check.decorator';
-export * from './decorators/use-fallback.decorator';
 export * from './http.module';
 export * from './http.client';
 export * from './hystrix.controller';

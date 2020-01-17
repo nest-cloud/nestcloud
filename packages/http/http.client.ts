@@ -12,21 +12,24 @@ import axios from 'axios';
 import * as LbModule from '@nestcloud/loadbalance';
 import { HttpOptions } from './interfaces/http-options.interface';
 import { AXIOS_INSTANCE_PROVIDER, HTTP_OPTIONS_PROVIDER } from './http.constants';
+import { Brakes, Fallback } from '@nestcloud/brakes';
 
 @Injectable()
 export class HttpClient {
     private lb: ILoadbalance;
+    private brakes: Brakes;
+    private fallback: Fallback;
     private interceptors: Interceptor[];
-    private service: string;
+    private readonly service: string;
 
     constructor(
         @Inject(AXIOS_INSTANCE_PROVIDER) private readonly http: AxiosInstance,
         @Inject(HTTP_OPTIONS_PROVIDER) private readonly options: HttpOptions,
     ) {
+        this.service = options.service;
     }
 
     create(options: HttpOptions = {}) {
-        this.service = options.service;
         const globalAxiosOptions = this.options || {};
         return new HttpClient(
             axios.create(Object.assign(globalAxiosOptions, options)),
@@ -43,6 +46,11 @@ export class HttpClient {
         this.interceptors = interceptors;
         this.registerInterceptors();
         return this;
+    }
+
+    useBrakes(brakes: Brakes, fallback?: Fallback) {
+        this.brakes = brakes;
+        this.fallback = fallback;
     }
 
     public async get(url: string, config: AxiosRequestConfig = {}): Promise<AxiosResponse | any> {
@@ -70,6 +78,36 @@ export class HttpClient {
     }
 
     public async request(options: AxiosRequestConfig): Promise<AxiosResponse | any> {
+        if (this.brakes) {
+            return this.requestWithBrakes(options);
+        }
+
+        return this.doRequest(options);
+    }
+
+    private async requestWithBrakes(options: AxiosRequestConfig): Promise<AxiosResponse | any> {
+        let e: HttpException = null;
+        const ref = this.brakes.slave(this.service, this.fallback, async () => {
+            try {
+                return await this.doRequest(options);
+            } catch (error) {
+                e = error;
+                if (error instanceof HttpException) {
+                    return;
+                }
+
+                throw e;
+            }
+        });
+        const response = await ref(options);
+
+        if (e) {
+            throw e;
+        }
+        return response;
+    }
+
+    public async doRequest(options: AxiosRequestConfig): Promise<AxiosResponse | any> {
         let response: AxiosResponse;
         if (this.service && this.lb) {
             const module: typeof LbModule = require('@nestcloud/loadbalance');

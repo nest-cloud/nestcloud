@@ -44,8 +44,8 @@ export class HttpExplorer implements OnModuleInit {
         const responseConfig = this.metadataAccessor.getResponseConfig(instance, target);
         const paramsMetadata = this.metadataAccessor.getParams(instance, key);
         const serviceName = this.metadataAccessor.getService(instance, target);
-        const brakesName = this.metadataAccessor.getBrakesName(instance, target);
-        const InterceptorTargets = this.metadataAccessor.getInterceptorTargets(instance, target) || [];
+        const InterceptorRefs = this.metadataAccessor.getInterceptorRefs(instance, target) || [];
+        const FallbackRef = this.metadataAccessor.getFallbackRef(instance, target);
 
         if (options.url) {
             this.httpOrchestrator.addDecoratorRequests(
@@ -55,8 +55,8 @@ export class HttpExplorer implements OnModuleInit {
                 responseConfig,
                 paramsMetadata,
                 serviceName,
-                brakesName,
-                InterceptorTargets,
+                FallbackRef,
+                InterceptorRefs,
             );
         }
     }

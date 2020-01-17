@@ -24,11 +24,11 @@ export class BootExplorer implements OnModuleInit {
             if (!instance) {
                 return;
             }
-            this.lookupWatchers(instance);
+            this.lookupBootValues(instance);
         });
     }
 
-    lookupWatchers(instance: Function) {
+    lookupBootValues(instance: Function) {
         const name = this.metadataAccessor.getBootValueName(instance);
         const defaults = this.metadataAccessor.getBootValueDefaults(instance);
         const property = this.metadataAccessor.getBootValueProperty(instance);

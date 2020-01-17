@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import {
-    BRAKES, INTERCEPTOR_METADATA,
+    INTERCEPTOR_METADATA,
     METHOD_METADATA,
     OPTIONS_METADATA,
     PATH_METADATA,
@@ -8,7 +8,7 @@ import {
     RESPONSE,
     RESPONSE_HEADER,
 } from './http.constants';
-import { getMetadata } from '@nestcloud/common';
+import { getMetadata, BRAKES_METADATA } from '@nestcloud/common';
 import { Injectable } from '@nestjs/common';
 import { ParamsMetadata } from './interfaces/params-metadata.interface';
 import { LOADBALANCE_SERVICE } from '@nestcloud/common';
@@ -43,11 +43,11 @@ export class HttpMetadataAccessor {
         return getMetadata<string>(LOADBALANCE_SERVICE, target, instance.constructor);
     }
 
-    getBrakesName(instance: Function, target: Function): string | undefined {
-        return getMetadata(BRAKES, target, instance.constructor);
+    getInterceptorRefs(instance: Function, target: Function): Function[] | undefined {
+        return getMetadata<Function[]>(INTERCEPTOR_METADATA, target, instance.constructor);
     }
 
-    getInterceptorTargets(instance: Function, target: Function): Function[] | undefined {
-        return getMetadata<Function[]>(INTERCEPTOR_METADATA, target, instance.constructor);
+    getFallbackRef(instance: Function, target: Function): Function | undefined {
+        return getMetadata<Function>(BRAKES_METADATA, target, instance.constructor);
     }
 }

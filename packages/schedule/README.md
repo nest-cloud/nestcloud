@@ -144,7 +144,7 @@ export class TasksService implements OnModuleInit {
 
 ### Distributed Support
 
-Now dynamic job is not support distributed.
+Dynamic job is not support distributed locker now.
 
 1. Implements `Locker` interface
 
@@ -193,13 +193,13 @@ export class TasksService {
 
 ### class ScheduleModule
 
-#### static register\(\): DynamicModule
+#### static forRoot\(\): DynamicModule
 
-Register schedule module.
+Import schedule module.
 
 ### class Schedule
 
-#### createTimeoutJob\(methodRef: Function, timeout: number, options: TimeoutOptions = {}\)
+#### createTimeoutJob\(methodRef: Function, timeout: number, options?: TimeoutOptions\)
 
 Dynamic create a timeout job.
 
@@ -209,7 +209,7 @@ Dynamic create a timeout job.
 | timeout   | number   | true     | milliseconds   |
 | options   |          | false    | see decorators |
 
-#### createIntervalJob\(methodRef: Function, timeout: number, options: IntervalOptions = {}\)
+#### createIntervalJob\(methodRef: Function, timeout: number, options?: IntervalOptions\)
 
 Dynamic create a interval job.
 
@@ -219,7 +219,7 @@ Dynamic create a interval job.
 | timeout   | number   | true     | milliseconds   |
 | options   |          | false    | see decorators |
 
-#### createCronJob\(rule: string | number | Date | CronObject | CronObjLiteral, methodRef, options: CronOptions = {}\)
+#### createCronJob\(rule: string | number | Date | CronObject | CronObjLiteral, methodRef, options?: CronOptions\)
 
 Dynamic create a cron job.
 
@@ -301,7 +301,7 @@ Inject Schedule instance
 
 ### UseLocker(locker: Locker | Function): MethodDecorator
 
-Set a locker for this job.
+Set a distributed locker for job.
 
 ## Stay in touch
 

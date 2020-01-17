@@ -1,5 +1,5 @@
 import { defaultsDeep } from 'lodash';
-import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as YAML from 'yamljs';
@@ -7,9 +7,8 @@ import { BOOT_OPTIONS_PROVIDER } from './boot.constants';
 import { BootOptions } from './interfaces/boot-options.interface';
 
 @Injectable()
-export class BootFileLoader implements OnModuleDestroy {
+export class BootFileLoader {
     private readonly files: string[];
-    private readonly watchers: fs.FSWatcher[] = [];
 
     constructor(
         @Inject(BOOT_OPTIONS_PROVIDER) private readonly options: BootOptions,
@@ -44,21 +43,6 @@ export class BootFileLoader implements OnModuleDestroy {
             }
         }
         return config;
-    }
-
-    public watch(ref: Function) {
-        this.files.forEach(file => {
-            const watcher = fs.watch(file, { encoding: 'buffer' }, (eventType, filename) => {
-                if (filename) {
-                    ref(this.load());
-                }
-            });
-            this.watchers.push(watcher);
-        });
-    }
-
-    public onModuleDestroy(): any {
-        this.watchers.forEach(watcher => watcher.close());
     }
 
     private getFilesPath(): string[] {

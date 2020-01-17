@@ -58,9 +58,9 @@ export interface BrakesOptions {
      */
     healthCheckInterval?: number;
 
-    event?: (name: string, ...params) => void;
-
-    healthCheck?: boolean;
-
     timeout?: number;
+}
+
+export interface AsyncBrakesOptions {
+    inject?: string[];
 }

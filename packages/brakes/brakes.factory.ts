@@ -1,42 +1,41 @@
-import * as Brakes from 'brakes';
-import { IBrakesConfig } from '@nestcloud/common';
-import { NotFoundBrakesException } from './exceptions/not-found-brakes.exception';
-import { HttpException } from '@nestjs/common';
+import * as BrakesClass from 'brakes';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { BrakesRegistry } from './brakes.registry';
+import { BrakesOptions } from './interfaces/brakes-options.interface';
+import { BRAKES_OPTIONS_PROVIDER } from './brakes.constants';
+import { IBrakes } from './interfaces/brakes.interface';
 
+@Injectable()
 export class BrakesFactory {
-    private static brakesMap = new Map<string, Brakes>();
+    private readonly logger = new Logger(BrakesFactory.name);
 
-    static isInit(service: string): boolean {
-        return this.brakesMap.has(service);
+    constructor(
+        private readonly brakesRegistry: BrakesRegistry,
+        @Inject(BRAKES_OPTIONS_PROVIDER) private readonly options: BrakesOptions,
+    ) {
     }
 
-    static initBrakes(service: string, config: IBrakesConfig): Brakes {
-        const brakes = new Brakes(config);
-        this.brakesMap.set(service, brakes);
-        return brakes;
-    }
+    create(name: string) {
+        const options = Object.assign(this.options, { isPromise: true });
+        const brakesInstance: IBrakes = new BrakesClass(options);
+        this.brakesRegistry.addBrakes(name, brakesInstance);
 
-    static async exec(service: string, call: Function, ...params) {
-        const brakes = this.brakesMap.get(service);
-        if (!brakes) {
-            throw new NotFoundBrakesException(`Cannot find brakes for ${service}`);
-        }
-
-        let httpException = null;
-        const executor = brakes.slaveCircuit(async (...params) => {
-            try {
-                return await call(...params);
-            } catch (e) {
-                if (e instanceof HttpException) {
-                    httpException = e;
-                } else {
-                    throw e;
-                }
-            }
+        brakesInstance.on('circuitOpen', () => {
+            this.logger.warn(`Circuit named ${name} is opened.`);
         });
-        if (httpException) {
-            throw httpException;
-        }
-        return executor.exec(params);
+
+        brakesInstance.on('circuitClosed', () => {
+            this.logger.warn(`Circuit named ${name} is closed.`);
+        });
+
+        brakesInstance.on('failure', (data, e) => {
+            this.logger.error(`Circuit named ${name} is failure.`, e.stack);
+        });
+
+        brakesInstance.on('timeout', (data, e) => {
+            this.logger.error(`Circuit named ${name} is failure.`, e.stack);
+        });
+
+        return brakesInstance;
     }
 }
