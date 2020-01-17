@@ -31,20 +31,11 @@ $ npm i --save @nestcloud/http
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { ConsulModule } from '@nestcloud/consul';
-import { ServiceModule } from '@nestcloud/service';
-import { LoadbalanceModule } from '@nestcloud/loadbalance';
-import { BootModule } from '@nestcloud/boot';
 import { HttpModule } from '@nestcloud/http';
-import { NEST_BOOT, NEST_LOADBALANCE, NEST_CONSUL } from '@nestcloud/common';
 
 @Module({
   imports: [
-      BootModule.register(__dirname, 'bootstrap.yml'),
-      ConsulModule.register({dependencies: [NEST_BOOT, NEST_CONSUL]}),
-      ServiceModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL] }),
-      LoadbalanceModule.register({ dependencies: [NEST_BOOT] }),
-      HttpModule.register({ dependencies: [NEST_BOOT, NEST_LOADBALANCE] }), // or NEST_CONSUL_CONFIG
+      HttpModule.forRoot(),
   ],
 })
 export class ApplicationModule {}
@@ -175,6 +166,60 @@ interceptor2 response
 interceptor1 response
 ```
 
+### Brakes
+
+Import `@nestcloud/brakes` module at first.
+
+```typescript
+import { Module } from '@nestjs/common';
+import { BrakesModule } from '@nestcloud/brakes';
+
+@Module({
+  imports: [
+      BrakesModule.forRoot(),
+  ],
+})
+export class AppModule {
+}
+```
+
+Write a fallback class.
+
+```typescript
+import { Fallback } from '@nestcloud/brakes';
+import { BadRequestException, Injectable } from '@nestjs/common';
+
+@Injectable()
+export class UserFallback implements Fallback {
+  config() {
+    return {};
+  }
+
+  fallback(...params) {
+    throw new BadRequestException('fallback invoke');
+  }
+
+  healthCheck() {
+  }
+}
+```
+
+Use fallback.
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { Get } from '@nestcloud/http';
+import { UseFallback } from '@nestcloud/brakes';
+import { UserFallback } from './UserFallback';
+
+@Injectable()
+@UseFallback(UserFallback)
+export class UserClient {
+  @Get('/users')
+  getUsers(): any {
+  }
+}
+```
 
 ## API
 
