@@ -30,37 +30,9 @@
 $ npm install @nestcloud/cli -g
 ```
 
-## NestCloud CLI
+The NestCloud CLI is a command-line interface tool that helps you to initialize your NestCloud applications.
 
-```shell script
-$ nestcloud --help
-Usage: nestcloud <command> [options]
-
-Options:
-  -v, --version           Output the current version.
-  -h, --help              Output usage information.
-
-Commands:
-  new|n [options] [name]  Generate NestCloud application.
-  info|i                  Display NestCloud project details.
-```
-
-```shell script
-$ nestcloud new --help
-Usage: nestcloud new|n [options] [name]
-
-Generate NestCloud application.
-
-Options:
-  --directory [directory]                  Specify the destination directory
-  -d, --dry-run                            Report actions that would be performed without writing out results.
-  -g, --skip-git                           Skip git repository initialization.
-  -s, --skip-install                       Skip package installation.
-  -p, --package-manager [package-manager]  Specify package manager.
-  -c, --collection [collectionName]        Schematics collection to use.
-  -t, --template [template]                Schematics template to use.
-  -h, --help                               Output usage information.
-```
+Read more [here](https://github.com/nest-cloud/nestcloud-cli) 
 
 ## Quick Start
 
