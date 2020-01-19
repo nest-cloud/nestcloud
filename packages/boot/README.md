@@ -19,8 +19,6 @@
 
 NestCloud component for getting local configurations and environment values when the app bootstrap.
 
-[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/bootstrap.md)
-
 ## Installation
 
 ```bash
@@ -34,18 +32,21 @@ $ npm i --save @nestcloud/boot
 ```typescript
 import { Module } from '@nestjs/common';
 import { BootModule } from '@nestcloud/boot';
-
-const env = process.env.NODE_ENV;
+import * as path from 'path';
 
 @Module({
-  imports: [BootModule.register(__dirname, `bootstrap-${env}.yml`)],
+  imports: [
+    BootModule.forRoot({ 
+      filePath: path.resolve(__dirname, 'config.yaml'),
+    }),
+  ],
 })
-export class ApplicationModule {}
+export class AppModule {}
 ```
 
 ### Configurations
 
-eg: bootstrap-development.yml.
+Boot module will load `config.yaml`, `config.${env}.yaml` two files.
 
 ```yaml
 web:
@@ -55,20 +56,22 @@ web:
 
 ## Usage
 
-There are two ways to get configurations,
+There are two ways to get your config data,
  
  1. Inject Boot instance:
 
 ```typescript
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectBoot, Boot } from '@nestcloud/boot';
 
 @Injectable()
-export class TestService {
-  constructor(@InjectBoot() private readonly boot: Boot) {}
+export class ConfigService implements OnModuleInit {
+  constructor(
+    @InjectBoot() private readonly boot: Boot
+  ) {}
 
-  getPort() {
-      return this.boot.get('web.port', 3000);
+  onModuleInit() {
+      const port = this.boot.get<number>('service.port', 3000);
   }
 }
 ```
@@ -80,13 +83,9 @@ import { Injectable } from '@nestjs/common';
 import { BootValue } from '@nestcloud/boot';
 
 @Injectable()
-export class TestService {
+export class ConfigService {
   @BootValue('service.port', 3000)
   private readonly port: number;
-
-  getPort() {
-      return this.port;
-  }
 }
 ```
 
@@ -123,49 +122,32 @@ service:
 
 ### class BootModule
 
-#### static register\(path: string, filename: string\): DynamicModule
+#### static forRoot\(options: BootOptions\): DynamicModule
 
 Register boot module.
 
-| field | type | description |
-| :--- | :--- | :--- |
-| path | string | the config file path |
-| filename | string | the config filename |
+| field            | type    | description              |
+| :--------------- | :------ | :----------------------- |
+| options.filePath | string  | the config file path     |
 
 ### class Boot
 
-#### get&lt;T&gt;\(path: string, defaults?: T\): T
+#### get&lt;T&gt;\(path?: string, defaults?: T\): T
 
 Get configurations
 
-| field | type | description |
-| :--- | :--- | :--- |
-| path |  string | path of configurations |
-| defaults | any | default value if the specific configuration is not exist |
+| field    | type   | description                                              |
+| :------- | :----- | :------------------------------------------------------- |
+| path     | string | path of configurations                                   |
+| defaults | any    | default value if the specific configuration is not exist |
 
-#### getEnv\(\): string
+## Decorators
 
-Get current NODE\_ENV value, if not set, it will return 'development'.
-
-#### getFilename\(\): string
-
-Get the current config filename.
-
-#### getConfigPath\(\): string
-
-Get the config file path.
-
-#### getFullConfigPath\(\): string
-
-Get the config file path with filename.
-
-### Decorator
-
-#### InjectBoot\(\): PropertyDecorator
+### InjectBoot\(\): PropertyDecorator
 
 Inject Boot instance.
 
-#### BootValue\(path?: string, defaultValue?: any\): PropertyDecorator
+### BootValue\(path?: string, defaultValue?: any\): PropertyDecorator
 
 Inject configuration to class attribute.
 

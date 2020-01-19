@@ -1,21 +1,13 @@
 import 'reflect-metadata';
-import { Store } from '../store';
+import { applyDecorators, SetMetadata } from '@nestcloud/common';
+import { BOOT_VALUE_DEFAULTS, BOOT_VALUE_NAME, BOOT_VALUE_PROPERTY } from '../boot.constants';
 
-export const BootValue = (path?: string, defaultValue?: any): PropertyDecorator => {
-    return (target: any, propertyName: string | Symbol) => {
-        const attributeName = propertyName as string;
-        const configPath = path || attributeName;
-
-        Store.watch(configPath, value => {
-            if (value !== void 0) {
-                target[attributeName] = value;
-            } else if (defaultValue !== void 0) {
-                target[attributeName] = defaultValue;
-            }
-        });
-        const value = Store.get(configPath, defaultValue);
-        if (value !== void 0) {
-            target[attributeName] = value;
-        }
-    };
-};
+export function BootValue(path?: string, defaults?: string): PropertyDecorator {
+    return applyDecorators(
+        SetMetadata(BOOT_VALUE_DEFAULTS, defaults),
+        SetMetadata(BOOT_VALUE_NAME, path),
+        (target, propertyKey) => {
+            return SetMetadata(BOOT_VALUE_PROPERTY, propertyKey)(target, propertyKey);
+        },
+    );
+}

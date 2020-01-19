@@ -1,64 +1,57 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
-import {
-    NEST_BOOT,
-    NEST_BOOT_PROVIDER,
-    NEST_LOADBALANCE_PROVIDER,
-    NEST_PROXY_PROVIDER,
-    NEST_CONFIG,
-    NEST_CONFIG_PROVIDER,
-    IConfig,
-    IBoot,
-    ILoadbalance,
-    NEST_LOADBALANCE,
-} from '@nestcloud/common';
-import { IExtraOptions } from './interfaces/extra-options.interface';
-import { IProxyOptions } from './interfaces/proxy-options.interface';
+import { ProxyOptions } from './interfaces/proxy-options.interface';
 import { Proxy } from './proxy';
+import { ProxyExplorer } from './proxy.explorer';
+import { ProxyFilterRegistry } from './proxy-filter.registry';
+import { ProxyRouteRegistry } from './proxy-route.registry';
+import { ProxyMetadataAccessor } from './proxy-metadata.accessor';
+import { DiscoveryModule } from '@nestjs/core';
+import { Scanner, BOOT, CONFIG, IBoot, IConfig, ILoadbalance, LOADBALANCE, PROXY } from '@nestcloud/common';
+import { ProxyFilterRegister } from './proxy-filter.register';
+import { ProxyConfig } from './proxy.config';
 
 @Global()
 @Module({
-    providers: [],
+    imports: [DiscoveryModule],
+    providers: [ProxyMetadataAccessor, Scanner],
 })
 export class ProxyModule {
-    static register(options: IProxyOptions = {}, extra?: IExtraOptions): DynamicModule {
-        const inject = [];
-        if (options.dependencies) {
-            if (options.dependencies.includes(NEST_LOADBALANCE)) {
-                inject.push(NEST_LOADBALANCE_PROVIDER);
-            }
-            if (options.dependencies.includes(NEST_BOOT)) {
-                inject.push(NEST_BOOT_PROVIDER);
-            } else if (options.dependencies.includes(NEST_CONFIG)) {
-                inject.push(NEST_CONFIG_PROVIDER);
-            }
-        }
+    public static forRoot(options: ProxyOptions): DynamicModule {
+        return this.forRootAsync(options);
+    }
 
-        const proxyProvider = {
-            provide: NEST_PROXY_PROVIDER,
-            useFactory: (...args: any[]): Proxy => {
-                const loadblanace: ILoadbalance = args[inject.indexOf(NEST_LOADBALANCE_PROVIDER)];
-                const boot: IBoot = args[inject.indexOf(NEST_BOOT_PROVIDER)];
-                const config: IConfig = args[inject.indexOf(NEST_CONFIG_PROVIDER)];
-                let proxy;
-                if (boot) {
-                    options = boot.get('proxy');
-                    proxy = new Proxy(extra, loadblanace, options.routes);
-                } else if (config) {
-                    options = (config as IConfig).get('proxy');
-                    proxy = new Proxy(extra, loadblanace, options.routes, config as IConfig);
-                    (config as IConfig).watch('proxy.routes', routes => {
-                        proxy.updateRoutes(routes || [], false);
-                    });
-                } else {
-                    proxy = new Proxy(extra, loadblanace, options.routes);
-                }
-                return proxy;
+    public static forRootAsync(options: ProxyOptions = {}): DynamicModule {
+        const inject = options.inject || [];
+
+        const proxyOptionsProvider = {
+            provide: ProxyConfig,
+            useFactory: (...params: any[]) => {
+                const boot: IBoot = params[inject.indexOf(BOOT)];
+                const config: IConfig = params[inject.indexOf(CONFIG)];
+                return new ProxyConfig(options, boot, config);
             },
             inject,
         };
+        const proxyProvider = {
+            provide: PROXY,
+            useFactory: (proxy: Proxy, ...params: any[]) => {
+                const lb: ILoadbalance = params[inject.indexOf(LOADBALANCE)];
+                proxy.useLb(lb);
+                return proxy;
+            },
+            inject: [Proxy, ...inject],
+        };
         return {
             module: ProxyModule,
-            providers: [proxyProvider],
+            providers: [
+                proxyOptionsProvider,
+                Proxy,
+                proxyProvider,
+                ProxyExplorer,
+                ProxyFilterRegistry,
+                ProxyRouteRegistry,
+                ProxyFilterRegister,
+            ],
             exports: [proxyProvider],
         };
     }

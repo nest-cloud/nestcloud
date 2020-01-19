@@ -5,6 +5,7 @@
     "no-unused-expression": true
   },
   "rules": {
+    "no-namespace": false,
     "radix": false,
     "prefer-for-of": false,
     "no-shadowed-variable": false,

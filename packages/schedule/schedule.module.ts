@@ -1,22 +1,29 @@
-import { Module, DynamicModule, Global } from '@nestjs/common';
-import { NEST_SCHEDULE_PROVIDER } from './constants';
+import { DynamicModule, Module } from '@nestjs/common';
+import { DiscoveryModule } from '@nestjs/core';
+import { SchedulerMetadataAccessor } from './schedule-metadata.accessor';
+import { ScheduleExplorer } from './schedule.explorer';
+import { SchedulerOrchestrator } from './scheduler.orchestrator';
+import { SchedulerRegistry } from './scheduler.registry';
+import { ScheduleWrapper } from './schedule.wrapper';
+import { Scanner, SCHEDULE } from '@nestcloud/common';
 import { Schedule } from './schedule';
-import { IGlobalConfig } from './interfaces/global-config.interface';
 
-@Global()
-@Module({})
+@Module({
+    imports: [DiscoveryModule],
+    providers: [SchedulerMetadataAccessor, SchedulerOrchestrator, Scanner],
+})
 export class ScheduleModule {
-    static register(globalConfig?: IGlobalConfig): DynamicModule {
+    static forRoot(): DynamicModule {
         const scheduleProvider = {
-            provide: NEST_SCHEDULE_PROVIDER,
-            useFactory: (): Schedule => {
-                return new Schedule(globalConfig);
-            },
+            provide: SCHEDULE,
+            useFactory: (schedule: Schedule) => schedule,
+            inject: [Schedule],
         };
         return {
+            global: true,
             module: ScheduleModule,
-            providers: [scheduleProvider],
-            exports: [scheduleProvider],
+            providers: [ScheduleExplorer, SchedulerRegistry, ScheduleWrapper, Schedule, scheduleProvider],
+            exports: [Schedule, scheduleProvider],
         };
     }
 }

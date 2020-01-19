@@ -2,6 +2,8 @@ import { Boot } from './boot.class';
 import { writeFileSync, unlinkSync } from 'fs';
 import { resolve } from 'path';
 import { expect } from 'chai';
+import { BootFileLoader } from './boot-file.loader';
+import { BootStore } from './boot.store';
 
 describe('Boot Class', () => {
     process.env.SERVICE = 'your-service-name';
@@ -9,13 +11,14 @@ describe('Boot Class', () => {
     const config = `
 web:
   service: \${{ SERVICE }}
-  port: 3000    
+  port: 3000
   address: http://\${{ web.service }}:\${{ web.port }}
     `;
     let boot: Boot;
     before(async () => {
         writeFileSync(resolve(__dirname, filename), config);
-        boot = new Boot(__dirname, filename);
+        const options = { filePath: resolve(__dirname, filename) };
+        boot = new Boot(options, new BootFileLoader(options), new BootStore());
     });
 
     it(`boot.get()`, () => {

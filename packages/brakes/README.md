@@ -25,10 +25,6 @@ Hystrix compliant Node.js Circuit Breaker Library based on [brakes](https://gith
 $ npm i --save @nestcloud/brakes brakes
 ```
 
-## Quick Start
-
-
-
 ## Stay in touch
 
 - Author - [NestCloud](https://github.com/nest-cloud)

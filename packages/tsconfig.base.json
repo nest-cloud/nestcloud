@@ -14,7 +14,13 @@
     "sourceMap": false,
     "allowJs": false,
     "strict": true,
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "lib": [
+      "es7"
+    ]
   },
-  "exclude": ["../node_modules", "./**/*.spec.ts"]
+  "exclude": [
+    "../node_modules",
+    "./**/*.spec.ts"
+  ]
 }

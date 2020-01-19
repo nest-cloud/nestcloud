@@ -1,18 +1,19 @@
-import { IClientConfig } from './interfaces/grpc-configuration.interface';
+import { ClientOptions } from './interfaces/client-options.interface';
 import { ClientGrpcProxy } from '@nestjs/microservices/client';
-import { NestCloud } from '@nestcloud/core';
 import { ILoadbalance, IServer } from '@nestcloud/common';
 import { GrpcDelegate } from '@nestcloud/loadbalance';
 
 export class GrpcClient {
-    private readonly config: IClientConfig;
+    private readonly options: ClientOptions;
     private readonly proxy: ClientGrpcProxy;
+    private readonly lb: ILoadbalance;
     private readonly proxyCache = new Map<string, ClientGrpcProxy>();
     private readonly serviceCache = new Map<string, any>();
 
-    constructor(config: IClientConfig) {
-        this.config = config;
-        this.proxy = new ClientGrpcProxy(config);
+    constructor(lb: ILoadbalance, options: ClientOptions) {
+        this.lb = lb;
+        this.options = options;
+        this.proxy = new ClientGrpcProxy(options);
     }
 
     public getService<T extends {}>(name: string): T {
@@ -22,6 +23,7 @@ export class GrpcClient {
         const protoMethods = Object.keys(noClusterService);
         protoMethods.forEach(key => {
             grpcService[key] = (...args: any[]) => {
+                // tslint:disable-next-line:prefer-const
                 let { service, node } = this.getProxyService<T>(name, key);
                 if (!service) {
                     service = noClusterService;
@@ -39,18 +41,14 @@ export class GrpcClient {
     }
 
     private getProxyService<T extends {}>(name: string, method: string): { service: T, node: IServer } {
-        const lb: ILoadbalance = NestCloud.global.loadbalance;
-        if (!lb) {
-            return { service: null, node: null };
-        }
-        const node = lb.choose(this.config.service);
+        const node = this.lb.choose(this.options.service);
         const methodKey = `${node.id}/${method}`;
         if (!this.serviceCache.get(methodKey)) {
             if (!this.proxyCache.has(node.id)) {
                 const proxy = new ClientGrpcProxy({
                     url: `${node.address}:${node.port}`,
-                    package: this.config.package,
-                    protoPath: this.config.protoPath,
+                    package: this.options.package,
+                    protoPath: this.options.protoPath,
                 });
                 this.proxyCache.set(node.id, proxy);
             }

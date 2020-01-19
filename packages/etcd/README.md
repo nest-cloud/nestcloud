@@ -19,8 +19,6 @@
 
 Etcd module for nestcloud
 
-[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/etcd.md)
-
 ## Installation
 
 ```bash
@@ -37,16 +35,18 @@ import { EtcdModule } from '@nestcloud/etcd';
 
 @Module({
   imports: [
-      EtcdModule.register(),
+      EtcdModule.forRoot(),
   ],
 })
-export class ApplicationModule {}
+export class AppModule {
+}
 ```
 
 ### Usage
 
 ```typescript
-import { Injectable, IEtcd } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { IEtcd } from '@nestcloud/common';
 import { InjectEtcd } from '@nestcloud/etcd';
 
 @Injectable()

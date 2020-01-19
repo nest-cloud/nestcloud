@@ -7,21 +7,16 @@ const deleteEmpty = require('delete-empty');
 const packages = {
     common: ts.createProject('packages/common/tsconfig.json'),
     boot: ts.createProject('packages/boot/tsconfig.json'),
-    core: ts.createProject('packages/core/tsconfig.json'),
     consul: ts.createProject('packages/consul/tsconfig.json'),
     etcd: ts.createProject('packages/etcd/tsconfig.json'),
     config: ts.createProject('packages/config/tsconfig.json'),
     service: ts.createProject('packages/service/tsconfig.json'),
     loadbalance: ts.createProject('packages/loadbalance/tsconfig.json'),
     logger: ts.createProject('packages/logger/tsconfig.json'),
-    memcached: ts.createProject('packages/memcached/tsconfig.json'),
     schedule: ts.createProject('packages/schedule/tsconfig.json'),
-    validations: ts.createProject('packages/validations/tsconfig.json'),
     brakes: ts.createProject('packages/brakes/tsconfig.json'),
-    feign: ts.createProject('packages/feign/tsconfig.json'),
+    http: ts.createProject('packages/http/tsconfig.json'),
     grpc: ts.createProject('packages/grpc/tsconfig.json'),
-    rbac: ts.createProject('packages/rbac/tsconfig.json'),
-    redis: ts.createProject('packages/redis/tsconfig.json'),
     proxy: ts.createProject('packages/proxy/tsconfig.json'),
     kubernetes: ts.createProject('packages/kubernetes/tsconfig.json'),
 };
@@ -45,21 +40,16 @@ gulp.task('copy-misc', function() {
         .src(['LICENSE', '.npmignore'])
         .pipe(gulp.dest(`${source}/common`))
         .pipe(gulp.dest(`${source}/boot`))
-        .pipe(gulp.dest(`${source}/core`))
         .pipe(gulp.dest(`${source}/etcd`))
         .pipe(gulp.dest(`${source}/consul`))
         .pipe(gulp.dest(`${source}/config`))
         .pipe(gulp.dest(`${source}/service`))
         .pipe(gulp.dest(`${source}/loadbalance`))
         .pipe(gulp.dest(`${source}/logger`))
-        .pipe(gulp.dest(`${source}/memcached`))
         .pipe(gulp.dest(`${source}/schedule`))
-        .pipe(gulp.dest(`${source}/validations`))
         .pipe(gulp.dest(`${source}/brakes`))
-        .pipe(gulp.dest(`${source}/feign`))
+        .pipe(gulp.dest(`${source}/http`))
         .pipe(gulp.dest(`${source}/grpc`))
-        .pipe(gulp.dest(`${source}/rbac`))
-        .pipe(gulp.dest(`${source}/redis`))
         .pipe(gulp.dest(`${source}/proxy`))
         .pipe(gulp.dest(`${source}/kubernetes`));
 });

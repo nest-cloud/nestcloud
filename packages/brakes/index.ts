@@ -1,2 +1,4 @@
-export * from './exceptions/not-found-brakes.exception';
-export * from './brakes-factory';
+export * from './brakes.class';
+export * from './brakes.module';
+export * from './interfaces/fallback.interface';
+export * from './decorators/use-fallback.decorator';

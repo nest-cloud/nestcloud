@@ -1,10 +1,10 @@
-import { IServiceCheck } from './service-check.interface';
 import { ConnectService } from './connect-service.interface';
+import { ServiceCheck } from './service-check.interface';
 
-export interface IServiceOptions {
-    dependencies?: string[];
+export interface ServiceOptions {
+    inject?: string[];
     discoveryHost?: string;
-    healthCheck?: IServiceCheck;
+    healthCheck?: ServiceCheck;
     maxRetry?: number;
     retryInterval?: number;
     id?: string;

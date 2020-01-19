@@ -1,4 +1,4 @@
-import { IServiceCheck } from './service-check.interface';
+import { ServiceCheck } from './service-check.interface';
 
 interface Proxy {
     destination_service_name?: string;
@@ -14,6 +14,6 @@ interface Upstream {
 export interface ConnectService {
     name?: string;
     kind?: string;
-    checks?: IServiceCheck;
+    checks?: ServiceCheck;
     proxy?: Proxy | Upstream;
 }

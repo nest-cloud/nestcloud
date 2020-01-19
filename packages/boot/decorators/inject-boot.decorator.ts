@@ -1,4 +1,4 @@
 import { Inject } from '@nestjs/common';
-import { NEST_BOOT_PROVIDER } from '@nestcloud/common';
+import { BOOT } from '@nestcloud/common';
 
-export const InjectBoot = () => Inject(NEST_BOOT_PROVIDER);
+export const InjectBoot = () => Inject(BOOT);

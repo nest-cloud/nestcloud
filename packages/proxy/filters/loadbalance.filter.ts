@@ -1,15 +1,13 @@
 import { get } from 'lodash';
-import { IFilter } from '../interfaces/filter.interface';
-import { IResponse } from '../interfaces/response.interface';
-import { IRequest } from '../interfaces/request.interface';
+import { Filter } from '../interfaces/filter.interface';
+import { Response } from '../interfaces/response.interface';
+import { Request } from '../interfaces/request.interface';
 import { ProxyErrorException } from '../exceptions/proxy-error.exception';
+import { Injectable } from '@nestjs/common';
 
-export class LoadbalanceFilter implements IFilter {
-    getName(): string {
-        return 'LoadbalanceFilter';
-    }
-
-    error(error: ProxyErrorException, request: IRequest, response: IResponse) {
+@Injectable()
+export class LoadbalanceFilter implements Filter {
+    error(error: ProxyErrorException, request: Request, response: Response) {
         try {
             const server = get(request.proxy, 'server');
             if (server && error && error.code === 'ECONNREFUSED') {

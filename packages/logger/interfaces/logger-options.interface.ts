@@ -1,8 +1,7 @@
-import { IConsoleTransport, IDailyRotateFile, IFileTransport } from './transport.interface';
+import { ConsoleTransport, DailyRotateFile, FileTransport } from './transport.interface';
 
-export interface ILoggerOptions {
-    path: string;
-    filename?: string;
+export interface LoggerOptions {
+    filePath: string;
     level?: string;
-    transports?: (IConsoleTransport | IFileTransport | IDailyRotateFile)[];
+    transports?: (ConsoleTransport | FileTransport | DailyRotateFile)[];
 }

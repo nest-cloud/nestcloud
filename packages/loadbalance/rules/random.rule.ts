@@ -1,11 +1,12 @@
 import { get } from 'lodash';
 import { Random } from 'random-js';
-
 import { ILoadbalancer } from '@nestcloud/common';
 import { Server } from '../server';
-import { IRule } from '../interfaces/rule.interface';
+import { Rule } from '../interfaces/rule.interface';
+import { Injectable } from '@nestjs/common';
 
-export class RandomRule implements IRule {
+@Injectable()
+export class RandomRule implements Rule {
     private readonly random = new Random();
     private loadbalancer: ILoadbalancer;
 
@@ -16,7 +17,7 @@ export class RandomRule implements IRule {
     choose(): Server {
         let server = null;
 
-        while (server === null) {
+        while (true) {
             const reachableServers = this.loadbalancer.servers.filter(server => server.state.isAlive());
             const allServers = this.loadbalancer.servers;
             const upCount = reachableServers.length;
@@ -39,7 +40,5 @@ export class RandomRule implements IRule {
 
             server = null;
         }
-
-        return server;
     }
 }

@@ -1,21 +1,13 @@
 import 'reflect-metadata';
-import { Store } from '../store';
+import { applyDecorators, ExtendMetadata } from '@nestcloud/common';
+import { CONFIG_VALUE } from '../config.constants';
 
-export const ConfigValue = (path?: string, defaultValue?: any): PropertyDecorator => {
-    return (target: any, propertyName: string | Symbol) => {
-        const attributeName = propertyName as string;
-        const configPath = path || attributeName;
-
-        Store.watch(configPath, value => {
-            if (value !== void 0) {
-                target[attributeName] = value;
-            } else if (defaultValue !== void 0) {
-                target[attributeName] = defaultValue;
-            }
-        });
-        const value = Store.get(configPath, defaultValue);
-        if (value !== void 0) {
-            target[attributeName] = value;
-        }
-    };
-};
+export function ConfigValue(name?: string, defaults?: any): PropertyDecorator {
+    return applyDecorators((target, property) => {
+        return ExtendMetadata(CONFIG_VALUE, {
+            property,
+            name,
+            defaults,
+        })(target, property);
+    });
+}

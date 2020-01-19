@@ -1,6 +1,11 @@
-import { IRoute } from './route.interface';
+import { Route } from './route.interface';
+import { ExtraOptions } from './extra-options.interface';
 
-export interface IProxyOptions {
-    dependencies?: string[];
-    routes?: IRoute[];
+export interface ProxyOptions {
+    /**
+     * One or many of these: BOOT, CONFIG, LOADBALANCE
+     */
+    inject?: string[];
+    routes?: Route[];
+    extras?: ExtraOptions;
 }

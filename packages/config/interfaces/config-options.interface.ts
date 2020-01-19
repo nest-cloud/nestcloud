@@ -1,6 +1,6 @@
-export interface IConfigOptions {
-    dependencies?: string[];
-    key?: string;
+export interface ConfigOptions {
+    inject?: string[];
+    name?: string;
     namespace?: string;
     path?: string;
 }

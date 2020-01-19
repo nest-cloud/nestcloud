@@ -1,10 +1,13 @@
-export interface IRoute {
+import { ExtraOptions } from './extra-options.interface';
+
+export interface Route {
     id: string;
     uri: string;
-    filters?: IRouteFilter[];
+    extras?: ExtraOptions;
+    filters?: RouteFilter[];
 }
 
-export interface IRouteFilter {
+export interface RouteFilter {
     name: string;
     parameters?: { [key: string]: any };
 }

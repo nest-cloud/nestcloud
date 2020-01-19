@@ -1,14 +1,14 @@
 import { LoggerService } from '@nestjs/common';
 import { Logger } from './logger';
-import { ILoggerOptions } from './interfaces/logger-options.interface';
-import { Cache, NEST_LOGGER } from '@nestcloud/common';
+import { LoggerOptions } from './interfaces/logger-options.interface';
+import { Cache, LOGGER } from '@nestcloud/common';
 
 export class NestLogger implements LoggerService {
     private readonly logger;
 
-    constructor(options: ILoggerOptions) {
+    constructor(options: LoggerOptions) {
         this.logger = new Logger(options).getLogger();
-        Cache.getInstance(NEST_LOGGER).set('logger', this.logger);
+        Cache.getInstance(LOGGER).set('logger', this.logger);
     }
 
     error(message: any, trace?: string, context?: string): any {

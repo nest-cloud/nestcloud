@@ -1,45 +1,21 @@
-import * as path from 'path';
-import * as YAML from 'yamljs';
 import { IBoot } from '@nestcloud/common';
-import { Store } from './store';
+import { Inject, Injectable } from '@nestjs/common';
+import { BootFileLoader } from './boot-file.loader';
+import { BootStore } from './boot.store';
+import { BootOptions } from './interfaces/boot-options.interface';
+import { BOOT_OPTIONS_PROVIDER } from './boot.constants';
 
+@Injectable()
 export class Boot implements IBoot {
-    private readonly env: string;
-    private readonly filename: string;
-    private readonly configPath: string;
-    private readonly fullConfigPath: string;
-
-    constructor(configPath: string, name?: string | ((env: string) => string)) {
-        this.configPath = configPath;
-        this.env = process.env.NODE_ENV || 'development';
-        this.filename = `bootstrap-${ this.env }.yml`;
-        if (typeof name === 'function') {
-            this.filename = name(this.env);
-        } else if (name) {
-            this.filename = name;
-        }
-
-        this.fullConfigPath = path.resolve(configPath, this.filename);
-        Store.data = YAML.load(this.fullConfigPath);
+    constructor(
+        @Inject(BOOT_OPTIONS_PROVIDER) private readonly options: BootOptions,
+        private readonly fileLoader: BootFileLoader = new BootFileLoader(options),
+        private readonly store: BootStore = new BootStore(),
+    ) {
+        this.store.data = this.fileLoader.load();
     }
 
-    getEnv(): string {
-        return this.env;
-    }
-
-    getFilename(): string {
-        return this.filename;
-    }
-
-    getConfigPath(): string {
-        return this.configPath;
-    }
-
-    getFullConfigPath(): string {
-        return this.fullConfigPath;
-    }
-
-    get<T extends any>(path: string, defaults?: T): T {
-        return Store.get<T>(path, defaults);
+    get<T extends any>(path?: string, defaults?: T): T {
+        return this.store.get<T>(path, defaults);
     }
 }

@@ -1,66 +1,69 @@
-import {
-    NEST_BOOT,
-    NEST_BOOT_PROVIDER,
-    NEST_CONFIG,
-    NEST_CONFIG_PROVIDER,
-    NEST_LOADBALANCE_PROVIDER,
-    NEST_SERVICE_PROVIDER,
-    IBoot,
-    IConfig,
-    IService,
-} from '@nestcloud/common';
 import { DynamicModule, Global, Module } from '@nestjs/common';
-
+import { AsyncLoadbalanceOptions, LoadbalanceOptions } from './interfaces/loadbalance-options.interface';
+import { AXIOS_INSTANCE_PROVIDER } from './loadbalance.constants';
+import { Scanner, BOOT, CONFIG, IBoot, IConfig, LOADBALANCE } from '@nestcloud/common';
+import { DiscoveryModule } from '@nestjs/core';
 import { Loadbalance } from './loadbalance';
-import { ILoadbalanceOptions } from './interfaces/loadbalance-options.interface';
-import { IRuleOptions } from './interfaces/rule-options.interface';
+import { LoadbalanceChecker } from './loadbalance.checker';
+import axios from 'axios';
+import { LoadbalanceMetadataAccessor } from './loadbalance-metadata.accessor';
+import { LoadbalanceOrchestrator } from './loadbalance.orchestrator';
+import { LoadbalanceExplorer } from './loadbalance.explorer';
+import { LoadbalanceRuleRegistry } from './loadbalance-rule.registry';
+import { LoadbalanceRuleRegister } from './loadbalance-rule.register';
+import { LoadbalanceConfig } from './loadbalance.config';
 
 @Global()
-@Module({})
+@Module({
+    imports: [DiscoveryModule],
+    providers: [Scanner, LoadbalanceMetadataAccessor, LoadbalanceOrchestrator],
+})
 export class LoadbalanceModule {
-    protected static readonly loadbalancePath = 'loadbalance';
-    private static readonly rulePath = 'loadbalance.rules';
-    private static readonly ruleClsPath = 'loadbalance.ruleCls';
+    private static CONFIG_PREFIX = 'loadbalance';
 
-    static register(options: ILoadbalanceOptions = {}): DynamicModule {
-        const inject = [NEST_SERVICE_PROVIDER];
-        if (options.dependencies) {
-            if (options.dependencies.includes(NEST_BOOT)) {
-                inject.push(NEST_BOOT_PROVIDER);
-            } else if (options.dependencies.includes(NEST_CONFIG)) {
-                inject.push(NEST_CONFIG_PROVIDER);
-            }
-        }
+    public static forRoot(options: LoadbalanceOptions): DynamicModule {
+        return this.register(options);
+    }
 
-        const loadbalanceProvider = {
-            provide: NEST_LOADBALANCE_PROVIDER,
-            useFactory: async (service: IService, config: IBoot | IConfig): Promise<Loadbalance> => {
-                const loadbalance = new Loadbalance(service, options.customRulePath);
-                let rules: IRuleOptions[] = options.rules || [];
-                let ruleCls: string = options.ruleCls || 'RandomRule';
-                if (inject.includes(NEST_BOOT_PROVIDER)) {
-                    rules = (config as IBoot).get<IRuleOptions[]>(this.rulePath, []);
-                    ruleCls = (config as IBoot).get<string>(this.ruleClsPath, 'RandomRule');
-                } else if (inject.includes(NEST_CONFIG_PROVIDER)) {
-                    rules = (config as IConfig).get<IRuleOptions[]>(this.rulePath, []);
-                    ruleCls = (config as IConfig).get<string>(this.ruleClsPath, 'RandomRule');
-                    (config as IConfig).watch<{
-                        routes: IRuleOptions[];
-                        ruleCls: string;
-                    }>(this.loadbalancePath, async ({ routes, ruleCls }) => {
-                        await loadbalance.init(rules, ruleCls);
-                    });
-                }
+    public static forRootAsync(options: AsyncLoadbalanceOptions): DynamicModule {
+        return this.register(options);
+    }
 
-                await loadbalance.init(rules, ruleCls);
-                return loadbalance;
+    private static register(options: LoadbalanceOptions & AsyncLoadbalanceOptions = {}): DynamicModule {
+        const inject = options.inject || [];
+        const loadbalanceOptionsProvider = {
+            provide: LoadbalanceConfig,
+            useFactory: (...params: any[]) => {
+                const boot: IBoot = params[inject.indexOf(BOOT)];
+                const config: IConfig = params[inject.indexOf(CONFIG)];
+
+                return new LoadbalanceConfig(options, boot, config);
             },
             inject,
         };
 
+        const loadbalanceProvider = {
+            provide: LOADBALANCE,
+            useFactory: (lb: Loadbalance) => lb,
+            inject: [Loadbalance],
+        };
+
+        const axiosProvider = {
+            provide: AXIOS_INSTANCE_PROVIDER,
+            useFactory: () => axios,
+        };
+
         return {
             module: LoadbalanceModule,
-            providers: [loadbalanceProvider],
+            providers: [loadbalanceOptionsProvider,
+                Loadbalance,
+                LoadbalanceChecker,
+                loadbalanceProvider,
+                axiosProvider,
+                LoadbalanceExplorer,
+                LoadbalanceRuleRegistry,
+                LoadbalanceRuleRegister,
+            ],
             exports: [loadbalanceProvider],
         };
     }

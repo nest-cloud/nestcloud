@@ -1,7 +1,9 @@
 import { get } from 'lodash';
 import { RoundRobinRule } from './round-robin.rule';
 import { Server } from '../server';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class WeightedResponseTimeRule extends RoundRobinRule {
     constructor() {
         super();
@@ -11,7 +13,7 @@ export class WeightedResponseTimeRule extends RoundRobinRule {
         let count = 0;
         let server = null;
 
-        while (server === null && count++ < 10) {
+        while (count++ < 10) {
             const reachableServers = this.loadbalancer.servers.filter(server => server.state.isAlive());
             const allServers = this.loadbalancer.servers;
             const upCount = reachableServers.length;

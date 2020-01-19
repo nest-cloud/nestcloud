@@ -5,3 +5,4 @@ export * from './nest-logger';
 export * from './typeorm-logger';
 export * from './decorators/inject-logger.decorator';
 export * from './logger';
+export * from './logger.constants';

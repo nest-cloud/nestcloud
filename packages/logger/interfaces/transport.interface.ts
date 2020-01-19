@@ -1,15 +1,15 @@
-export interface ITransport {
+export interface Transport {
     level: string;
     transport: string;
     datePattern: string;
     label: string;
 }
 
-export interface IConsoleTransport extends ITransport {
+export interface ConsoleTransport extends Transport {
     colorize: boolean;
 }
 
-export interface IFileTransport extends ITransport {
+export interface FileTransport extends Transport {
     name: string;
     filename: string;
     maxSize: number;
@@ -28,7 +28,7 @@ export interface IFileTransport extends ITransport {
     options: any;
 }
 
-export interface IDailyRotateFile extends ITransport {
+export interface DailyRotateFile extends Transport {
     filename: string;
     maxSize: number;
     maxFiles: number;

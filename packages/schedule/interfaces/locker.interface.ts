@@ -1,7 +1,5 @@
-import { IScheduleConfig } from './schedule-config.interface';
-
-export interface ILocker {
-    init(key: string, config: IScheduleConfig): void;
+export interface Locker {
+    init(name: string): void;
 
     tryLock(): Promise<boolean> | boolean;
 

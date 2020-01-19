@@ -1,12 +1,13 @@
 /**
  * @see https://github.com/silas/node-consul
  */
-export interface IConsulOptions {
-    dependencies?: string[];
+import { IConsulOptions } from '@nestcloud/common';
+
+export interface ConsulOptions extends IConsulOptions {
     host?: string;
-    port?: number;
+    port?: string;
     secure?: boolean;
-    ca?: string[] | Buffer[];
+    ca?: string[];
     defaults?: {
         dc?: string;
         wan?: boolean;
@@ -18,4 +19,8 @@ export interface IConsulOptions {
         'node-meta'?: string[];
         timeout?: number;
     };
+}
+
+export interface AsyncConsulOptions {
+    inject?: string[];
 }

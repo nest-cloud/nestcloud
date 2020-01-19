@@ -1,15 +1,13 @@
 import 'reflect-metadata';
-import { extendMetadata } from '../utils/metadata.util';
-import { GUARDS_METADATA, NEST_SCHEDULE_LOCKER } from '../constants';
-import { ILocker } from '../interfaces/locker.interface';
+import { Locker } from '../interfaces/locker.interface';
+import { applyDecorators, SetMetadata } from '@nestjs/common';
+import { SCHEDULE_LOCKER } from '../schedule.constants';
 
-export const UseLocker = (Locker: ILocker | Function): MethodDecorator => (
-    target,
-    key,
-    descriptor,
-) => {
-    extendMetadata(NEST_SCHEDULE_LOCKER, { Locker, key }, target);
+export function UseLocker(Locker: Locker | Function): MethodDecorator {
+    return applyDecorators(
+        SetMetadata(SCHEDULE_LOCKER, Locker),
 
-    // hack
-    extendMetadata(GUARDS_METADATA, Locker, descriptor.value);
-};
+        // hack
+        SetMetadata('__guards__', Locker),
+    );
+}

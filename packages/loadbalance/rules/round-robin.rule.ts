@@ -1,9 +1,11 @@
 import { get } from 'lodash';
-import { IRule } from '../interfaces/rule.interface';
+import { Rule } from '../interfaces/rule.interface';
 import { ILoadbalancer } from '@nestcloud/common';
 import { Server } from '../server';
+import { Injectable } from '@nestjs/common';
 
-export class RoundRobinRule implements IRule {
+@Injectable()
+export class RoundRobinRule implements Rule {
     protected loadbalancer: ILoadbalancer;
     private counter = 0;
 
@@ -14,7 +16,7 @@ export class RoundRobinRule implements IRule {
     choose(): Server {
         let count = 0;
         let server = null;
-        while (server === null && count++ < 10) {
+        while (count++ < 10) {
             const reachableServers = this.loadbalancer.servers.filter(server => server.state.isAlive());
             const allServers = this.loadbalancer.servers;
             const upCount = reachableServers.length;

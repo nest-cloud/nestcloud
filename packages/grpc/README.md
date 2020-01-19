@@ -19,8 +19,6 @@
 
 The loadbalance grpc module for nestcloud.
 
-[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/grpc.md)
-
 ## Installation
 
 ```bash
@@ -37,8 +35,8 @@ import { join } from 'path';
 
 const grpcOptions: IClientConfig = {
     service: 'rpc-server',
-            package: 'hero',
-            protoPath: join(__dirname, './hero.proto'),
+    package: 'hero',
+    protoPath: join(__dirname, './hero.proto'),
 };
 
 @Controller()
@@ -56,7 +54,6 @@ export class HeroController {
 ```
 
 More please visit the example: https://github.com/nest-cloud/nestcloud-grpc-example
-
 
 ## Stay in touch
 

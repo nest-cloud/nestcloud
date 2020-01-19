@@ -1,9 +1,13 @@
-import { IClientConfig } from '../interfaces/grpc-configuration.interface';
-import { ClientFactory } from '../client-factory';
+import { ClientOptions } from '../interfaces/client-options.interface';
+import { GRPC_CLIENT } from '../grpc.constants';
+import { applyDecorators, ExtendMetadata } from '@nestcloud/common';
 
-export const Service = (name: string, metadata?: IClientConfig) => {
-    return (target: object, propertyKey: string | symbol): void => {
-        const client = ClientFactory.create(metadata);
-        target[propertyKey] = client.getService(name);
-    };
-};
+export function Service(name: string, options?: ClientOptions): PropertyDecorator {
+    return applyDecorators((target, property) => {
+        return ExtendMetadata(GRPC_CLIENT, {
+            name,
+            property,
+            options,
+        })(target, property);
+    });
+}

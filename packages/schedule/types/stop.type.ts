@@ -1,1 +1,0 @@
-type Stop = boolean;

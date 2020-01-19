@@ -1,12 +1,12 @@
-export interface IServiceCheck {
+export interface ServiceCheck {
     http?: string;
     tcp?: string;
     script?: string;
-    dockercontainerid?: string;
-    shell?: string;
     interval?: string;
     timeout?: string;
-    ttl?: string | number;
+    shell?: string;
+    dockercontainerid?: string;
+    ttl?: string;
     notes?: string;
     status?: string;
     deregistercriticalserviceafter?: string;

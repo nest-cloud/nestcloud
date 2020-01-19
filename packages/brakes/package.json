@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/brakes",
-  "version": "0.6.11",
+  "version": "0.6.10-22",
   "description": "Hystrix compliant Node.js Circuit Breaker Library based on brakes.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
@@ -8,7 +8,6 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@nestjs/common": "^6.0.0",
     "brakes": "^2.7.0"
   },
   "repository": {

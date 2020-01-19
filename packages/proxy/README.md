@@ -19,8 +19,6 @@
 
 The proxy module for nestcloud.
 
-[中文文档](https://github.com/nest-cloud/nestcloud/blob/master/docs/proxy.md)
-
 ## Installation
 
 ```bash
@@ -29,42 +27,62 @@ $ npm install --save @nestcloud/proxy
 
 ## Notification
 
-You should not use body parser middleware when use this module or the post request will hang.
+Don't use the body parser middleware when use this module.
 
 ## Quick Start
 
-### Register Module
+### Import Module
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { NEST_BOOT } from '@nestcloud/common';
 import { ProxyModule } from "@nestcloud/proxy";
 
 @Module({
-    imports: [
-        ProxyModule.register({dependencies: [NEST_BOOT]}),
-    ]
+  imports: [
+    ProxyModule.forRoot({
+      routes: [{
+        id: 'github',
+        uri: 'https://api.github.com',
+      }],
+    }),
+  ]
 })
 export class AppModule {
 }
 ```
 
-### Configurations
+#### Import With Config Module
+
+Except `@nestcloud/boot` module you can also use `@nestcloud/config` module too.
+
+app.module.ts:
+
+```typescript
+import { Module } from '@nestjs/common';
+import { BOOT } from "@nestcloud/common";
+import { BootModule } from "@nestcloud/boot";
+import { ProxyModule } from "@nestcloud/proxy";
+import { resolve } from 'path';
+
+@Module({
+  imports: [
+    BootModule.forRoot({
+      filePath: resolve(__dirname, 'config.yaml'),
+    }),
+    ProxyModule.forRootAsync({ inject: [BOOT] }),
+  ]
+})
+export class AppModule {
+}
+```
+
+config.yaml:
 
 ```yaml
 proxy:
   routes:
-    - id: user
-      uri: lb://nestcloud-user-service
-      filters:
-       - name: AddRequestHeaderFilter
-         paramters: 
-           request-id: 123
-       - name: AddResponseHeaderFilter
-         parameters:
-           request-id: 456
-    - id: pay
-      uri: https://example.com/pay
+    - id: github
+      uri: https://api.github.com
 ```
 
 ## Usage
@@ -85,65 +103,103 @@ export class ProxyController {
     do(@Req() req: Request, @Res() res: Response, @Param('service') id) {
         this.proxy.forward(req, res, id);
     }
-    
-    private updatRoutes() {
-        const routes = [{id: 'example', uri: 'lb://example-service'}];
-        this.proxy.updateRoutes(routes);
-    }
 }
 ```
+
+Then visit http://localhost:{port}/proxy/github
 
 ### Filters
 
-There are `AddRequestHeaderFilter` and `AddResponseHeaderFilter` filters in internal proxy,
-if you want to use your own filter, please implement `IFilter` interface, 
-then call `registerFilter(filter: IFilter)` function for registering filter.
+Proxy module have `RequestHeaderFilter` and `ResponseHeaderFilter` internal filters.
+
+If you want to use a custom filter, please implement `Filter` interface
+ 
+and then use `UseFilters` decorator import your custom filter.
+
+#### How To Use Filter
 
 ```typescript
-class CustomFilter implements IFilter {
-    before(request: IRequest, response: IResponse): boolean | Promise<boolean> {
-        return undefined;
+import { Module } from '@nestjs/common';
+import { ProxyModule } from "@nestcloud/proxy";
+
+@Module({
+  imports: [
+    ProxyModule.forRoot({
+      routes: [{
+        id: 'github',
+        uri: 'https://api.github.com',
+        filters: [{
+          name: 'RequestHeaderFilter',
+          parameters: {
+            Authorization: 'Basic dGVzdDp0ZXN0',
+          },
+        }],
+      }],
+    }),
+  ]
+})
+export class AppModule {
+}
+```
+
+#### Custom Filter
+
+If you need custom a proxy filter, you need implement `Filter` interface:
+
+```typescript
+import { ClientRequest, IncomingMessage } from 'http';
+import { Filter, Request, Response, ProxyErrorException } from '@nestcloud/proxy';
+
+class CustomFilter implements Filter {
+    before(request: Request, response: Response): boolean | Promise<boolean> {
+        return true;
     }
 
-    error(error: ProxyErrorException, request: IRequest, response: IResponse) {
+    error(error: ProxyErrorException, request: Request, response: Response) {
     }
 
-    getName(): string {
-        return "CustomFilter";
+    request(proxyReq: ClientRequest, request: Request, response: Response) {
     }
 
-    request(proxyReq: ClientRequest, request: IRequest, response: IResponse) {
-    }
-
-    response(proxyRes: IncomingMessage, request: IRequest, response: IResponse) {
+    response(proxyRes: IncomingMessage, request: Request, response: Response) {
     }
 }
 ```
+
+And then, create a register class, use `UseFilters` to import your custom filter.
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { UseFilters } from "@nestcloud/proxy";
+import { CustomFilter } from './filters/CustomFilter'
+
+@Injectable()
+@UseFilters(CustomFilter)
+export class ProxyFilterRegister {
+}
+```
+
+Now you can specific your custom filter by filter classname.
 
 ## API
 
 ### class ProxyModule
 
-#### static register\(options: IProxyOptions = {}, proxy?: IExtraOptions\): DynamicModule
+#### static forRoot\(options: ProxyOptions = {}\): DynamicModule
 
 Register proxy module.
 
-| field | type | description |
-| :--- | :--- | :--- |
-| options.dependencies | string[] | NEST_BOOT or NEST_CONSUL_CONFIG |
-| options.routes | IRoute[] | routes of proxy |
-| proxy | IExtraOptions | please see http-proxy doc for detail |
+| field           | type         | description                          |
+| :-------------- | :----------- | :----------------------------------- |
+| options.inject  | string[]     | BOOT CONFIG LOADBALANCE              |
+| options.routes  | Route[]      | routes of proxy                      |
+| options.extras  | ExtraOptions | please see http-proxy doc for detail |
 
 ### class Proxy
 
-#### updateRoutes(routes: IRoute[], sync: boolean = true): void
+#### forward\(req: Request, res: Response, id: string\)
 
-Update proxy routes.
-
-#### registerFilter(filter: IFilter)
-
-Register your custom filter.
-
+forward the http request.
 
 ## Stay in touch
 
@@ -151,4 +207,4 @@ Register your custom filter.
 
 ## License
 
-  NestCloud is [MIT licensed](LICENSE).
+NestCloud is [MIT licensed](LICENSE).
