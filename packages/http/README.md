@@ -38,7 +38,8 @@ import { HttpModule } from '@nestcloud/http';
       HttpModule.forRoot(),
   ],
 })
-export class ApplicationModule {}
+export class AppModule {
+}
 ```
 
 ### Configurations

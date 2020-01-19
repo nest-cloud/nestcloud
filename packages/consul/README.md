@@ -31,16 +31,11 @@ $ npm i --save @nestcloud/consul consul
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { resolve } from 'path';
 import { ConsulModule } from '@nestcloud/consul';
-import { BootModule } from '@nestcloud/boot';
 import { BOOT } from '@nestcloud/common';
 
 @Module({
   imports: [
-    BootModule.forRoot({
-      filePath: resolve(__dirname, '../config.yaml'),
-    }),
     ConsulModule.forRootAsync({ inject: [BOOT] })
   ],
 })

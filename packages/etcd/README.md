@@ -38,7 +38,8 @@ import { EtcdModule } from '@nestcloud/etcd';
       EtcdModule.forRoot(),
   ],
 })
-export class ApplicationModule {}
+export class AppModule {
+}
 ```
 
 ### Usage

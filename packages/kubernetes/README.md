@@ -38,7 +38,8 @@ import { KubernetesModule } from '@nestcloud/kubernetes';
       KubernetesModule.forRoot({ kubeConfig: '/root/.kube/config' })
   ],
 })
-export class AppModule {}
+export class AppModule {
+}
 ```
 
 ### Use Internal Cluster

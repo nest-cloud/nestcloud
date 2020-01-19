@@ -22,12 +22,7 @@ A NestCloud component for getting and watching configurations from consul kv or 
 ## Installation
 
 ```bash
-# consul backend
-$ npm i --save @nestcloud/consul consul @nestcloud/config
-# etcd backend
-$ npm i --save @nestcloud/etcd etcd3 @nestcloud/config
-# kubernetes backend
-$ npm i --save @nestcloud/config @nestcloud/kubernetes
+$ npm i --save @nestcloud/config
 ```
 
 ## Quick Start
@@ -36,27 +31,16 @@ $ npm i --save @nestcloud/config @nestcloud/kubernetes
 
 ```typescript
 import { Module } from '@nestjs/common';
-import * as path from 'path';
-import { ConsulModule } from '@nestcloud/consul';
-import { EtcdModule } from '@nestcloud/etcd';
-import { KubernetesModule } from '@nestcloud/kuberentes';
 import { ConfigModule } from '@nestcloud/config';
-import { BootModule } from '@nestcloud/boot';
 import { BOOT, CONSUL, ETCD, KUBERNETES } from '@nestcloud/common';
 
 @Module({
     imports: [
-        BootModule.forRoot({
-            filePath: path.resolve(__dirname, '../config.yaml'),
-        }),
-        // Consul Backend
-        ConsulModule.forRootAsync({ inject: [BOOT] }),
+        // Consul
         ConfigModule.forRootAsync({ inject: [BOOT, CONSUL] }),
-        // Etcd Backend
-        EtcdModule.forRootAsync({ inject: [BOOT] }),
+        // Etcd
         ConfigModule.forRootAsync({ inject: [BOOT, ETCD] }),
-        // Kubernetes Backend
-        KubernetesModule.forRootAsync({ inject: [BOOT] }),
+        // Kubernetes
         ConfigModule.forRootAsync({ inject: [BOOT, KUBERNETES] }),
     ],
 })
