@@ -1,7 +1,7 @@
 {
   "name": "@nestcloud/boot",
-  "version": "0.6.10-22",
-  "description": "A Nest framework (node.js) module for getting config parameters when the app start running.",
+  "version": "0.7.0",
+  "description": "NestCloud is a Node.js micro-service solution, writing by Typescript language and Nest.js.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
   "publishConfig": {

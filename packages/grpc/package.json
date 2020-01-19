@@ -1,7 +1,7 @@
 {
   "name": "@nestcloud/grpc",
-  "version": "0.6.10-22",
-  "description": "loadbalance grpc module for nestcloud",
+  "version": "0.7.0",
+  "description": "NestCloud is a Node.js micro-service solution, writing by Typescript language and Nest.js.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
   "publishConfig": {

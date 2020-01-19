@@ -1,7 +1,7 @@
 {
   "name": "@nestcloud/http",
-  "version": "0.6.10-22",
-  "description": "Http is a nest http decorators library that makes writing nodejs http clients easier.",
+  "version": "0.7.0",
+  "description": "NestCloud is a Node.js micro-service solution, writing by Typescript language and Nest.js.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
   "publishConfig": {

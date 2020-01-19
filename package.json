@@ -1,7 +1,7 @@
 {
   "name": "@nestcloud/common",
   "version": "0.6.9",
-  "description": "Nest micro service solution.",
+  "description": "NestCloud is a Node.js micro-service solution, writing by Typescript language and Nest.js",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
   "scripts": {
