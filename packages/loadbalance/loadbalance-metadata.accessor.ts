@@ -11,10 +11,18 @@ export class LoadbalanceMetadataAccessor {
     }
 
     getChooses(target: Function): ChooseMetadata[] | undefined {
-        return this.reflector.get(LOADBALANCE_CHOOSE, target);
+        try {
+            return this.reflector.get(LOADBALANCE_CHOOSE, target);
+        } catch (e) {
+            return;
+        }
     }
 
     getRules(target: Function): Function[] | undefined {
-        return this.reflector.get(RULES_METADATA, target);
+        try {
+            return this.reflector.get(RULES_METADATA, target);
+        } catch (e) {
+            return;
+        }
     }
 }

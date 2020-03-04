@@ -11,6 +11,10 @@ export class ConsulMetadataAccessor {
     }
 
     getKeyValues(target: Function): KeyValueMetadata[] | undefined {
-        return this.reflector.get(CONSUL_KEY_VALUE, target);
+        try {
+            return this.reflector.get(CONSUL_KEY_VALUE, target);
+        } catch (e) {
+            return;
+        }
     }
 }

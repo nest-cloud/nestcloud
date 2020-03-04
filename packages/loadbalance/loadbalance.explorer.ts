@@ -50,7 +50,7 @@ export class LoadbalanceExplorer implements OnModuleInit {
     }
 
     lookupKeyValues(instance: Function) {
-        const chooses = this.metadataAccessor.getChooses(instance.constructor);
+        const chooses = this.metadataAccessor.getChooses(instance);
         if (chooses) {
             this.loadbalanceOrchestrator.addChooses(instance, chooses);
         }

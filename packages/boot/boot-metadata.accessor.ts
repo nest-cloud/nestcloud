@@ -10,14 +10,26 @@ export class BootMetadataAccessor {
     }
 
     getBootValueName(target: Function): string | undefined {
-        return this.reflector.get(BOOT_VALUE_NAME, target);
+        try {
+            return this.reflector.get(BOOT_VALUE_NAME, target);
+        } catch (e) {
+            return;
+        }
     }
 
     getBootValueDefaults(target: Function): any | undefined {
-        return this.reflector.get(BOOT_VALUE_DEFAULTS, target);
+        try {
+            return this.reflector.get(BOOT_VALUE_DEFAULTS, target);
+        } catch (e) {
+            return;
+        }
     }
 
     getBootValueProperty(target: Function): string | undefined {
-        return this.reflector.get(BOOT_VALUE_PROPERTY, target);
+        try {
+            return this.reflector.get(BOOT_VALUE_PROPERTY, target);
+        } catch (e) {
+            return;
+        }
     }
 }

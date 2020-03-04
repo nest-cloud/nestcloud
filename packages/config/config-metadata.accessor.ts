@@ -11,6 +11,10 @@ export class ConfigMetadataAccessor {
     }
 
     getConfigValues(target: Function): ConfigValueMetadata[] | undefined {
-        return this.reflector.get(CONFIG_VALUE, target);
+        try {
+            return this.reflector.get(CONFIG_VALUE, target);
+        } catch (e) {
+            return;
+        }
     }
 }
