@@ -18,18 +18,32 @@ export class BootFileLoader {
 
     public load(): any {
         const configs = [];
+        this.checkFileExists();
         this.files.forEach((file, index) => {
-            configs.push(this.loadFile(file, index === 0));
+            configs.push(this.loadFile(file));
         });
         return defaultsDeep({}, ...configs);
     }
 
-    public loadFile(path: string, throwable: boolean): any {
+    private checkFileExists() {
+        if (this.files.length === 0) {
+            throw new Error(`file ${path} was not found`);
+        }
+
+        let existFiles: number = 0;
+        for (let i = 0; i < this.files.length; i++) {
+            if (fs.existsSync(this.files[i])) {
+                existFiles++;
+            }
+        }
+        if (existFiles === 0) {
+            throw new Error(`file ${path} was not found`);
+        }
+    }
+
+    public loadFile(path: string): any {
         let config = {};
         if (!fs.existsSync(path)) {
-            if (throwable) {
-                throw new Error(`file ${path} was not found`);
-            }
             return config;
         }
         const configStr = fs.readFileSync(path).toString();
