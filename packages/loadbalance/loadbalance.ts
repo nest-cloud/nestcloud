@@ -9,6 +9,7 @@ import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { LoadbalanceChecker } from './loadbalance.checker';
 import { LoadbalanceRuleRegistry } from './loadbalance-rule.registry';
 import { LoadbalanceConfig } from './loadbalance.config';
+import { rejects } from 'assert';
 
 @Injectable()
 export class Loadbalance implements ILoadbalance, OnModuleInit {
@@ -64,16 +65,24 @@ export class Loadbalance implements ILoadbalance, OnModuleInit {
     }
 
     private updateServices(services: string[]) {
-        services.forEach(service => {
+        services.forEach(async service => {
             const nodes = this.service.getServiceServers(service);
             if (!service || this.loadbalancers.has(service)) {
                 return null;
             }
 
             const ruleName = this.config.getRule(service);
-            const rule: Rule = this.loadbalanceRuleRegistry.getRule(ruleName);
+            let rule: Rule = this.loadbalanceRuleRegistry.getRule(ruleName);
             if (!rule) {
-                throw new Error(`The rule ${ruleName} is not exist`);
+                await new Promise((resolve, reject) => {
+                    this.loadbalanceRuleRegistry.watch(() => {
+                        rule = this.loadbalanceRuleRegistry.getRule(ruleName);
+                        if (rule) {
+                            resolve();
+                        }
+                    });
+                    setTimeout(() => reject(new Error(`The rule ${ruleName} is not exist`)), 5000);
+                });
             }
             this.createLoadbalancer(service, nodes, rule);
             this.createServiceWatcher(service, rule);
