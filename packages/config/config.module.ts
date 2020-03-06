@@ -44,7 +44,7 @@ export class ConfigModule {
                 }
                 const kubernetes: IKubernetes = params[inject.indexOf(KUBERNETES)];
                 if (kubernetes) {
-                    return factory.create(KUBERNETES, consul);
+                    return factory.create(KUBERNETES, kubernetes);
                 }
                 const etcd: IEtcd = params[inject.indexOf(ETCD)];
                 if (etcd) {
