@@ -4,6 +4,7 @@ node_js:
   - "10"
   - "11"
 services:
+  - xvfb
   - docker
 cache:
   directories:
@@ -12,9 +13,6 @@ git:
   depth: 5
 addons:
   firefox: "latest"
-before_script:
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
 before_install:
   - docker pull consul
   - docker run -d --name=dev-consul -e CONSUL_BIND_INTERFACE=eth0 -p 8500:8500 consul
