@@ -30,8 +30,12 @@ export class Loadbalance implements ILoadbalance, OnModuleInit {
 
     private async init() {
         const services: string[] = this.service.getServiceNames();
+        this.config.on(() => this.updateServices(services, true));
         await this.updateServices(services);
-        this.service.watchServiceList((services: string[]) => this.updateServices(services));
+        this.service.watchServiceList(async (services: string[]) => {
+            this.config.on(() => this.updateServices(services, true));
+            await this.updateServices(services);
+        });
 
         if (this.timer) {
             clearInterval(this.timer);
@@ -63,11 +67,13 @@ export class Loadbalance implements ILoadbalance, OnModuleInit {
         return state;
     }
 
-    private updateServices(services: string[]) {
+    private updateServices(services: string[], force?: boolean) {
         services.forEach(async service => {
             const nodes = this.service.getServiceServers(service);
-            if (!service || this.loadbalancers.has(service)) {
-                return null;
+            if (!force) {
+                if (!service || this.loadbalancers.has(service)) {
+                    return null;
+                }
             }
 
             const ruleName = this.config.getRule(service);

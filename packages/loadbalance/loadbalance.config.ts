@@ -3,9 +3,9 @@ import { OnModuleInit } from '@nestjs/common';
 import { LoadbalanceOptions } from './interfaces/loadbalance-options.interface';
 
 export class LoadbalanceConfig implements OnModuleInit {
-    private CONFIG_PREFIX = 'proxy';
+    private CONFIG_PREFIX = 'loadbalance';
     private options: LoadbalanceOptions = {};
-    private ref: Function;
+    private refs: Function[] = [];
 
     constructor(
         private readonly opts: LoadbalanceOptions = {},
@@ -34,7 +34,7 @@ export class LoadbalanceConfig implements OnModuleInit {
     }
 
     public on(ref: Function) {
-        this.ref = ref;
+        this.refs.push(ref);
     }
 
     onModuleInit(): any {
@@ -48,7 +48,7 @@ export class LoadbalanceConfig implements OnModuleInit {
 
             this.config.watch(this.CONFIG_PREFIX, configOptions => {
                 this.options = Object.assign(this.opts, this.options, configOptions);
-                this.ref && this.ref(this.options);
+                this.refs.forEach(ref => ref(this.options));
             });
         }
 
