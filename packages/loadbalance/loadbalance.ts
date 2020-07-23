@@ -9,7 +9,6 @@ import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { LoadbalanceChecker } from './loadbalance.checker';
 import { LoadbalanceRuleRegistry } from './loadbalance-rule.registry';
 import { LoadbalanceConfig } from './loadbalance.config';
-import { rejects } from 'assert';
 
 @Injectable()
 export class Loadbalance implements ILoadbalance, OnModuleInit {
@@ -104,6 +103,7 @@ export class Loadbalance implements ILoadbalance, OnModuleInit {
                 server.state = new ServerState();
             }
             server.state.status = node.status;
+            server.tags = node.tags;
             return server;
         });
 

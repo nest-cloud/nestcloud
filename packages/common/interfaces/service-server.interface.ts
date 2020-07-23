@@ -4,6 +4,7 @@ export interface IServiceServer {
     name: string;
     address: string;
     port: string;
+    tags?: string[];
     zone?: string;
     status: string;
 }
