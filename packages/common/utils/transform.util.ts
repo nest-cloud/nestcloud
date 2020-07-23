@@ -20,6 +20,16 @@ export const mapToObject = map => {
     return result;
 };
 
+export const stringToKeyValue = (values: string[], char: string = '='): Map<string, string> => {
+    const map = new Map<string, string>();
+    values.forEach(value => {
+        value = value.trim();
+        const chunks = value.split(char);
+        map.set(chunks[0], chunks[1]);
+    });
+    return map;
+};
+
 function parseObjectToMap(mapper, object, path?) {
     if (!mapper) {
         mapper = {};

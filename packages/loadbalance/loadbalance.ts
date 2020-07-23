@@ -1,4 +1,13 @@
-import { ILoadbalance, IServiceServer, IServer, ILoadbalancer, IService, Scanner, SERVICE } from '@nestcloud/common';
+import {
+    ILoadbalance,
+    IServiceServer,
+    IServer,
+    ILoadbalancer,
+    IService,
+    Scanner,
+    SERVICE,
+    stringToKeyValue,
+} from '@nestcloud/common';
 import { ServiceOptions } from './interfaces/service-options.interface';
 import { Loadbalancer } from './loadbalancer';
 import { Server } from './server';
@@ -30,10 +39,9 @@ export class Loadbalance implements ILoadbalance, OnModuleInit {
 
     private async init() {
         const services: string[] = this.service.getServiceNames();
-        this.config.on(() => this.updateServices(services, true));
+        this.config.on(() => this.updateServices(this.service.getServiceNames(), true));
         await this.updateServices(services);
         this.service.watchServiceList(async (services: string[]) => {
-            this.config.on(() => this.updateServices(services, true));
             await this.updateServices(services);
         });
 
@@ -109,7 +117,7 @@ export class Loadbalance implements ILoadbalance, OnModuleInit {
                 server.state = new ServerState();
             }
             server.state.status = node.status;
-            server.tags = node.tags;
+            server.tags = stringToKeyValue(node.tags);
             return server;
         });
 

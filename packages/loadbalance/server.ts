@@ -7,7 +7,7 @@ export class Server implements IServer {
     address: string;
     port: string;
     zone?: string;
-    tags?: string[];
+    tags?: Map<string, string>;
     state: ServerState;
 
     constructor(address: string, port: string) {
