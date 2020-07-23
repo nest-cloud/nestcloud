@@ -9,19 +9,20 @@ export class BootExplorer implements OnModuleInit {
     constructor(
         private readonly discoveryService: DiscoveryService,
         private readonly metadataAccessor: BootMetadataAccessor,
-        private readonly configOrchestrator: BootOrchestrator,
+        private readonly bootOrchestrator: BootOrchestrator,
     ) {
     }
 
-    onModuleInit() {
+    async onModuleInit() {
         this.explore();
+        await this.bootOrchestrator.mountBootValues();
     }
 
     explore() {
         const providers: InstanceWrapper[] = this.discoveryService.getProviders();
         providers.forEach((wrapper: InstanceWrapper) => {
             const { instance } = wrapper;
-            if (!instance) {
+            if (!instance || typeof instance === 'string') {
                 return;
             }
             this.lookupBootValues(instance);
@@ -33,7 +34,7 @@ export class BootExplorer implements OnModuleInit {
         const defaults = this.metadataAccessor.getBootValueDefaults(instance);
         const property = this.metadataAccessor.getBootValueProperty(instance);
         if (name) {
-            this.configOrchestrator.addBootValue(name, property, instance, defaults);
+            this.bootOrchestrator.addBootValue(name, property, instance, defaults);
         }
     }
 }

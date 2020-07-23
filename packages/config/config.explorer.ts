@@ -13,15 +13,16 @@ export class ConfigExplorer implements OnModuleInit {
     ) {
     }
 
-    onModuleInit() {
+    async onModuleInit() {
         this.explore();
+        await this.configOrchestrator.mountConfigValues();
     }
 
     explore() {
         const providers: InstanceWrapper[] = this.discoveryService.getProviders();
         providers.forEach((wrapper: InstanceWrapper) => {
             const { instance } = wrapper;
-            if (!instance) {
+            if (!instance || typeof instance === 'string') {
                 return;
             }
             this.lookupWatchers(instance);

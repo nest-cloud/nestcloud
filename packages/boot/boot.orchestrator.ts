@@ -1,4 +1,4 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BootStore } from './boot.store';
 
 interface WatcherOptions {
@@ -9,7 +9,7 @@ interface WatcherOptions {
 }
 
 @Injectable()
-export class BootOrchestrator implements OnApplicationBootstrap {
+export class BootOrchestrator {
     private readonly configValues = new Map<string, WatcherOptions>();
 
     constructor(
@@ -22,11 +22,7 @@ export class BootOrchestrator implements OnApplicationBootstrap {
         this.configValues.set(key, { name, property, target, defaults });
     }
 
-    async onApplicationBootstrap(): Promise<void> {
-        await this.mountBootValues();
-    }
-
-    private async mountBootValues() {
+    async mountBootValues() {
         for (const item of this.configValues.values()) {
             const { name, property, target, defaults } = item;
             const path = name || property;

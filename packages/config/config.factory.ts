@@ -13,22 +13,32 @@ export class ConfigFactory {
     ) {
     }
 
-    create(backend: string, ref: any) {
+    async create(backend: string, ref: any) {
+        let client;
         switch (backend) {
             case CONSUL:
-                return new ConsulConfig(this.store, ref, this.options.name);
+                client = new ConsulConfig(this.store, ref, this.options.name);
+                break;
             case ETCD:
-                return new EtcdConfig(this.store, ref, this.options.name);
+                client = new EtcdConfig(this.store, ref, this.options.name);
+                break;
             case KUBERNETES:
-                return new KubernetesConfig(
+                client = new KubernetesConfig(
                     this.store,
                     ref,
                     this.options.name,
                     this.options.namespace,
                     this.options.path,
                 );
+                break;
             default:
                 throw new Error(NO_DEPS_MODULE_FOUND);
         }
+
+        try {
+            await client.onModuleInit();
+        } catch (e) {
+        }
+        return client;
     }
 }

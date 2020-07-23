@@ -30,10 +30,9 @@ export class HttpClient {
     }
 
     create(options: HttpOptions = {}) {
-        const globalAxiosOptions = this.options || {};
         return new HttpClient(
-            axios.create(Object.assign(globalAxiosOptions, options)),
-            this.options,
+            axios.create({ ...options }),
+            options,
         );
     }
 

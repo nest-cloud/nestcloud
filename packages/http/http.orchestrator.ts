@@ -23,7 +23,7 @@ interface DecoratorRequest {
 }
 
 @Injectable()
-export class HttpOrchestrator implements OnApplicationBootstrap {
+export class HttpOrchestrator {
     private readonly decoratorRequests = new Map<string, DecoratorRequest>();
 
     constructor(
@@ -57,11 +57,7 @@ export class HttpOrchestrator implements OnApplicationBootstrap {
         });
     }
 
-    async onApplicationBootstrap(): Promise<void> {
-        await this.mountDecoratorRequests();
-    }
-
-    private async mountDecoratorRequests() {
+    async mountDecoratorRequests() {
         const lb: ILoadbalance = this.scanner.findProviderByName(LOADBALANCE);
         const brakes: Brakes = this.scanner.findProviderByName(BRAKES);
         for (const item of this.decoratorRequests.values()) {

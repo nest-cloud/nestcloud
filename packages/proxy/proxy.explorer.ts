@@ -29,7 +29,7 @@ export class ProxyExplorer implements OnModuleInit {
         ];
         providers.forEach((wrapper: InstanceWrapper) => {
             const { instance } = wrapper;
-            if (!instance) {
+            if (!instance || typeof instance === 'string') {
                 return;
             }
             this.lookupFilters(instance);

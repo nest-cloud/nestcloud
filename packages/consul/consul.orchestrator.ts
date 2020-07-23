@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationShutdown } from '@nestjs/common';
 import { Scanner, Watch, KeyValueOptions, KeyValueMetadata, setValue } from '@nestcloud/common';
 import { Consul } from './consul.class';
 import { KVResponse } from './interfaces/consul-kv-response.interface';
@@ -14,7 +14,7 @@ interface KeyValue {
 }
 
 @Injectable()
-export class ConsulOrchestrator implements OnApplicationBootstrap, OnApplicationShutdown {
+export class ConsulOrchestrator implements OnApplicationShutdown {
     private readonly keyValues = new Map<string, KeyValue>();
     private logger = new Logger(ConsulOrchestrator.name);
 
@@ -32,15 +32,11 @@ export class ConsulOrchestrator implements OnApplicationBootstrap, OnApplication
 
     }
 
-    async onApplicationBootstrap(): Promise<void> {
-        await this.mountKeyValues();
-    }
-
     onApplicationShutdown(signal?: string): any {
         this.keyValues.forEach(item => item.watcher ? item.watcher.end() : '');
     }
 
-    private async mountKeyValues() {
+    public async mountKeyValues() {
         for (const item of this.keyValues.values()) {
             const { name, property, target, options = {} } = item;
             try {

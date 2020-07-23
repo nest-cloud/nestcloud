@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/loadbalance",
-  "version": "0.7.8",
+  "version": "0.7.9",
   "description": "NestCloud is a Node.js micro-service solution, writing by Typescript language and Nest.js.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",

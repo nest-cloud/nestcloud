@@ -36,7 +36,7 @@ export class ConfigModule {
         };
         const configProvider = {
             provide: CONFIG,
-            useFactory: (options: ConfigOptions, store: ConfigStore, ...params: any[]): IConfig => {
+            useFactory: async (options: ConfigOptions, store: ConfigStore, ...params: any[]): Promise<IConfig> => {
                 const factory = new ConfigFactory(store, options);
                 const consul: IConsul = params[inject.indexOf(CONSUL)];
                 if (consul) {

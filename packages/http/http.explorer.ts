@@ -16,15 +16,16 @@ export class HttpExplorer implements OnModuleInit {
     ) {
     }
 
-    onModuleInit() {
+    async onModuleInit() {
         this.explore();
+        await this.httpOrchestrator.mountDecoratorRequests();
     }
 
     explore() {
         const providers: InstanceWrapper[] = this.discoveryService.getProviders();
         providers.forEach((wrapper: InstanceWrapper) => {
             const { instance } = wrapper;
-            if (!instance) {
+            if (!instance || typeof instance === 'string') {
                 return;
             }
             this.metadataScanner.scanFromPrototype(

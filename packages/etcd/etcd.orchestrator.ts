@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationShutdown } from '@nestjs/common';
 import { KeyValueOptions, KeyValueMetadata, setValue } from '@nestcloud/common';
 import { Etcd } from './etcd';
 import { InjectEtcd } from './decorators/inject-etcd.decorator';
@@ -15,7 +15,7 @@ interface KeyValue {
 }
 
 @Injectable()
-export class EtcdOrchestrator implements OnApplicationBootstrap, OnApplicationShutdown {
+export class EtcdOrchestrator implements OnApplicationShutdown {
     private readonly keyValues = new Map<string, KeyValue>();
     private logger = new Logger(EtcdOrchestrator.name);
 
@@ -31,15 +31,11 @@ export class EtcdOrchestrator implements OnApplicationBootstrap, OnApplicationSh
         });
     }
 
-    async onApplicationBootstrap(): Promise<void> {
-        await this.mountKeyValues();
-    }
-
     onApplicationShutdown(signal?: string): any {
         this.keyValues.forEach(item => item.watcher ? item.watcher.cancel() : '');
     }
 
-    private async mountKeyValues() {
+    public async mountKeyValues() {
         for (const item of this.keyValues.values()) {
             const { name, property, target, options = {} } = item;
             try {

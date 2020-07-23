@@ -21,7 +21,7 @@ export class GrpcExplorer implements OnModuleInit {
         const providers: InstanceWrapper[] = this.discoveryService.getProviders();
         providers.forEach((wrapper: InstanceWrapper) => {
             const { instance } = wrapper;
-            if (!instance) {
+            if (!instance || typeof instance === 'string') {
                 return;
             }
             this.lookupKeyValues(instance);

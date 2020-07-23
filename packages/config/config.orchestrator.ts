@@ -1,4 +1,4 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigStore } from './config.store';
 import { ConfigValueMetadata } from './interfaces/config-value-metadata.interface';
 
@@ -10,7 +10,7 @@ interface ConfigValue {
 }
 
 @Injectable()
-export class ConfigOrchestrator implements OnApplicationBootstrap {
+export class ConfigOrchestrator {
     private readonly configValues = new Map<string, ConfigValue>();
 
     constructor(
@@ -25,11 +25,7 @@ export class ConfigOrchestrator implements OnApplicationBootstrap {
         });
     }
 
-    async onApplicationBootstrap(): Promise<void> {
-        await this.mountConfigValues();
-    }
-
-    private async mountConfigValues() {
+    public async mountConfigValues() {
         for (const item of this.configValues.values()) {
             const { name, property, target, defaults } = item;
             const path = name || property;

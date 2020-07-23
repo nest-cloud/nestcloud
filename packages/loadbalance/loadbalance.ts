@@ -39,7 +39,6 @@ export class Loadbalance implements ILoadbalance, OnModuleInit {
 
     private async init() {
         const services: string[] = this.service.getServiceNames();
-        this.config.on(() => this.updateServices(this.service.getServiceNames(), true));
         await this.updateServices(services);
         this.service.watchServiceList(async (services: string[]) => {
             await this.updateServices(services);

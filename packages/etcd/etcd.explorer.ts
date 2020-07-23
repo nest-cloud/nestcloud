@@ -13,15 +13,16 @@ export class EtcdExplorer implements OnModuleInit {
     ) {
     }
 
-    onModuleInit() {
+    async onModuleInit() {
         this.explore();
+        await this.etcdOrchestrator.mountKeyValues();
     }
 
     explore() {
         const providers: InstanceWrapper[] = this.discoveryService.getProviders();
         providers.forEach((wrapper: InstanceWrapper) => {
             const { instance } = wrapper;
-            if (!instance) {
+            if (!instance || typeof instance === 'string') {
                 return;
             }
             this.lookupKeyValues(instance);

@@ -18,8 +18,9 @@ export class LoadbalanceExplorer implements OnModuleInit {
     ) {
     }
 
-    onModuleInit() {
+    async onModuleInit() {
         this.explore();
+        await this.loadbalanceOrchestrator.mountChooses();
     }
 
     explore() {
@@ -29,7 +30,7 @@ export class LoadbalanceExplorer implements OnModuleInit {
         ];
         providers.forEach((wrapper: InstanceWrapper) => {
             const { instance } = wrapper;
-            if (!instance) {
+            if (!instance || typeof instance === 'string') {
                 return;
             }
             this.lookupKeyValues(instance);

@@ -1,4 +1,4 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Scanner, ILoadbalance, IServer } from '@nestcloud/common';
 import { ChooseMetadata } from './interfaces/choose-metadata.interface';
 import { InjectLoadbalance } from './decorators/inject-loadbalance.decorator';
@@ -10,7 +10,7 @@ interface Choose {
 }
 
 @Injectable()
-export class LoadbalanceOrchestrator implements OnApplicationBootstrap {
+export class LoadbalanceOrchestrator {
     private readonly keyValues = new Map<string, Choose>();
 
     constructor(
@@ -27,11 +27,7 @@ export class LoadbalanceOrchestrator implements OnApplicationBootstrap {
 
     }
 
-    async onApplicationBootstrap(): Promise<void> {
-        await this.mountChooses();
-    }
-
-    private async mountChooses() {
+    public async mountChooses() {
         for (const item of this.keyValues.values()) {
             const { service, property, target } = item;
             Object.defineProperty(target, property, {

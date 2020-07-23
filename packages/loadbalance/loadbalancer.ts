@@ -11,7 +11,6 @@ export class Loadbalancer implements ILoadbalancer {
         private rule: Rule,
     ) {
         this.servers = this.initialServers(this.servers);
-        this.rule.init(this);
     }
 
     public chooseService(): IServer {
@@ -19,6 +18,7 @@ export class Loadbalancer implements ILoadbalancer {
             throw new Error('The rule is not exist.');
         }
 
+        this.rule.init(this);
         return this.rule.choose();
     }
 
