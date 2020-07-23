@@ -28,7 +28,7 @@ export class Logger {
             this.options = options;
         }
 
-        this.basePath = dirname(options.filePath);
+        this.basePath = options.filePath ? dirname(options.filePath) : '';
         this.init();
     }
 
