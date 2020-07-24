@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BootStore } from './boot.store';
+import { BootValueMetadata } from './interfaces/boot-value-metadata.interface';
 
 interface WatcherOptions {
     name: string;
@@ -17,9 +18,11 @@ export class BootOrchestrator {
     ) {
     }
 
-    public addBootValue(name: string, property: string, target: Function, defaults?: any) {
-        const key = `${name}__${property}__${target.constructor.name}`;
-        this.configValues.set(key, { name, property, target, defaults });
+    public addBootValues(target: Function, bootValues: BootValueMetadata[]) {
+        bootValues.forEach(({ name, defaults, property }) => {
+            const key = `${name}__${property}__${target.constructor.name}`;
+            this.configValues.set(key, { name, property, target, defaults });
+        });
     }
 
     async mountBootValues() {

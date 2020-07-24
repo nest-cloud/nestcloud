@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { BOOT_VALUE_DEFAULTS, BOOT_VALUE_NAME, BOOT_VALUE_PROPERTY } from './boot.constants';
+import { BOOT_VALUE } from './boot.constants';
+import { BootValueMetadata } from './interfaces/boot-value-metadata.interface';
 
 @Injectable()
 export class BootMetadataAccessor {
@@ -9,25 +10,9 @@ export class BootMetadataAccessor {
     ) {
     }
 
-    getBootValueName(target: Function): string | undefined {
+    getBootValues(target: Function): BootValueMetadata[] | undefined {
         try {
-            return this.reflector.get(BOOT_VALUE_NAME, target);
-        } catch (e) {
-            return;
-        }
-    }
-
-    getBootValueDefaults(target: Function): any | undefined {
-        try {
-            return this.reflector.get(BOOT_VALUE_DEFAULTS, target);
-        } catch (e) {
-            return;
-        }
-    }
-
-    getBootValueProperty(target: Function): string | undefined {
-        try {
-            return this.reflector.get(BOOT_VALUE_PROPERTY, target);
+            return this.reflector.get(BOOT_VALUE, target);
         } catch (e) {
             return;
         }
