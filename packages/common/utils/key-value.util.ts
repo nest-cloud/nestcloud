@@ -6,14 +6,14 @@ export function setValue(target: Function, value: any, property: string, options
         try {
             value = JSON.parse(value);
         } catch (e) {
-            value = {};
+            value = options.defaults;
         }
     } else if (options.type === 'yaml') {
         try {
             value = YAML.parse(value);
         } catch (e) {
-            value = {};
+            value = options.defaults;
         }
     }
-    target.constructor.prototype[property] = value;
+    target.constructor.prototype[property] = value ?? options.defaults;
 }
