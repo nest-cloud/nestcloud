@@ -16,7 +16,7 @@
   },
   "homepage": "https://github.com/nest-cloud/nestcloud#readme",
   "dependencies": {
-    "etcd3": "^0.2.13",
+    "etcd3": "^1.0.1",
     "lodash": "^4.17.11",
     "reflect-metadata": "^0.1.12",
     "yamljs": "^0.3.0"

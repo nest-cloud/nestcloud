@@ -15,7 +15,7 @@
     "url": "https://github.com/nest-cloud/nestcloud/issues"
   },
   "peerDependencies": {
-    "etcd3": "^0.2.13"
+    "etcd3": "^1.0.1"
   },
   "homepage": "https://github.com/nest-cloud/nestcloud#readme"
 }
