@@ -25,11 +25,31 @@ The loadbalance grpc module for nestcloud.
 $ npm install --save @nestcloud/grpc
 ```
 
-## Usage
+## Quick Start
+
+### Import module
+
+*Before import `GrpcModule`, you need to import [`LoadbalanceModule`][loadbalance] first.*
+
+```typescript
+import { Module } from '@nestjs/common';
+import { LoadbalanceModule } from '@nestcloud/loadbalance'
+import { GrpcModule } from '@nestcloud/grpc';
+
+@Module({
+  imports: [
+      LoadbalanceModule.forRoot({...}),
+      GrpcModule.forRoot()
+  ],
+})
+export class AppModule {}
+```
+
+### Usage
 
 ```typescript
 import { Controller, Get } from '@nestjs/common';
-import { GrpcClient, LbClient, IClientConfig, Service } from '@nestcloud/grpc';
+import { RpcClient, GrpcClient, IClientConfig, Service } from '@nestcloud/grpc';
 import { HeroService } from './interfaces/hero-service.interface';
 import { join } from 'path';
 
@@ -41,7 +61,7 @@ const grpcOptions: IClientConfig = {
 
 @Controller()
 export class HeroController {
-    @LbClient(grpcOptions)
+    @RpcClient(grpcOptions)
     private readonly client: GrpcClient;
     @Service('HeroService', grpcOptions)
     private readonly heroService: HeroService;
@@ -62,3 +82,6 @@ More please visit the example: https://github.com/nest-cloud/nestcloud-grpc-exam
 ## License
 
   NestCloud is [MIT licensed](LICENSE).
+
+
+[loadbalance]: https://github.com/nest-cloud/nestcloud/tree/master/packages/loadbalance
