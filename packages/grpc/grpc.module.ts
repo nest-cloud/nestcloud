@@ -16,7 +16,8 @@ export class GrpcModule {
 
         const grpcProvider = {
             provide: GRPC,
-            useFactory: async (): Promise<any> => {},
+            useFactory: async (): Promise<any> => {
+            },
             inject,
         };
 
