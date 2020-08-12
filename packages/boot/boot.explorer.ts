@@ -19,7 +19,10 @@ export class BootExplorer implements OnModuleInit {
     }
 
     explore() {
-        const providers: InstanceWrapper[] = this.discoveryService.getProviders();
+        const providers: InstanceWrapper[] = [
+            ...this.discoveryService.getProviders(),
+            ...this.discoveryService.getControllers(),
+        ];
         providers.forEach((wrapper: InstanceWrapper) => {
             const { instance } = wrapper;
             if (!instance || typeof instance === 'string') {
