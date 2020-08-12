@@ -1,9 +1,8 @@
 import { OnModuleDestroy, OnModuleInit, Logger } from '@nestjs/common';
 import * as md5encode from 'blueimp-md5';
-import { IConsul } from '@nestcloud/common';
+import { IConsul, IService, IServiceServer, sleep } from '@nestcloud/common';
 import { get } from 'lodash';
 
-import { IService, sleep, IServiceServer } from '@nestcloud/common';
 import { ServiceOptions } from './interfaces/service-options.interface';
 import { ServiceCheck } from './interfaces/service-check.interface';
 import { getIPAddress } from './utils/os.util';
@@ -36,10 +35,7 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IService {
     private readonly includes: string[];
     private readonly connect: ConnectService;
 
-    constructor(
-        private readonly consul: IConsul,
-        options: ServiceOptions,
-    ) {
+    constructor(private readonly consul: IConsul, options: ServiceOptions) {
         this.discoveryHost = get(options, 'discoveryHost', getIPAddress());
         this.serviceId = get(options, 'id');
         this.serviceName = get(options, 'name');
@@ -118,7 +114,7 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy, IService {
         } as ServiceCheck;
 
         if (this.tcp) {
-            check.tcp = this.tcp;
+            check.tcp = this.tcp === 'true' ? `${this.discoveryHost}:${this.servicePort}` : this.tcp;
         } else if (this.script) {
             check.script = this.script;
         } else if (this.dockerContainerId) {

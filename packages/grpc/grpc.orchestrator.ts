@@ -20,11 +20,7 @@ export class GrpcOrchestrator implements OnApplicationBootstrap {
     private readonly clients = new Map<string, Client>();
     private readonly services = new Map<string, Service>();
 
-    constructor(
-        private readonly scanner: Scanner,
-        @Inject(LOADBALANCE) private readonly lb: ILoadbalance,
-    ) {
-    }
+    constructor(private readonly scanner: Scanner, @Inject(LOADBALANCE) private readonly lb: ILoadbalance) {}
 
     public addClients(target: Function, clients: GrpcClientMetadata[]) {
         clients.forEach(({ property, options }) => {
@@ -53,7 +49,11 @@ export class GrpcOrchestrator implements OnApplicationBootstrap {
     private async mountClients() {
         for (const item of this.clients.values()) {
             const { property, target, options } = item;
-            target.constructor[property] = GrpcClientFactory.create(this.lb, options);
+            Object.defineProperty(target, property, {
+                get: () => {
+                    return GrpcClientFactory.create(this.lb, options);
+                },
+            });
         }
     }
 
@@ -61,7 +61,12 @@ export class GrpcOrchestrator implements OnApplicationBootstrap {
         for (const item of this.services.values()) {
             const { name, property, target, options } = item;
             const client = GrpcClientFactory.create(this.lb, options);
-            target.constructor[property] = client.getService(name);
+
+            Object.defineProperty(target, property, {
+                get: () => {
+                    return client.getService(name);
+                },
+            });
         }
     }
 }

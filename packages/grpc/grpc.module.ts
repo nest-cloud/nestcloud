@@ -1,5 +1,5 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
-import { GRPC, LOADBALANCE } from '@nestcloud/common';
+import { Scanner, GRPC, LOADBALANCE } from '@nestcloud/common';
 import { DiscoveryModule } from '@nestjs/core';
 import { GrpcMetadataAccessor } from './grpc-metadata.accessor';
 import { GrpcOrchestrator } from './grpc.orchestrator';
@@ -8,7 +8,7 @@ import { GrpcExplorer } from './grpc.explorer';
 @Global()
 @Module({
     imports: [DiscoveryModule],
-    providers: [GrpcMetadataAccessor, GrpcOrchestrator],
+    providers: [Scanner, GrpcMetadataAccessor, GrpcOrchestrator],
 })
 export class GrpcModule {
     static forRoot(): DynamicModule {
@@ -16,8 +16,7 @@ export class GrpcModule {
 
         const grpcProvider = {
             provide: GRPC,
-            useFactory: async (): Promise<any> => {
-            },
+            useFactory: async (): Promise<any> => {},
             inject,
         };
 
