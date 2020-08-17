@@ -1,6 +1,5 @@
 import {
     ForbiddenException,
-    Injectable,
     InternalServerErrorException,
     NotFoundException,
     OnModuleInit,
@@ -21,15 +20,14 @@ import { ProxyRouteRegistry } from './proxy-route.registry';
 import { URL } from 'url';
 import { ProxyConfig } from './proxy.config';
 
-@Injectable()
 export class Proxy implements IProxy, OnModuleInit {
     private proxy: HttpProxy;
-    private lb: ILoadbalance;
 
     constructor(
         private readonly config: ProxyConfig,
         private readonly filterRegistry: ProxyFilterRegistry,
         private readonly routeRegistry: ProxyRouteRegistry,
+        private readonly lb: ILoadbalance
     ) {
     }
 
@@ -57,10 +55,6 @@ export class Proxy implements IProxy, OnModuleInit {
             this.initRoutes();
             this.initProxy();
         });
-    }
-
-    public useLb(lb: ILoadbalance) {
-        this.lb = lb;
     }
 
     private initRoutes() {

@@ -44,8 +44,7 @@ export class LoadbalanceModule {
 
         const loadbalanceProvider = {
             provide: LOADBALANCE,
-            useFactory: (lb: Loadbalance) => lb,
-            inject: [Loadbalance],
+            useExisting: Loadbalance
         };
 
         const axiosProvider = {

@@ -16,14 +16,13 @@ export class ScheduleModule {
     static forRoot(): DynamicModule {
         const scheduleProvider = {
             provide: SCHEDULE,
-            useFactory: (schedule: Schedule) => schedule,
-            inject: [Schedule],
+            useExisting: Schedule,
         };
         return {
             global: true,
             module: ScheduleModule,
             providers: [ScheduleExplorer, SchedulerRegistry, ScheduleWrapper, Schedule, scheduleProvider],
-            exports: [Schedule, scheduleProvider],
+            exports: [scheduleProvider],
         };
     }
 }
