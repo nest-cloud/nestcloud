@@ -6,10 +6,9 @@ import { ProxyFilterRegistry } from './proxy-filter.registry';
 import { ProxyRouteRegistry } from './proxy-route.registry';
 import { ProxyMetadataAccessor } from './proxy-metadata.accessor';
 import { DiscoveryModule } from '@nestjs/core';
-import { Scanner, BOOT, CONFIG, IBoot, IConfig, PROXY } from '@nestcloud/common';
+import { Scanner, BOOT, CONFIG, IBoot, IConfig, PROXY, ILoadbalance, LOADBALANCE } from '@nestcloud/common';
 import { ProxyFilterRegister } from './proxy-filter.register';
 import { ProxyConfig } from './proxy.config';
-import { ILoadbalance, LOADBALANCE } from '../common';
 
 @Global()
 @Module({
