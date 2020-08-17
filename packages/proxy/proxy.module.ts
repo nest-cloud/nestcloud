@@ -6,7 +6,7 @@ import { ProxyFilterRegistry } from './proxy-filter.registry';
 import { ProxyRouteRegistry } from './proxy-route.registry';
 import { ProxyMetadataAccessor } from './proxy-metadata.accessor';
 import { DiscoveryModule } from '@nestjs/core';
-import { Scanner, BOOT, CONFIG, IBoot, IConfig, ILoadbalance, LOADBALANCE, PROXY } from '@nestcloud/common';
+import { Scanner, BOOT, CONFIG, IBoot, IConfig, PROXY } from '@nestcloud/common';
 import { ProxyFilterRegister } from './proxy-filter.register';
 import { ProxyConfig } from './proxy.config';
 
@@ -34,12 +34,7 @@ export class ProxyModule {
         };
         const proxyProvider = {
             provide: PROXY,
-            useFactory: (proxy: Proxy, ...params: any[]) => {
-                const lb: ILoadbalance = params[inject.indexOf(LOADBALANCE)];
-                proxy.useLb(lb);
-                return proxy;
-            },
-            inject: [Proxy, ...inject],
+            useExisting: Proxy
         };
         return {
             module: ProxyModule,

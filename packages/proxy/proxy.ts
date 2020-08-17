@@ -1,12 +1,13 @@
 import {
     ForbiddenException,
+    Inject,
     Injectable,
     InternalServerErrorException,
     NotFoundException,
     OnModuleInit,
 } from '@nestjs/common';
 import * as HttpProxy from 'http-proxy';
-import { IProxy, ILoadbalance } from '@nestcloud/common';
+import { IProxy, ILoadbalance, LOADBALANCE } from '@nestcloud/common';
 import { get } from 'lodash';
 
 import { Route } from './interfaces/route.interface';
@@ -24,12 +25,12 @@ import { ProxyConfig } from './proxy.config';
 @Injectable()
 export class Proxy implements IProxy, OnModuleInit {
     private proxy: HttpProxy;
-    private lb: ILoadbalance;
 
     constructor(
         private readonly config: ProxyConfig,
         private readonly filterRegistry: ProxyFilterRegistry,
         private readonly routeRegistry: ProxyRouteRegistry,
+        @Inject(LOADBALANCE) private readonly lb: ILoadbalance
     ) {
     }
 
@@ -57,10 +58,6 @@ export class Proxy implements IProxy, OnModuleInit {
             this.initRoutes();
             this.initProxy();
         });
-    }
-
-    public useLb(lb: ILoadbalance) {
-        this.lb = lb;
     }
 
     private initRoutes() {
