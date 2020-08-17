@@ -9,6 +9,7 @@ import { DiscoveryModule } from '@nestjs/core';
 import { Scanner, BOOT, CONFIG, IBoot, IConfig, PROXY } from '@nestcloud/common';
 import { ProxyFilterRegister } from './proxy-filter.register';
 import { ProxyConfig } from './proxy.config';
+import { ILoadbalance, LOADBALANCE } from '../common';
 
 @Global()
 @Module({
@@ -34,13 +35,21 @@ export class ProxyModule {
         };
         const proxyProvider = {
             provide: PROXY,
-            useExisting: Proxy
+            useFactory: (
+                config: ProxyConfig,
+                filterRegistry: ProxyFilterRegistry,
+                routeRegistry: ProxyRouteRegistry,
+                ...params: any[]
+            ) => {
+                const lb: ILoadbalance = params[inject.indexOf(LOADBALANCE)];
+                return new Proxy(config, filterRegistry, routeRegistry, lb);
+            },
+            inject: [ProxyConfig, ProxyFilterRegistry, ProxyRouteRegistry, ...inject],
         };
         return {
             module: ProxyModule,
             providers: [
                 proxyOptionsProvider,
-                Proxy,
                 proxyProvider,
                 ProxyExplorer,
                 ProxyFilterRegistry,
