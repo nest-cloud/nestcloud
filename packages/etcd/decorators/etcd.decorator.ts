@@ -26,19 +26,26 @@ async function handlePropertyValue(etcd: IEtcd, key, target, propertyName, type,
     try {
         const value = await etcd.get(key).string();
         updatePropertyValue(value, target, propertyName, type, defaults);
-
-        const watcher = await etcd.watch().key(key).create();
-        watcher.on('data', (res: RPC.IWatchResponse) => {
-            res.events.forEach(evt => {
-                if (evt.type === 'Put') {
-                    updatePropertyValue(evt.kv.value.toString(), target, propertyName, type, defaults);
-                } else if (evt.type === 'Delete') {
-                    updatePropertyValue('', target, propertyName, type, defaults);
-                }
-            });
-        });
     } catch (e) {
     }
+
+    const watcher = await etcd.watch().key(key).create();
+    watcher.on('data', (res: RPC.IWatchResponse) => {
+        res.events.forEach(evt => {
+            if (evt.type === 'Put') {
+                updatePropertyValue(evt.kv.value.toString(), target, propertyName, type, defaults);
+            } else if (evt.type === 'Delete') {
+                updatePropertyValue('', target, propertyName, type, defaults);
+            }
+        });
+    });
+    watcher.on('connected', async () => {
+        try {
+            const value = await etcd.get(key).string();
+            updatePropertyValue(value, target, propertyName, type, defaults);
+        } catch (e) {
+        }
+    });
 }
 
 function updatePropertyValue(value, target, propertyName, type, defaults) {
