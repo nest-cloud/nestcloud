@@ -56,6 +56,14 @@ export class EtcdOrchestrator implements OnApplicationShutdown {
                     }
                 });
             });
+            watcher.on('connected', async () => {
+                try {
+                    const value = await this.etcd.get(name).string();
+                    setValue(target, value, property, options);
+                } catch (e) {
+                    this.logger.error(ETCD_KEY_VALUE_ERROR(name), e);
+                }
+            });
             watcher.on('error', e => this.logger.error(ETCD_KEY_VALUE_ERROR(name), e.message));
             item.watcher = watcher;
         }
