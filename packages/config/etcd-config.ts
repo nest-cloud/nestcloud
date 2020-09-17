@@ -4,7 +4,7 @@ import * as YAML from 'yamljs';
 import { Logger } from '@nestjs/common';
 import { Store } from './store';
 import { ConfigSyncException } from './exceptions/config-sync.exception';
-import * as RPC from 'etcd3/lib/src/rpc';
+import * as RPC from 'etcd3/lib/rpc';
 
 export class EtcdConfig implements IConfig {
     private readonly store = Store;

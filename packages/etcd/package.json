@@ -1,6 +1,6 @@
 {
   "name": "@nestcloud/etcd",
-  "version": "0.6.12",
+  "version": "0.6.13",
   "description": "A Nest framework (node.js) module for registering and getting consul service easily.",
   "author": "Miaowing <i@zfeng.net>",
   "license": "MIT",
@@ -15,7 +15,7 @@
     "url": "https://github.com/nest-cloud/nestcloud/issues"
   },
   "peerDependencies": {
-    "etcd3": "^0.2.13"
+    "etcd3": "^1.0.1"
   },
   "homepage": "https://github.com/nest-cloud/nestcloud#readme"
 }

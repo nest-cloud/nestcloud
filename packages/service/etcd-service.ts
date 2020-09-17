@@ -5,7 +5,7 @@ import { Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import * as YAML from 'yamljs';
 import { ServiceNode } from './service-node';
 import { getIPAddress } from './utils/os.util';
-import { Watcher } from 'etcd3/lib/src/watch';
+import { Watcher } from 'etcd3/lib/watch';
 
 interface WatcherWrapper {
     connected: boolean;

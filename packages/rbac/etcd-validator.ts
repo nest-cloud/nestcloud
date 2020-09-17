@@ -6,7 +6,7 @@ import { IRbacConfig } from './interfaces/rbac-config.interface';
 import { Backend } from './constants';
 import { BackendMismatchException } from './exceptions/backend-mismatch.exception';
 import { IEtcd } from '@nestcloud/common';
-import * as RPC from 'etcd3/lib/src/rpc';
+import * as RPC from 'etcd3/lib/rpc';
 import { IRbacData } from './interfaces/rbac-data.interface';
 
 export class EtcdValidator implements IRbacValidator {

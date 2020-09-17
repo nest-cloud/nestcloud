@@ -2,7 +2,7 @@ import { NEST_ETCD } from '@nestcloud/common';
 import * as YAML from 'yamljs';
 import * as CoreModule from '@nestcloud/core';
 import { IEtcd } from '../../common';
-import * as RPC from 'etcd3/lib/src/rpc';
+import * as RPC from 'etcd3/lib/rpc';
 
 export const Etcd = (key?: string, type?: 'json' | 'yaml' | 'text', defaults?: any) => createEtcdDecorator(key, type, defaults);
 
