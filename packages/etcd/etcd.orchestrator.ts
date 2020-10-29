@@ -3,8 +3,8 @@ import { KeyValueOptions, KeyValueMetadata, setValue } from '@nestcloud/common';
 import { Etcd } from './etcd';
 import { InjectEtcd } from './decorators/inject-etcd.decorator';
 import { ETCD_KEY_VALUE_ERROR } from './etcd.messages';
-import * as RPC from 'etcd3/lib/src/rpc';
-import { Watcher } from 'etcd3/lib/src/watch';
+import * as RPC from 'etcd3/lib/rpc';
+import { Watcher } from 'etcd3/lib/watch';
 
 interface KeyValue {
     name: string;
