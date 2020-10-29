@@ -4,7 +4,7 @@ import * as YAML from 'yamljs';
 import { Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigStore } from './config.store';
 import { ConfigSyncException } from './exceptions/config-sync.exception';
-import * as RPC from 'etcd3/lib/src/rpc';
+import * as RPC from 'etcd3/lib/rpc';
 import { NO_NAME_PROVIDE } from './config.messages';
 
 export class EtcdConfig implements IConfig, OnModuleInit {

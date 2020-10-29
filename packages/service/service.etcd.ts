@@ -5,7 +5,7 @@ import { Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import * as YAML from 'yamljs';
 import { ServiceServer } from './service.server';
 import { getIPAddress } from './utils/os.util';
-import { Watcher } from 'etcd3/lib/src/watch';
+import { Watcher } from 'etcd3/lib/watch';
 
 export class EtcdService implements IService, OnModuleInit, OnModuleDestroy {
     // nestcloud-service/service__${serviceName}__${ip}__${port}
