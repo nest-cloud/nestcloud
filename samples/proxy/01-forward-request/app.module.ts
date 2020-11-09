@@ -6,10 +6,14 @@ import { NEST_BOOT } from '@nestcloud/common';
 import { TerminusModule } from '@nestjs/terminus';
 import { GatewayModule } from '@nestcloud/gateway';
 import { ApiController } from "./api.controller";
+import { resolve } from 'path'
+
 
 @Module({
     imports: [
-        BootModule.register(__dirname, `config.yaml`),
+        BootModule.forRoot({
+            filePath: resolve(__dirname, `config.yaml`)
+        }),
         ConsulModule.register({ dependencies: [NEST_BOOT] }),
         ConsulServiceModule.register({ dependencies: [NEST_BOOT] }),
         GatewayModule.register({ dependencies: [NEST_BOOT] }),

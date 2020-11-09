@@ -5,10 +5,14 @@ import { ConsulServiceModule } from '@nestcloud/consul-service';
 import { LoadbalanceModule } from '@nestcloud/consul-loadbalance';
 import { NEST_BOOT } from '@nestcloud/common';
 import { LoadbalanceService } from "./loadbalance.service";
+import { resolve } from 'path'
+
 
 @Module({
     imports: [
-        BootModule.register(__dirname, `config.yaml`),
+        BootModule.forRoot({
+            filePath: resolve(__dirname, `config.yaml`)
+        }),
         ConsulModule.register({ dependencies: [NEST_BOOT] }),
         ConsulServiceModule.register({ dependencies: [NEST_BOOT] }),
         LoadbalanceModule.register({ dependencies: [NEST_BOOT] })

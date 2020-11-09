@@ -7,10 +7,14 @@ import { NEST_BOOT, NEST_CONSUL_LOADBALANCE } from '@nestcloud/common';
 import { TerminusModule } from '@nestjs/terminus';
 import { HttpClient } from "./http.client";
 import { TestService } from "./test.service";
+import { resolve } from 'path'
+
 
 @Module({
     imports: [
-        BootModule.register(__dirname, `config.yaml`),
+        BootModule.forRoot({
+            filePath: resolve(__dirname, `config.yaml`)
+        }),
         ConsulModule.register({ dependencies: [NEST_BOOT] }),
         ConsulServiceModule.register({ dependencies: [NEST_BOOT] }),
         FeignModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL_LOADBALANCE] }),
