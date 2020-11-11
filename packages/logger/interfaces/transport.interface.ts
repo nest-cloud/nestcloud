@@ -30,8 +30,8 @@ export interface FileTransport extends Transport {
 
 export interface DailyRotateFile extends Transport {
     filename?: string;
-    maxSize?: number;
-    maxFiles?: number;
+    maxSize?: string;
+    maxFiles?: string;
     zippedArchive?: boolean;
     options?: any;
 }
