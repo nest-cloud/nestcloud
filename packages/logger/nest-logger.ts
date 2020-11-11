@@ -19,6 +19,10 @@ export class NestLogger implements LoggerService {
         this.logger.info(message);
     }
 
+    info(message: any, context?: string): any {
+        this.logger.info(message);
+    }
+
     warn(message: any, context?: string): any {
         this.logger.warn(message);
     }
@@ -28,6 +32,10 @@ export class NestLogger implements LoggerService {
     }
 
     verbose(message: any, context?: string): any {
+        this.logger.verbose(message);
+    }
+
+    trace(message: any, context?: string): any {
         this.logger.verbose(message);
     }
 }
