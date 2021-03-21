@@ -46,9 +46,8 @@ export class GrpcClient {
         if (!this.serviceCache.get(methodKey)) {
             if (!this.proxyCache.has(node.id)) {
                 const proxy = new ClientGrpcProxy({
-                    url: `${node.address}:${node.port}`,
-                    package: this.options.package,
-                    protoPath: this.options.protoPath,
+                    ...(this.options),
+                    url: `${node.address}:${node.port}`
                 });
                 this.proxyCache.set(node.id, proxy);
             }
