@@ -116,7 +116,7 @@ export class Loadbalance implements ILoadbalance, OnModuleInit {
                 server.state = new ServerState();
             }
             server.state.status = node.status;
-            server.tags = stringToKeyValue(node.tags);
+            if (server.tags) server.tags = stringToKeyValue(node.tags);
             return server;
         });
 
