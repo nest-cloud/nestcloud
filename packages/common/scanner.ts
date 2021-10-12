@@ -23,10 +23,9 @@ export class Scanner implements OnModuleInit {
         }
         const modules = this.container.getModules().values();
         for (const module of modules) {
-            const instanceWrapper = module.injectables.get(metaType.name);
-            if (instanceWrapper && module.injectables.has(metaType.name) && instanceWrapper.metatype === metaType) {
-                const instanceWrapper: InstanceWrapper = module.injectables.get(metaType.name);
-                if (instanceWrapper) {
+            if(module.injectables.size > 0){
+                const instanceWrapper = module.injectables.get(metaType);
+                if (instanceWrapper && module.injectables.has(metaType) && instanceWrapper.metatype === metaType) {
                     const instanceHost = instanceWrapper.getInstanceByContextId(STATIC_CONTEXT);
                     if (instanceHost.isResolved && instanceHost.instance) {
                         return instanceHost.instance;
