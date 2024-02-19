@@ -20,7 +20,12 @@ export class ConfigFactory {
                 client = new ConsulConfig(this.store, ref, this.options.name);
                 break;
             case ETCD:
-                client = new EtcdConfig(this.store, ref, this.options.name);
+                client = new EtcdConfig(
+                    this.store, 
+                    ref, 
+                    this.options.name,
+                    this.options.namespace,
+                );
                 break;
             case KUBERNETES:
                 client = new KubernetesConfig(

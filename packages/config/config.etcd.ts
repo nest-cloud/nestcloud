@@ -10,12 +10,12 @@ import { NO_NAME_PROVIDE } from './config.messages';
 export class EtcdConfig implements IConfig, OnModuleInit {
     private readonly retryInterval = 5000;
     private readonly logger = new Logger('ConfigModule');
-    private readonly namespace = 'nestcloud-config/';
 
     constructor(
         private readonly store: ConfigStore,
         private readonly client: IEtcd,
         private readonly name: string,
+        private readonly namespace: string = '',
     ) {
     }
 
